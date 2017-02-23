@@ -1,0 +1,18 @@
+{
+	"name": "kuofp/yapa",
+	"type": "library",
+	"description": "Admin Panel Engine",
+	"keywords": ["admin"],
+	"license": "MIT",
+	"authors": [
+		{"name": "Frank Kuo", "email": "kuofp@cs.nctu.edu.tw"}
+	],
+	"require": {
+		"php": ">=5.3",
+		"Yatp": ">=1.0",
+		"medoo": ">=1.2"
+	},
+	"autoload": {
+		"files": ["yapa.php"]
+	}
+}
