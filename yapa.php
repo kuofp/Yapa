@@ -50,7 +50,7 @@ class Yapa{
 		$this->col_num = count($col_en);
 		$this->uid = 0;
 		
-		$this->tpl = new Yatp(__DIR__ . '/html/default.tpl');
+		$this->tpl = new Yatp(__DIR__ . '/assets/html.tpl');
 	}
 	
 	public function __destruct(){
@@ -459,6 +459,11 @@ class Yapa{
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
+	}
+	
+	public function script(){
+		
+		echo file_get_contents(__DIR__ . '/assets/script.js');
 	}
 	
 	public function genFormModal($preset){

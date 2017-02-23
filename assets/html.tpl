@@ -1,4 +1,38 @@
 <!-- @main -->
+<script>
+if(typeof checkScript == 'undefined'){
+	$("head").append('<script src="{url}&method=script"><\/script>');
+}
+</script>
+<style>
+.table-alter {
+	table-layout:fixed;
+}
+.table-alter td {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ui-autocomplete {
+	z-index: 1200;
+}
+
+@media print {
+	body{
+		display: none;
+	}
+    .genPrint {
+        visibility: visible;
+    }
+}
+
+@media screen {
+    .genPrint {
+		display: none;
+    }
+}
+</style>
 <div id="{unique_id}" style="height: 100%">
 	<input id="{unique_id}_item_cnt"        type="hidden" value="">
 	<input id="{unique_id}_target_id"       type="hidden" value="">
@@ -31,7 +65,7 @@
 			
 			<!-- main content area -->
 			<div style="padding-right: 16px;">
-				<table class="table" style="margin: 0px;">
+				<table class="table table-alter" style="margin: 0px;">
 					<thead class="form_title">
 						<th class="chkall" style="width: 30px; cursor: pointer">
 							<i class="fa fa-square-o"></i>
@@ -44,7 +78,7 @@
 			</div>
 			
 			<div class="table_wrap sub" style="overflow-y: scroll; height: calc(100% - 70px);">
-				<table class="table table-hover review" style="cursor: pointer;">
+				<table class="table table-hover table-alter review" style="cursor: pointer;">
 					<tbody class="last">
 						<!-- @tr-->
 						<tr class="newdatalist">
@@ -65,7 +99,6 @@
 <script>
 	bindFormViewComplete('{unique_id}');
 	bindFormAjaxOnRefresh('{unique_id}', '{url}', '{table}');
-
 </script>
 <!-- @main -->
 
@@ -79,7 +112,7 @@
 	</div>
 	<div class="modal-body">
 		<form>
-			<table class="table">
+			<table class="table table-alter">
 				<thead>
 					<tr>
 						<th class="col-xs-1 col-sm-1 col-md-1"></th>
@@ -100,7 +133,7 @@
 				</tr>
 				<tr>
 					<td align="center">內文</td>
-					<td><textarea class="form-control" name="content" type="text" rows="7"></textarea></td>
+					<td><textarea class="form-control" name="content" type="text" rows="7" style="resize: vertical"></textarea></td>
 				</tr>
 				<tr>
 					<td align="center">附檔</td>
@@ -213,7 +246,7 @@
 		</div>
 		<div class="modal-body">
 			<form>
-				<table class="table">
+				<table class="table table-alter">
 					<tr>
 						<th class="col-xs-1 col-sm-1 col-md-1">項目</th>
 						<th class="col-xs-2 col-sm-2 col-md-2">內容</th>
@@ -242,7 +275,7 @@
 						<!-- @textarea -->
 						<td align="center">{meta}</td>
 						<td>
-							<textarea class="form-control input-sm" name="{name}" type="text" rows="7">{value}</textarea>
+							<textarea class="form-control input-sm" name="{name}" type="text" rows="7" style="resize: vertical">{value}</textarea>
 						</td>
 						<!-- @textarea -->
 						<!-- @select -->
