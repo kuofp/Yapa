@@ -666,7 +666,7 @@ class Yapa{
 						'value' => $pre,
 						'name'  => $this->col_en[$i],
 						'uid'   => $uid,
-						'url'   => $this->file . '&method=upload',
+						'url'   => $this->file,
 					));
 					break;
 				default:

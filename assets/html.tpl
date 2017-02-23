@@ -1,7 +1,12 @@
 <!-- @main -->
 <script>
 if(typeof checkScript == 'undefined'){
-	$("head").append('<script src="{url}&method=script"><\/script>');
+	$.ajax({
+		url: '{url}',
+		async: false,
+		data: {method: 'script'},
+		dataType: "script"
+    });
 }
 </script>
 <style>
