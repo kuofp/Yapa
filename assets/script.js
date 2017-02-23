@@ -493,11 +493,9 @@ function bindFormDeleteTool(uid, url){
 	});
 }
 
-function bindFormMailTool(uid, url, table, source){
+function bindFormMailTool(uid, url, table){
 	var mm = $('#' + uid + '_Mail_Modal');
 	
-	mm.find('[name=mailto]').autocomplete({source: source});
-	mm.find('[name=mailcc]').autocomplete({source: source});
 	
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');

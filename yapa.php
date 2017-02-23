@@ -400,7 +400,6 @@ class Yapa{
 				'unique_id'   => $this->unique_id,
 				'url'         => $this->file,
 				'table'       => $this->table_name,
-				'source'      => json_encode($this->database->select('t_account', 'mail'), JSON_UNESCAPED_UNICODE),
 			))->render();
 		}
 		

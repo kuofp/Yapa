@@ -159,7 +159,7 @@ if(typeof checkScript == 'undefined'){
 </div>
 
 <script>
-	bindFormMailTool('{unique_id}', '{url}', '{table}', {source});
+	bindFormMailTool('{unique_id}', '{url}', '{table}');
 </script>
 <!-- @mail -->
 
