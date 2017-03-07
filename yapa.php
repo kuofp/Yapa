@@ -18,6 +18,9 @@ class Yapa{
 	private $auth = array();
 	private $database;
 	private $mail;
+	private $data;
+	private $tree;
+	private $config;
 	
 	public $col_num;
 	private $uid;
@@ -27,7 +30,7 @@ class Yapa{
 	
 	private $tpl;
 
-	public function __construct($file, $db_name, $table_name, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $route_chk, $show, $type, $auth, $medoo, $phpmailer){
+	public function __construct($file, $db_name, $table_name, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $route_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
 		
 		$this->unique_id = 'form_' . uniqid();
 		
@@ -46,6 +49,9 @@ class Yapa{
 		$this->auth = $auth;
 		$this->database = $medoo;
 		$this->mail = $phpmailer;
+		$this->data = array();
+		$this->tree = array();
+		$this->config = $config;
 		
 		$this->col_num = count($col_en);
 		$this->uid = 0;
@@ -169,6 +175,7 @@ class Yapa{
 				'table'       => $this->table_name,
 				'tr'          => '',
 				'th'          => $this->tpl->block('main.th')->nest($th),
+				'max'         => $this->config['perpage'] ?? 50,
 			))->render();
 		
 			$this->genFormModal($preset);
@@ -187,9 +194,20 @@ class Yapa{
 		return $result;
 	}
 	
-	public function review($pdata){
+	public function review($pdata, $callback=''){
 		
 		$datas = $this->getData($pdata);
+		
+		// custom callback before rendering
+		if($callback){
+			$datas = call_user_func($callback, $datas);
+		}
+		
+		// apply outer data
+		$this->apply($datas);
+		
+		// tree view
+		$this->tree($datas);
 		
 		$style = $_REQUEST['style'] ?? '';
 		
@@ -471,6 +489,10 @@ class Yapa{
 		
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
+			
+			// skip hash tag
+			if(substr($this->col_en[$i], 0, 1) === '#') continue;
+			
 			$star = '';
 			if($this->empty_chk[$i]){
 				$star .= '(必填)';
@@ -531,59 +553,6 @@ class Yapa{
 					));
 					
 					break;
-				/*case 'chainselect':
-					$uid = $this->getUid();
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
-					$html .= "<td><select class='form-control input-sm' name='" . $this->col_en[$i] . "' id='" . $uid . "'>";
-					$html .= "</td></select>";
-					$html .= "<script>
-					
-					$('#" . $this->unique_id . "_Modal').find('.modal-body').find('[name=\'" . $this->col_en[$i-1] . "\']').on('change', function(){
-						$('#" . $uid . "').trigger('preset', [$(this).val(), '*']).trigger('change');
-					});
-					
-					$('#" . $uid . "').on('click', function(){
-						
-						//if there is only one option, then send ajax! (preset has only one option ) I can't find one for dropdown and another for click option
-						if($('#" . $uid . "').children().length == 1){
-							$('#" . $this->unique_id . "_Modal').find('.modal-body').find('[name=\'" . $this->col_en[$i-1] . "\']').trigger('change');
-						}
-					});
-					
-					$('#" . $uid . "').on('preset', function(e, v, t){
-						$('#" . $uid . "').empty();
-						
-						var pdata = {data: { 0: '" . $arr_tmp[2] . "(id)', 1: '" . $arr_tmp[1] . "(name)' }, where: { }};
-						if(t == '*'){
-							$('#" . $uid . "').append('<option value=\'0\'>-請選擇-</option>');
-							pdata['where'] = {'" . $arr_tmp[3] . "': v};
-							if(v == 0 || v === null){
-								return;
-							}
-						}else{
-							pdata['where'] = {id: v};
-							if(v == 0 || v === null){
-								$('#" . $uid . "').append('<option value=\'0\'>-請選擇-</option>');
-								return;
-							}
-						}
-						
-						$.ajax({
-							url: '" . $this->route_chk[$i] . "',
-							type: 'POST',
-							data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
-							success: function(re) {
-								var jdata = JSON.parse(re);
-								
-								for(var i = 0; i < jdata.length; i++){
-									$('#" . $uid . "').append('<option value=\'' + jdata[i]['id'] + '\'>' + jdata[i]['name'] + '</option>');
-								}
-							}
-						});
-					});
-					
-					</script>";
-					break;*/
 				case 'radiobox':
 					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 					
@@ -703,13 +672,26 @@ class Yapa{
 			$arr_search = array();
 			$arr_chain = array();
 			$arr_col = array();
+			$this->tree['col'] = null;
+			
 			for($i = 0; $i < $this->col_num; $i++){
+				// skip hash tag
+				if(substr($this->col_en[$i], 0, 1) === '#') continue;
 				$arr_col[$i] = $this->table_name . '.' . $this->col_en[$i];
 			}
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->type[$i] == 'checkbox') continue;
+				
+				// skip hash tag
+				if(substr($this->col_en[$i], 0, 1) === '#') continue;
 				if($this->chain_chk[$i] != ''){
 					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
+					
+					// tree view check
+					if($arr_tmp[0] == $this->table_name){
+						$this->tree['col'] = $i;
+					}
+					
 					$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
 					
 					$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
@@ -756,7 +738,32 @@ class Yapa{
 				}
 			}
 			
-			if(!($pdata['where']['ORDER'] ?? 0)){
+			// order
+			if($this->tree['col'] !== null){
+				// tree view must ordered under plan
+				$col = $this->col_en[$this->tree['col']];
+				$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$this->tree['col']]);
+				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[2], $col));
+				
+				$tmp = array();
+				foreach($datas as $v){
+					$tmp[$v['id']] = $v[$col];
+				}
+				
+				$sub = $this->treeSub($tmp);
+				$order = $this->flatten($this->to_tree($tmp));
+				
+				$offset = array();
+				foreach($order as $k=>$v){
+					$offset[$v] = explode(',', $k)[1];
+				}
+				
+				$this->tree['offset'] = $offset;
+				$this->tree['sub'] = $sub;
+				
+				$pdata['where']['ORDER'] = [$this->table_name . '.id' => $order];
+				
+			}elseif(!($pdata['where']['ORDER'] ?? 0)){
 				// default order
 				$pdata['where']['ORDER'] = ['id' => 'DESC'];
 			}
@@ -864,7 +871,6 @@ class Yapa{
 					case 'autocomplete':
 					case 'select':
 					case 'radiobox':
-					case 'chainselect':
 						if(!isset($data[$this->col_en[$i]]) || $data[$this->col_en[$i]] == 0){
 							$result = 'err_empty';
 						}
@@ -922,5 +928,126 @@ class Yapa{
 	
 	protected function e($str){
 		return is_array($str)? ($str[0] ?? ''): htmlspecialchars($str);
+	}
+	
+	protected function treeSub($tree){
+		
+		$arr = array();
+		// unique pid list
+		$p = array();
+		
+		foreach($tree as $k=>$v){
+			if(empty($tree[$k])){
+				$tree[$k] = 'root';
+			}
+			
+			$p[$v] = $v;
+			
+			// init
+			$arr[$k] = [];
+		}
+		
+		foreach($tree as $k=>$v){
+			$arr[$v][$k] = $k;
+		}
+		
+		foreach($p as $parent){
+			foreach($arr as $k => $children){
+				if(in_array($parent, $children)){
+					$arr[$k] = $children + $arr[$parent];
+				}
+			}
+		}
+		
+		return $arr;
+	}
+	
+	protected function to_tree($array){
+		$flat = array();
+		$tree = array();
+
+		foreach($array as $child => $parent){
+			if(!isset($flat[$child])){
+				$flat[$child] = array();
+			}
+			if(!empty($parent)){
+				$flat[$parent][$child] =& $flat[$child];
+			}else{
+				$tree[$child] =& $flat[$child];
+			}
+		}
+
+		return $tree;
+	}
+	
+	protected function flatten($arr, $l = 0) {
+		$result = array();
+		foreach($arr as $key=>$val) {
+			$result[$key . ',' . $l] = $key;
+			if(is_array($val) && count($val)){
+				$result = array_merge($result, $this->flatten($val, $l+1));
+			}
+		}
+		return $result;
+	}
+	
+	public function bind($data){
+		
+		$tmp = array();
+		
+		foreach($data as $arr){
+			foreach($arr as $k=>$v){
+				if($k == '#sum1' || $k == '#sum2'){
+					$tmp[$k][$arr['id']] = $v;
+				}
+			}
+		}
+		$this->data = $tmp;
+	}
+	
+	protected function apply(&$data){
+		
+		foreach($data['data'] as $k=>$v){
+			foreach($this->data as $key=>$arr){
+				$data['data'][$k][$key] = $this->data[$key][$v['id']] ?? 0;
+			}
+		}
+	}
+	
+	protected function tree(&$data){
+		
+		if($this->tree['col'] !== null){
+			$offset = $this->tree['offset'];
+			$sub = $this->tree['sub'];
+			
+			foreach($data['data'] as $k=>$v){
+				
+				$sum = array();
+				foreach($this->data as $key=>$arr){
+					$sum[$key] = 0;
+				}
+				
+				foreach($sub[$v['id']] as $c){
+					foreach($this->data as $key=>$arr){
+						$sum[$key] += $arr[$c] ?? 0;
+					}
+				}
+				
+				$prefix = '';
+				for($i = $offset[$v['id']]; $i > 0; $i--){
+					if($i == 1){
+						$prefix .= '　└─';
+					}else{
+						$prefix .= '　　';
+					}
+				}
+				
+				$data['data'][$k]['user'] = $prefix . $data['data'][$k]['user'] . '(' . count($sub[$v['id']]) . ')';
+				
+				foreach($this->data as $key=>$arr){
+					$data['data'][$k][$key] += $sum[$key] ?? 0;
+				}
+			}
+		}
 	}
 }

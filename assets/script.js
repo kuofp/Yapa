@@ -263,7 +263,7 @@ function bindFormChkall2(uid){
 }
 
 
-function bindFormViewComplete(uid){
+function bindFormViewComplete(uid, max){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
@@ -275,7 +275,7 @@ function bindFormViewComplete(uid){
 	c.change(function(){ f.find('.item_cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormChkall( uid );
-	f.find('button.review').click(function(){ $(this).addClass('buttonLoading').button('loading'); f.find('table.review').trigger('refresh',{type: 'append', max: 50});});
+	f.find('button.review').click(function(){ $(this).addClass('buttonLoading').button('loading'); f.find('table.review').trigger('refresh',{type: 'append', max: max});});
 
 
 	r.change(function(){
@@ -306,7 +306,7 @@ function bindFormViewComplete(uid){
 }
 
 
-function bindFormAjaxOnRefresh(uid, url, table){
+function bindFormAjaxOnRefresh(uid, url, table, max){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
@@ -316,10 +316,10 @@ function bindFormAjaxOnRefresh(uid, url, table){
 		var arr_id = str_id.split(',');
 		for(var i = 0; i < arr_id.length; i++){
 			var int_id = parseInt(arr_id[i]);
-			var pdata={data:{},where:{ AND: {}}};
-			var arr_like={};
-			var arr_or={};
-			var max_ = (typeof obj.max === 'undefined') ? 50 : obj.max;
+			var pdata = {data:{},where:{ AND: {}}};
+			var arr_like = {};
+			var arr_or = {};
+			var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
 			var keyword = f.find('input.search').val();
 			var keyword_adv = f.find('input.search_adv').val();
 	
@@ -327,7 +327,9 @@ function bindFormAjaxOnRefresh(uid, url, table){
 				case 'review':
 					c.val(0);
 				case 'append':
-					pdata['where']['LIMIT'] = [c.val(), max_];
+					if(max_){ // skip zero case
+						pdata['where']['LIMIT'] = [c.val(), max_];
+					}
 					pdata['where']['SEARCH'] = keyword;
 					pdata['where']['SEARCH_ADV'] = keyword_adv;
 					break;
@@ -692,6 +694,10 @@ function bindInputAjaxOnChange(uid, url, type, col){
 				var jdata = JSON.parse(re);
 				pdata = jdata[0];
 				for(var i in col){
+					
+					// skip hash tag
+					if(col[i].substr(0, 1) === '#') continue;
+					
 					switch(type[i]){
 						case 'radiobox':
 							m.find('[name=' + col[i] + ']').each(function(i){
@@ -715,10 +721,6 @@ function bindInputAjaxOnChange(uid, url, type, col){
 							// put value and trigger preset
 							m.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
 							break;
-						//case 'chainselect':
-							// put value and trigger preset
-							//m.find('[name=' + col[i] + ']').trigger('preset', [pdata[col[i]]]);
-							//break;
 						default:
 							m.find('[name=' + col[i] + ']').val(pdata[col[i]]);
 							break;
