@@ -695,9 +695,6 @@ function bindInputAjaxOnChange(uid, url, type, col){
 				pdata = jdata[0];
 				for(var i in col){
 					
-					// skip hash tag
-					if(col[i].substr(0, 1) === '#') continue;
-					
 					switch(type[i]){
 						case 'radiobox':
 							m.find('[name=' + col[i] + ']').each(function(i){

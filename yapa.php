@@ -490,9 +490,6 @@ class Yapa{
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
 			
-			// skip hash tag
-			if(substr($this->col_en[$i], 0, 1) === '#') continue;
-			
 			$star = '';
 			if($this->empty_chk[$i]){
 				$star .= '(必填)';
@@ -503,6 +500,7 @@ class Yapa{
 			
 			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
 			$tag = ''; //select: selected, radio/checkbox: checked, autocomplete: label
+			$td = '';
 			
 			switch($this->type[$i]){
 				case 'hidden':
@@ -641,9 +639,11 @@ class Yapa{
 					break;
 			}
 			
-			$tr[] = array(
-				'td' => array($td)
-			);
+			if($td){
+				$tr[] = array(
+					'td' => array($td)
+				);	
+			}
 		}
 		
 		$this->tpl->block('modal-detail')->assign(array(
@@ -675,15 +675,14 @@ class Yapa{
 			$this->tree['col'] = null;
 			
 			for($i = 0; $i < $this->col_num; $i++){
-				// skip hash tag
-				if(substr($this->col_en[$i], 0, 1) === '#') continue;
+				// skip
+				if($this->type[$i] == 'value') continue;
 				$arr_col[$i] = $this->table_name . '.' . $this->col_en[$i];
 			}
 			for($i = 0; $i < $this->col_num; $i++){
+				// skip
 				if($this->type[$i] == 'checkbox') continue;
-				
-				// skip hash tag
-				if(substr($this->col_en[$i], 0, 1) === '#') continue;
+				if($this->type[$i] == 'value') continue;
 				if($this->chain_chk[$i] != ''){
 					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 					
@@ -705,10 +704,9 @@ class Yapa{
 				for($j = 0; $j < count($keyword); $j++){
 					if(!empty($keyword[$j])){
 						for($i = 0; $i < $this->col_num; $i++){
-							if($this->type[$i] == 'checkbox'){
-
-								continue;
-							}
+							// skip
+							if($this->type[$i] == 'checkbox') continue;
+							if($this->type[$i] == 'value') continue;
 							if($this->chain_chk[$i] != ''){
 								$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
@@ -743,11 +741,13 @@ class Yapa{
 				// tree view must ordered under plan
 				$col = $this->col_en[$this->tree['col']];
 				$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$this->tree['col']]);
-				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[2], $col));
+				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
 				
 				$tmp = array();
+				$alias = array();
 				foreach($datas as $v){
 					$tmp[$v['id']] = $v[$col];
+					$alias[$v['id']] = $v[$arr_tmp[1]];
 				}
 				
 				$sub = $this->treeSub($tmp);
@@ -760,6 +760,7 @@ class Yapa{
 				
 				$this->tree['offset'] = $offset;
 				$this->tree['sub'] = $sub;
+				$this->tree['alias'] = $alias;
 				
 				$pdata['where']['ORDER'] = [$this->table_name . '.id' => $order];
 				
@@ -991,17 +992,23 @@ class Yapa{
 		return $result;
 	}
 	
+	// array(
+		// array('id' => 1, '#tag' => 7),
+		// array('id' => 2, '#tag' => 8),
+		// ...
+	// )
 	public function bind($data){
 		
 		$tmp = array();
 		
 		foreach($data as $arr){
 			foreach($arr as $k=>$v){
-				if($k == '#sum1' || $k == '#sum2'){
+				if($k != 'id'){
 					$tmp[$k][$arr['id']] = $v;
 				}
 			}
 		}
+		
 		$this->data = $tmp;
 	}
 	
@@ -1019,6 +1026,7 @@ class Yapa{
 		if($this->tree['col'] !== null){
 			$offset = $this->tree['offset'];
 			$sub = $this->tree['sub'];
+			$alias = $this->tree['alias'];
 			
 			foreach($data['data'] as $k=>$v){
 				
@@ -1042,7 +1050,8 @@ class Yapa{
 					}
 				}
 				
-				$data['data'][$k]['user'] = $prefix . $data['data'][$k]['user'] . '(' . count($sub[$v['id']]) . ')';
+				$col = $this->col_en[$this->tree['col']];
+				$data['data'][$k][$col] = $prefix . $alias[$v['id']] . '(' . count($sub[$v['id']]) . ')';
 				
 				foreach($this->data as $key=>$arr){
 					$data['data'][$k][$key] += $sum[$key] ?? 0;
