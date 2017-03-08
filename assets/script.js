@@ -18,6 +18,53 @@ function open(verb, url, data, target) {
 	form.submit();
 }
 
+jQuery.fn.extend({
+	json: function(init = ''){
+		
+		var tar = this;
+		var tpl = (init.tpl || '[]').replace(/'/g, '"');
+		tpl = JSON.parse(tpl);
+		
+		$(tar).parents('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			
+			$(tar).siblings('div.box').remove();
+			
+			var str = ($(this).val() || '[]').replace(/'/g, '"');
+			var obj = JSON.parse(str);
+			var ctl = [];
+			
+			var box = $('<div class="box"></div>');
+			
+			if(tpl){
+				for(var i in tpl){
+					tpl[i] = obj[i] || '';
+				}
+				obj = tpl;
+			}
+			
+			for(var i in obj){
+				
+				ctl[i] = $('<span class="label label-default">' + i + '</span><input class="form-control input-sm" value="' + obj[i] + '">');
+				box.append(ctl[i]);
+				
+				ctl[i].on('input', '', i, function(e){
+					obj[e.data] = $(this).val();
+					$(tar).val(JSON.stringify(obj));
+				});
+			}
+			
+			$(this).before(box);
+		});
+	}
+});
+
+
 // require jquery/bootstrap/font-awesome
 jQuery.fn.extend({
 	uploadfile: function(init){
@@ -713,6 +760,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 								}
 							});
 							break;
+						case 'json':
 						case 'uploadfile':
 						case 'autocomplete':
 							// put value and trigger preset

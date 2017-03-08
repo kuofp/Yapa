@@ -149,7 +149,7 @@ class Yapa{
 		
 		$style  = $_REQUEST['style']  ?? '';
 		$query  = $_REQUEST['query']  ?? [];
-		$preset = $_REQUEST['preset'] ?? '';
+		$preset = $this->config['preset'] ?? $_REQUEST['preset'] ?? '';
 		
 		$result = 'success';
 		if($this->authCheck('review')){
@@ -633,6 +633,16 @@ class Yapa{
 						'name'  => $this->col_en[$i],
 						'uid'   => $uid,
 						'url'   => $this->file,
+					));
+					break;
+				case 'json':
+					$uid = $this->getUid();
+					
+					$td = $this->tpl->block('modal-detail.td.json')->assign(array(
+						'meta'  => $this->col_ch[$i] . $star,
+						'value' => str_replace('"', '\'', json_encode($pre)),
+						'name'  => $this->col_en[$i],
+						'uid'   => $uid,
 					));
 					break;
 				default:

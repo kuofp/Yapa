@@ -342,6 +342,15 @@ if(typeof checkScript == 'undefined'){
 							</script>
 						</td>
 						<!-- @uploadfile -->
+						<!-- @json -->
+						<td align="center">{meta}</td>
+						<td>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
+							<script>
+								$('#{uid}').json({tpl: "{value}"});
+							</script>
+						</td>
+						<!-- @json -->
 					<!-- @td -->
 					</tr>
 				<!-- @tr -->
