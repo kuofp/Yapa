@@ -664,7 +664,7 @@ class Yapa{
 					$table = $arr_tmp[0];
 					$arr_col = array(
 						$arr_tmp[1] . '(label)',
-						$arr_tmp[2] . '(val)',
+						$arr_tmp[2] . '(val)', // 'value' will be inserted into the input automatically, 'val' won't
 					);
 					
 					if($pdata['where']['[~]'] ?? 0){
@@ -810,6 +810,7 @@ class Yapa{
 			if($datas != ''){
 				$arr_checkbox_list = array();
 				$arr_uploadfile_list = array();
+				$arr_json_list = array();
 				for($j = 0; $j < $this->col_num; $j++){
 					
 					//mark checkbox
@@ -826,6 +827,11 @@ class Yapa{
 					//mark uploadfile
 					if($this->type[$j] == 'uploadfile'){
 						$arr_uploadfile_list[$this->col_en[$j]] = 1;
+					}
+					
+					//mark json
+					if($this->type[$j] == 'json'){
+						$arr_json_list[$this->col_en[$j]] = 1;
 					}
 				}
 				
@@ -865,6 +871,20 @@ class Yapa{
 								}
 							}
 							$datas[$i][$key] = $this->raw($this->tpl->block('crop-img')->nest($arr)->render(false));
+						}
+					}
+					
+					//translate json
+					foreach($arr_json_list as $key=>$val){
+						
+						$arr = json_decode($datas[$i][$key], true);
+						
+						if(is_array($arr)){
+							$tmp = array();
+							foreach($arr as $k=>$v){
+								$tmp[] = $this->e($k) . ': ' . $this->e($v);
+							}
+							$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
 						}
 					}
 				}

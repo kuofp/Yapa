@@ -51,8 +51,7 @@ jQuery.fn.extend({
 					$(col).autocomplete({
 						source: arr,
 						select: function(event, ui){
-							$(col).val(ui.item.label);
-							$(tar).val(ui.item.val).trigger('change');
+							$(tar).val(ui.item.val);
 						}
 					});
 				}
