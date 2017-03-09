@@ -12,7 +12,6 @@ class Yapa{
 	private $empty_chk = array();
 	private $exist_chk = array();
 	private $chain_chk = array();
-	private $route_chk = array();
 	public $show = array();
 	public $type = array();
 	private $auth = array();
@@ -30,7 +29,7 @@ class Yapa{
 	
 	private $tpl;
 
-	public function __construct($file, $db_name, $table_name, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $route_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
+	public function __construct($file, $db_name, $table_name, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
 		
 		$this->unique_id = 'form_' . uniqid();
 		
@@ -43,7 +42,6 @@ class Yapa{
 		$this->empty_chk = $empty_chk;
 		$this->exist_chk = $exist_chk;
 		$this->chain_chk = $chain_chk;
-		$this->route_chk = $route_chk;
 		$this->show = $show;
 		$this->type = $type;
 		$this->auth = $auth;
@@ -594,22 +592,14 @@ class Yapa{
 					));
 					break;
 				case 'autocomplete':
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
-					if($pre){
-						$datas = $this->database->select($arr_tmp[0], $arr_tmp[1], array($arr_tmp[2]=>$pre));
-						$tag = $datas[0];
-					}
 					$uid = $this->getUid();
 					
 					$td = $this->tpl->block('modal-detail.td.autocomplete')->assign(array(
 						'meta'  => $this->col_ch[$i] . $star,
-						'text'  => $tag,
 						'value' => $pre,
 						'name'  => $this->col_en[$i],
 						'uid'   => $uid,
-						'url'   => $this->route_chk[$i],
-						'label' => $arr_tmp[2],
-						'val'   => $arr_tmp[1],
+						'url'   => $this->file,
 					));
 					
 					break;
@@ -666,10 +656,44 @@ class Yapa{
 	
 	public function getJson($pdata){//get raw data
 		
-		$arr_col = $pdata['data']?$pdata['data']:'*';
-		$datas = $this->database->select($this->table_name, $arr_col, $pdata['where']);
+		if($pdata['data']['autocomplete'] ?? 0){
+			
+			for($i = 0; $i < $this->col_num; $i++){
+				if($this->col_en[$i] == $pdata['data']['autocomplete']){
+					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
+					$table = $arr_tmp[0];
+					$arr_col = array(
+						$arr_tmp[1] . '(label)',
+						$arr_tmp[2] . '(val)',
+					);
+					
+					if($pdata['where']['[~]'] ?? 0){
+						$pdata['where'] = array(
+							$arr_tmp[1] . '[~]' => $pdata['where']['[~]'],
+							'LIMIT' => 10,
+						);
+					}elseif($pdata['where']['AND'] ?? 0){
+						$pdata['where'] = array(
+							'AND' => array($arr_tmp[2] => $pdata['where']['AND']),
+						);
+					}
+					break;
+				}
+			}
+			
+		}else{
+			$table = $this->table_name;
+			$arr_col = $pdata['data']?$pdata['data']:'*';
+		}
 		
-		return json_encode($datas, JSON_UNESCAPED_UNICODE);
+		if($this->authCheck('review')){
+			$result = 'err_auth';
+			return $result;
+			
+		}else{
+			$datas = $this->database->select($table, $arr_col, $pdata['where']);
+			return json_encode($datas, JSON_UNESCAPED_UNICODE);
+		}
 	}
 	
 	public function getData($pdata){//translate all data

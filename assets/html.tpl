@@ -317,10 +317,9 @@ if(typeof checkScript == 'undefined'){
 						<!-- @autocomplete -->
 						<td align="center">{meta}</td>
 						<td>
-							<input class="form-control input-sm" type="text" value="{text}" id="{uid}_label"/>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
 							<script>
-								bindInputAutoComplete('{uid}', '{url}', '{label}', '{val}');
+								$('#{uid}')._autocomplete({url: '{url}'});
 							</script>
 						</td>
 						<!-- @autocomplete -->
