@@ -420,7 +420,7 @@ function bindFormViewComplete(uid, max){
 }
 
 
-function bindFormAjaxOnRefresh(uid, url, table, max){
+function bindFormAjaxOnRefresh(uid, url, max){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
@@ -450,7 +450,7 @@ function bindFormAjaxOnRefresh(uid, url, table, max){
 				case 'create':
 				case 'modify':
 				case 'delete':
-					pdata['where']['AND'][table + '.id'] = int_id;
+					pdata['where']['AND']['id'] = int_id;
 					pdata['where']['SEARCH'] = keyword;
 					pdata['where']['SEARCH_ADV'] = keyword_adv;
 					break;
@@ -609,40 +609,31 @@ function bindFormDeleteTool(uid, url){
 	});
 }
 
-function bindFormMailTool(uid, url, table){
+function bindFormMailTool(uid, url){
 	var mm = $('#' + uid + '_Mail_Modal');
-	
 	
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	
-	f.find('ul.toollist').append('<li><a href="#" class="mail">從郵件寄送</a></li>');
-	f.find('ul.toollist').find('a.mail').click(function(){
+	var a = $('<li><a href="#">從郵件寄送</a></li>');
+	
+	f.find('ul.toollist').append(a);
+	
+	$(a).click(function(){
 		mm.find('form')[0].reset();
 		mm.find('[name=title]').val('【通知】資料報表通知: ' + $.datepicker.formatDate('yy-mm-dd', new Date()));
 		mm.find('[name=report]').empty().css('padding', 0);
-		
-		
 		mm.modal('show');
 		
-		var str = l.val();
-		var arr = str.split(',');
-		var pdata={data:{},where:{ ORDER:{}}};
-		pdata['where'][table + '.id'] = arr;
-		pdata['where']['ORDER'][table + '.id'] = arr; //last choose at last
+		var str_id = l.val();
+		var arr_id = str_id.split(',');
 		
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
-			success: function(re) {
-				var jdata = JSON.parse(re);
-				
-				if(jdata.cnt == 0){
-					mm.find('[name=report]').append('<p>未勾選資料表項目</p>');
-				}else{
-					mm.find('[name=report]').css('padding', '50px 0').append(jdata.data);
-				}
+		genPrint(url, arr_id, function(re){
+			
+			if(re.cnt == 0){
+				mm.find('[name=report]').append('<p>未勾選資料表項目</p>');
+			}else{
+				mm.find('[name=report]').css('padding', '50px 0').append(re.data);
 			}
 		});
 	});
@@ -682,55 +673,59 @@ function bindFormMailTool(uid, url, table){
 	});
 }
 
-function bindFormExportTool(uid, url, table){
+function bindFormExportTool(uid, url){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
+	var t = $('title').text();
 	
-	f.find('ul.toollist').append('<li><a href="#" class="print">列印表格</a></li>');
-	f.find('ul.toollist').append('<li><a href="#" class="excel">匯出至Excel表格</a></li>');
+	var p = $('<li><a href="#">列印表格</a></li>');
+	var e = $('<li><a href="#">匯出至Excel表格</a></li>');
 	
-	f.find('ul.toollist').find('a.print').click(function(){
+	f.find('ul.toollist').append(p).append(e);
+	
+	$(p).click(function(){
+		var str_id = l.val();
+		var arr_id = str_id.split(',');
 		
-		var str = l.val();
-		var arr = str.split(',');
-		var pdata={data:{},where:{ ORDER:{}, OR:{}}};
-		pdata['where'][table + '.id'] = arr;
-		pdata['where']['ORDER'][table + '.id'] = arr; //last choose at last
-		
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
-			success: function(re) {
-				var jdata = JSON.parse(re);
-				
-				$('.genPrint').remove();
-				$('body').after('<div class="genPrint">' + $('title').text() + '<br>' + jdata.data + '</div>');
-				window.print();
-				
-				
-			}
+		genPrint(url, arr_id, function(re){
+			$('.genPrint').remove();
+			$('body').after('<div class="genPrint">' + t + '<br>' + re.data + '</div>');
+			window.print();
 		});
 	});
-	f.find('ul.toollist').find('a.excel').click(function(){
-		var str = l.val();
-		var arr = str.split(',');
-		var pdata={data:{},where:{ ORDER:{}, OR:{}}};
-		pdata['where'][table + '.id'] = arr;
-		pdata['where']['ORDER'][table + '.id'] = arr; //last choose at last
+	
+	$(e).click(function(){
+		var str_id = l.val();
+		var arr_id = str_id.split(',');
 		
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
-			success: function(re) {
-				var jdata = JSON.parse(re);
-				
-				open('POST', url, {data: jdata.data, method: 'excel'}, '_blank');
-			}
+		genPrint(url, arr_id, function(re){
+			open('POST', url, {data: re.data, method: 'excel'}, '_blank');
 		});
 	});
 }
+
+function genPrint(url, arr_id, callback){
+	
+	var arr = arr_id;
+	var pdata = {
+		where: {
+			ORDER: {id: arr},
+			AND:   {id: arr}
+		}
+	};
+	
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
+		success: function(re) {
+			var jdata = JSON.parse(re);
+			
+			callback(jdata);
+		}
+	});
+}
+
 
 function bindInputAjaxOnChange(uid, url, type, col){
 	

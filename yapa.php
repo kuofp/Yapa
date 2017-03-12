@@ -5,8 +5,7 @@ class Yapa{
 	public $unique_id;
 	
 	public $file;
-	private $db_name;
-	private $table_name;
+	private $table;
 	public $col_en = array();
 	public $col_ch = array();
 	private $empty_chk = array();
@@ -29,13 +28,12 @@ class Yapa{
 	
 	private $tpl;
 
-	public function __construct($file, $db_name, $table_name, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
+	public function __construct($file, $db_name, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
 		
 		$this->unique_id = 'form_' . uniqid();
 		
 		$this->file = $file;
-		$this->db_name = $db_name;
-		$this->table_name = $table_name;
+		$this->table = $table;
 		
 		$this->col_en = $col_en;
 		$this->col_ch = $col_ch;
@@ -61,12 +59,8 @@ class Yapa{
 		
 	}
 	
-	public function getDB(){
-		return $this->db_name;
-	}
-	
 	public function getTable(){
-		return $this->table_name;
+		return $this->table;
 	}
 	
 	public function authCheck($mode){
@@ -170,7 +164,6 @@ class Yapa{
 				'style_effect'=> $style_effect,
 				'query'       => str_replace('"', '\'', json_encode($query)),
 				'url'         => $this->file,
-				'table'       => $this->table_name,
 				'tr'          => '',
 				'th'          => $this->tpl->block('main.th')->nest($th),
 				'max'         => $this->config['perpage'] ?? 50,
@@ -280,7 +273,7 @@ class Yapa{
 			$pdata['data']['id'] = 0; //clear id, create don't need id
 			$err = $this->dataCheck($pdata['data']);
 			if($err == 'success'){//pass dataCheck
-				$this->database->insert($this->table_name, $pdata['data']);
+				$this->database->insert($this->table, $pdata['data']);
 				$result['id'] = $this->database->id();
 			}else{
 				$result['err'] = $err;
@@ -316,13 +309,13 @@ class Yapa{
 		}else{
 			if(isset($pdata['where']['muti'])){
 				unset($pdata['where']['muti']);
-				$modify_num = $this->database->update($this->table_name, $pdata['data'], $pdata['where']);
+				$modify_num = $this->database->update($this->table, $pdata['data'], $pdata['where']);
 				if($modify_num>0){ $result['id'] = implode(',', $pdata['where']['OR']['id']); }
 			}else{
 				$err = $this->dataCheck($pdata['data']);
 				if($err == 'success'){//pass dataCheck
 					$pdata['where']['AND']['id'] = $pdata['data']['id'];
-					$modify_num = $this->database->update($this->table_name, $pdata['data'], $pdata['where']);
+					$modify_num = $this->database->update($this->table, $pdata['data'], $pdata['where']);
 					if($modify_num>0){ $result['id'] = $pdata['data']['id'];}
 				}else{
 					$result['err'] = $err;
@@ -357,7 +350,7 @@ class Yapa{
 		if($this->authCheck('delete')){
 			$result['err'] = 'err_auth';
 		}else{
-			$delete_num = $this->database->delete($this->table_name, $pdata['where']);
+			$delete_num = $this->database->delete($this->table, $pdata['where']);
 			if($delete_num != 1){
 				$result['err'] = 'err_delete';
 			}else{
@@ -415,7 +408,6 @@ class Yapa{
 			$this->tpl->block('mail')->assign(array(
 				'unique_id'   => $this->unique_id,
 				'url'         => $this->file,
-				'table'       => $this->table_name,
 			))->render();
 		}
 		
@@ -432,7 +424,6 @@ class Yapa{
 			$this->tpl->block('export')->assign(array(
 				'unique_id'   => $this->unique_id,
 				'url'         => $this->file,
-				'table'       => $this->table_name,
 			))->render();
 		}
 		
@@ -682,7 +673,7 @@ class Yapa{
 			}
 			
 		}else{
-			$table = $this->table_name;
+			$table = $this->table;
 			$arr_col = $pdata['data']?$pdata['data']:'*';
 		}
 		
@@ -711,7 +702,7 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'value') continue;
-				$arr_col[$i] = $this->table_name . '.' . $this->col_en[$i];
+				$arr_col[$i] = $this->table . '.' . $this->col_en[$i];
 			}
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
@@ -721,7 +712,7 @@ class Yapa{
 					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 					
 					// tree view check
-					if($arr_tmp[0] == $this->table_name){
+					if($arr_tmp[0] == $this->table){
 						$this->tree['col'] = $i;
 					}
 					
@@ -729,6 +720,12 @@ class Yapa{
 					
 					$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
 				}
+			}
+			
+			// add table name
+			foreach($pdata['where']['AND'] ?? [] as $k=>$v){
+				$pdata['where']['AND'][$this->table . '.' . $k] = $v;
+				unset($pdata['where']['AND'][$k]);
 			}
 			
 			//for search
@@ -745,7 +742,7 @@ class Yapa{
 								$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
 							}else{
-								$arr_search[$this->table_name . '.' . $this->col_en[$i] . '[~]'] = $keyword[$j];
+								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $keyword[$j];
 							}
 						}
 						$pdata['where']['AND']['OR #muti keyword' . $j] = $arr_search;
@@ -760,7 +757,7 @@ class Yapa{
 				$adv = json_decode(str_replace('\'', '"', $pdata['where']['SEARCH_ADV']), true);
 				foreach($adv['AND'] ?? [] as $k=>$v){
 					//table.id (join)
-					$adv['AND'][$this->table_name . '.' . $k] = $v;
+					$adv['AND'][$this->table . '.' . $k] = $v;
 					unset($adv['AND'][$k]);
 				}
 				unset($pdata['where']['SEARCH_ADV']);
@@ -796,16 +793,24 @@ class Yapa{
 				$this->tree['sub'] = $sub;
 				$this->tree['alias'] = $alias;
 				
-				$pdata['where']['ORDER'] = [$this->table_name . '.id' => $order];
+				$pdata['where']['ORDER'] = ['id' => $order];
 				
 			}elseif(!($pdata['where']['ORDER'] ?? 0)){
 				// default order
 				$pdata['where']['ORDER'] = ['id' => 'DESC'];
 			}
 			
+			// add table name
+			foreach($pdata['where']['ORDER'] ?? [] as $k=>$v){
+				$pdata['where']['ORDER'][$this->table . '.' . $k] = $v;
+				unset($pdata['where']['ORDER'][$k]);
+			}
+			
+			//dd($pdata['where']);
+			
 			$where = isset($pdata['where'])?$pdata['where']:'';
-			if(empty($arr_chain)){ $datas = $this->database->select($this->table_name, '*', $where);}
-			else{ $datas = $this->database->select($this->table_name, $arr_chain, $arr_col, $where);}
+			if(empty($arr_chain)){ $datas = $this->database->select($this->table, '*', $where);}
+			else{ $datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);}
 			
 			if($datas != ''){
 				$arr_checkbox_list = array();
@@ -943,9 +948,9 @@ class Yapa{
 				if(isset($data[$this->col_en[$i]]) && $data[$this->col_en[$i]] != ''){
 					$count = 0;
 					if($data['id']){
-						$count = $this->database->count($this->table_name, array('AND'=>array($this->col_en[$i] => $data[$this->col_en[$i]], 'id[!]'=>$data['id']) ));
+						$count = $this->database->count($this->table, array('AND'=>array($this->col_en[$i] => $data[$this->col_en[$i]], 'id[!]'=>$data['id']) ));
 					}else{
-						$count = $this->database->count($this->table_name, array($this->col_en[$i] => $data[$this->col_en[$i]]));
+						$count = $this->database->count($this->table, array($this->col_en[$i] => $data[$this->col_en[$i]]));
 					}
 					if($count > 0){
 						$result = 'err_exist';

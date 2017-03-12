@@ -103,7 +103,7 @@ if(typeof checkScript == 'undefined'){
 
 <script>
 	bindFormViewComplete('{unique_id}', '{max}');
-	bindFormAjaxOnRefresh('{unique_id}', '{url}', '{table}', '{max}');
+	bindFormAjaxOnRefresh('{unique_id}', '{url}', '{max}');
 </script>
 <!-- @main -->
 
@@ -159,7 +159,7 @@ if(typeof checkScript == 'undefined'){
 </div>
 
 <script>
-	bindFormMailTool('{unique_id}', '{url}', '{table}');
+	bindFormMailTool('{unique_id}', '{url}');
 </script>
 <!-- @mail -->
 
@@ -184,7 +184,7 @@ if(typeof checkScript == 'undefined'){
 
 <!-- @export -->
 <script>
-	bindFormExportTool('{unique_id}', '{url}', '{table}');
+	bindFormExportTool('{unique_id}', '{url}');
 </script>
 <!-- @export -->
 
