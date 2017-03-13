@@ -28,7 +28,7 @@ class Yapa{
 	
 	private $tpl;
 
-	public function __construct($file, $db_name, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
+	public function __construct($file, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
 		
 		$this->unique_id = 'form_' . uniqid();
 		
