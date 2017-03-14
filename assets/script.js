@@ -19,6 +19,53 @@ function open(verb, url, data, target) {
 }
 
 jQuery.fn.extend({
+	_datepicker: function(init = ''){
+		
+		var tar = this;
+		var col = $('<input class="form-control input-sm" type="text">');
+		
+		$(tar).before(col);
+		
+		$(tar).parents('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(col).datepicker({
+			dateFormat: 'yy-mm-dd',
+			closeText: 'Close',
+			changeYear: true,
+			changeMonth: true,
+			beforeShow: function(){
+				setTimeout(function(){
+					$('.ui-datepicker').css('z-index', 1070);
+				}, 100);
+			},
+			onSelect: function(date) {
+				var unixtime = Date.parse(date)/1000;
+				$(tar).val(unixtime);
+			}
+		});
+		
+		$(tar).on('preset', function(){
+			var val = $(tar).val();
+			
+			if(val){
+				var a = new Date(val * 1000);
+				var arr = [
+					a.getFullYear(),
+					('0'+(a.getMonth()+1)).slice(-2),
+					('0'+a.getDate()).slice(-2)
+				];
+				
+				$(col).val(arr.join('-'));
+			}
+		});
+	}
+});
+
+jQuery.fn.extend({
 	_autocomplete: function(init = ''){
 		
 		var tar = this;
@@ -769,6 +816,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 							});
 							break;
 						case 'json':
+						case 'datepicker':
 						case 'uploadfile':
 						case 'autocomplete':
 							// put value and trigger preset

@@ -326,9 +326,9 @@ if(typeof checkScript == 'undefined'){
 						<!-- @datepicker -->
 						<td align="center">{meta}</td>
 						<td>
-							<input class="form-control input-sm" name="{name}" type="text" value="{value}" id="{uid}"/>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
 							<script>
-								$('#{uid}').datepicker({dateFormat: 'yy-mm-dd', closeText: 'Close', changeYear: true, changeMonth: true, beforeShow: function() {setTimeout(function(){ $('.ui-datepicker').css('z-index', 1070);}, 0);}});
+								$('#{uid}')._datepicker();
 							</script>
 						</td>
 						<!-- @datepicker -->

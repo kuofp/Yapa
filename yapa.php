@@ -838,6 +838,11 @@ class Yapa{
 					if($this->type[$j] == 'json'){
 						$arr_json_list[$this->col_en[$j]] = 1;
 					}
+					
+					//mark datepicker
+					if($this->type[$j] == 'datepicker'){
+						$arr_datepicker_list[$this->col_en[$j]] = 1;
+					}
 				}
 				
 				$cnt_datas = count($datas);
@@ -890,6 +895,14 @@ class Yapa{
 								$tmp[] = $this->e($k) . ': ' . $this->e($v);
 							}
 							$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
+						}
+					}
+					
+					//translate datepicker
+					foreach($arr_datepicker_list as $key=>$val){
+						
+						if($val){
+							$datas[$i][$key] = date('Y-m-d', (int)$datas[$i][$key]);
 						}
 					}
 				}
