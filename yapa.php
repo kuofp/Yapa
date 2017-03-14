@@ -813,96 +813,86 @@ class Yapa{
 			else{ $datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);}
 			
 			if($datas != ''){
-				$arr_checkbox_list = array();
-				$arr_uploadfile_list = array();
-				$arr_json_list = array();
+				$arr_mark = array();
+				
 				for($j = 0; $j < $this->col_num; $j++){
 					
-					//mark checkbox
-					if($this->type[$j] == 'checkbox'){
-						
-						$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$j]);
-						$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
-						
-						foreach($datas_checkbox as $arr){
-							$arr_checkbox_list[$this->col_en[$j]][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
-						}
-					}
-					
-					//mark uploadfile
-					if($this->type[$j] == 'uploadfile'){
-						$arr_uploadfile_list[$this->col_en[$j]] = 1;
-					}
-					
-					//mark json
-					if($this->type[$j] == 'json'){
-						$arr_json_list[$this->col_en[$j]] = 1;
-					}
-					
-					//mark datepicker
-					if($this->type[$j] == 'datepicker'){
-						$arr_datepicker_list[$this->col_en[$j]] = 1;
+					switch($this->type[$j]){
+						case 'checkbox':
+							$arr_mark[$j] = array();
+							$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$j]);
+							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
+							
+							foreach($datas_checkbox as $arr){
+								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
+							}
+							break;
+						case 'uploadfile':
+						case 'json':
+						case 'datepicker':
+							$arr_mark[$j] = 1;
+							break;
 					}
 				}
 				
 				$cnt_datas = count($datas);
 				for($i = 0; $i < $cnt_datas; $i++){
 					
-					//translate checkbox
-					foreach($arr_checkbox_list as $key=>$arr){
-						if($datas[$i][$key] != ''){
-							$arr_vtmp = preg_split('/[\s,]+/', $datas[$i][$key]);
-							$arr_result = array();
-							
-							foreach($arr_vtmp as $val){
-								$arr_result[] = $arr[$val];
-							}
-							
-							$datas[$i][$key] = $this->e(implode(',', $arr_result));
-						}
-					}
-					
-					//translate uploadfile
-					foreach($arr_uploadfile_list as $key=>$val){
+					//translate
+					foreach($arr_mark as $key=>$arr){
 						
-						$arr = json_decode($datas[$i][$key], true);
+						$j = $key;
+						$key = $this->col_en[$j];
 						
-						if(is_array($arr)){
-							// check file
-							foreach($arr as $k=>$v){
-								
-								$ext = strtolower(explode('.', $v['name'])[1] ?? 'na');
-								
-								if(file_exists($v['url']) && explode('/', mime_content_type($v['url']))[0] == 'image'){
-									$arr[$k]['icon'] = 'hidden';
-								}else{
-									$arr[$k]['img'] = 'hidden';
-									$arr[$k]['ext'] = $ext;
+						switch($this->type[$j]){
+							case 'checkbox':
+								if($datas[$i][$key]){
+									$arr_vtmp = preg_split('/[\s,]+/', $datas[$i][$key]);
+									$arr_result = array();
+									
+									foreach($arr_vtmp as $val){
+										$arr_result[] = $arr[$val];
+									}
+									
+									$datas[$i][$key] = implode(',', $arr_result);
 								}
-							}
-							$datas[$i][$key] = $this->raw($this->tpl->block('crop-img')->nest($arr)->render(false));
-						}
-					}
-					
-					//translate json
-					foreach($arr_json_list as $key=>$val){
-						
-						$arr = json_decode($datas[$i][$key], true);
-						
-						if(is_array($arr)){
-							$tmp = array();
-							foreach($arr as $k=>$v){
-								$tmp[] = $this->e($k) . ': ' . $this->e($v);
-							}
-							$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
-						}
-					}
-					
-					//translate datepicker
-					foreach($arr_datepicker_list as $key=>$val){
-						
-						if($val){
-							$datas[$i][$key] = date('Y-m-d', (int)$datas[$i][$key]);
+								break;
+							
+							case 'uploadfile':
+								$arr = json_decode($datas[$i][$key], true);
+								if(is_array($arr)){
+									// check file
+									foreach($arr as $k=>$v){
+										
+										$ext = strtolower(explode('.', $v['name'])[1] ?? 'na');
+										
+										if(file_exists($v['url']) && explode('/', mime_content_type($v['url']))[0] == 'image'){
+											$arr[$k]['icon'] = 'hidden';
+										}else{
+											$arr[$k]['img'] = 'hidden';
+											$arr[$k]['ext'] = $ext;
+										}
+									}
+									$datas[$i][$key] = $this->raw($this->tpl->block('crop-img')->nest($arr)->render(false));
+								}
+								break;
+								
+							case 'json':
+								$arr = json_decode($datas[$i][$key], true);
+								if(is_array($arr)){
+									$tmp = array();
+									foreach($arr as $k=>$v){
+										$tmp[] = $this->e($k) . ': ' . $this->e($v);
+									}
+									$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
+								}
+								break;
+								
+							case 'datepicker':
+								if($datas[$i][$key]){
+									$datas[$i][$key] = date('Y-m-d', (int)$datas[$i][$key]);
+								}
+								break;
 						}
 					}
 				}
