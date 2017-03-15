@@ -59,7 +59,7 @@ if(typeof checkScript == 'undefined'){
 			
 			<!-- search and advance search option which can filter more keywords -->
 			<div class="btn-group">
-				<input class="form-control search" type="{style_effect}" placeholder="搜尋" style="width: 160px"/>
+				<input class="form-control search" placeholder="搜尋" style="width: 160px"/>
 				<input class="form-control search_adv" type="hidden" value="{query}" />
 			</div>
 			

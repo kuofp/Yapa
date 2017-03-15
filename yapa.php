@@ -141,14 +141,12 @@ class Yapa{
 		
 		$style  = $_REQUEST['style']  ?? '';
 		$query  = $_REQUEST['query']  ?? [];
-		$preset = $this->config['preset'] ?? $_REQUEST['preset'] ?? '';
+		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$result = 'success';
 		if($this->authCheck('review')){
 			$result = 'err_auth';
 		}else{
-			
-			$style_effect = $style == 'sub'? 'hidden': 'text';
 			
 			$th = [];
 			for($i = 0; $i < $this->col_num; $i++){
@@ -161,7 +159,6 @@ class Yapa{
 			
 			$this->tpl->block('main')->assign(array(
 				'unique_id'   => $this->unique_id,
-				'style_effect'=> $style_effect,
 				'query'       => str_replace('"', '\'', json_encode($query)),
 				'url'         => $this->file,
 				'tr'          => '',
@@ -661,13 +658,14 @@ class Yapa{
 					if($pdata['where']['[~]'] ?? 0){
 						$pdata['where'] = array(
 							$arr_tmp[1] . '[~]' => $pdata['where']['[~]'],
-							'LIMIT' => 10,
 						);
 					}elseif($pdata['where']['AND'] ?? 0){
 						$pdata['where'] = array(
 							'AND' => array($arr_tmp[2] => $pdata['where']['AND']),
 						);
 					}
+					// limit
+					$pdata['where']['LIMIT'] = 10;
 					break;
 				}
 			}
