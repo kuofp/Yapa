@@ -774,7 +774,10 @@ class Yapa{
 				$ids = array_merge($this->tree['sub'][$this->config['root']], [$this->config['root']]);
 				
 				if($id){
-					if(!in_array($pdata['where']['AND']['id'], $ids)){
+					if(!is_array($id)){
+						$id = [$id];
+					}
+					if(count(array_diff($id, $ids)) != 0){
 						// invalid user
 						exit;
 					}

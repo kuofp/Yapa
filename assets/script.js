@@ -509,8 +509,9 @@ function bindFormAjaxOnRefresh(uid, url, max){
 				default:
 					break;
 			}
-		
-		
+			
+			f.find('button.review').addClass('buttonLoading').button('loading');
+			
 			$.ajax({
 				url: url,
 				idx: i,
@@ -537,7 +538,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 							if(jdata['cnt'] > 0){
 								f.find('table.review').find('.last').append(jdata['data']);
 							}
-							if(jdata['cnt'] == max_){
+							if(max_ > 0 && jdata['cnt'] == max_){
 								f.find('button.review').show();
 								f.find('p.empty_text').addClass('hidden');
 							}else{
@@ -562,7 +563,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 							break;
 					}
 					
-					
+					$('.buttonLoading').button('reset');
 					r.trigger('change');
 				},
 				error: function() {
