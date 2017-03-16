@@ -350,6 +350,15 @@ if(typeof checkScript == 'undefined'){
 							</script>
 						</td>
 						<!-- @json -->
+						<!-- @module -->
+						<td align="center">{meta}</td>
+						<td>
+							<select class="form-control input-sm module" name="{name}" id="{uid}"></select>
+							<script>
+								$('#{uid}').module({tpl: {value}});
+							</script>
+						</td>
+						<!-- @module -->
 					<!-- @td -->
 					</tr>
 				<!-- @tr -->
@@ -361,7 +370,5 @@ if(typeof checkScript == 'undefined'){
 			<div class="modify"></div>
 		</div>
 	<!--/div></div-->
-	<div class="modal-area-label"></div>
-	<div class="modal-area"></div>
 </div>
 <!-- @modal-detail -->

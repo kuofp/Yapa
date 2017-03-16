@@ -436,7 +436,12 @@ function bindFormViewComplete(uid, max){
 	c.change(function(){ f.find('.item_cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormChkall( uid );
-	f.find('button.review').click(function(){ $(this).addClass('buttonLoading').button('loading'); f.find('table.review').trigger('refresh',{type: 'append', max: max});});
+	f.find('button.review').click(function(e){
+		// prevent sending post
+		e.preventDefault();
+		$(this).addClass('buttonLoading').button('loading');
+		f.find('table.review').trigger('refresh',{type: 'append', max: max});
+	});
 
 
 	r.change(function(){
@@ -816,6 +821,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 							});
 							break;
 						case 'json':
+						case 'module':
 						case 'datepicker':
 						case 'uploadfile':
 						case 'autocomplete':
@@ -835,3 +841,65 @@ function bindInputAjaxOnChange(uid, url, type, col){
 		}); 
 	});
 }
+
+
+jQuery.fn.extend({
+	module: function(init){
+		
+		var tar = this;
+		var tpl = init.tpl || [];
+		var col = $('<tr><td colspan="2"><div></div></td></tr>');
+		
+		$(tar).parents('tr').after(col);
+		
+		var f = $(this).parents('form');
+		
+		for(var i in tpl){
+			var opt = $('<option>' + tpl[i]['tag'] + '</option>');
+			
+			$(opt).click(tpl[i], function(e){
+				var arr = {};
+				var sql = JSON.parse(e.data['sql'].replace(/'/g, '"'));
+				var url = e.data['url'];
+		
+				for(var i in sql){
+					arr[i] = f.find('[name=' + sql[i] + ']').val() || sql[i];
+				}
+				
+				$(col).find('div').attr('style', 'height: 300px').empty();
+				$(col).find('div').load(url, {
+					preset: arr,
+					query: {
+						AND: arr
+					}
+				});
+			});
+			
+			$(tar).append(opt);
+		}
+		
+		$(tar).change(function(){
+			$(this).find('option:selected').trigger('click');
+		});
+		
+		$(tar).parents('form').on('reset', function(){
+			// remove the modules
+			$(tar).trigger('preset', {type: 'reset'});
+		});
+		
+		$(tar).on('preset', function(e, obj){
+			
+			var d = false;
+			if(typeof obj !== 'undefined'){
+				d = ('type' in obj) && (obj.type == 'reset')? true: false;
+			}
+			
+			$(tar).prop('disabled', d);
+			if(d){
+				$(col).find('div').attr('style', '').empty();
+			}else{
+				$(tar).find('option').eq(0).prop('selected', true).trigger('click');
+			}
+		});
+	}
+});

@@ -213,7 +213,7 @@ class Yapa{
 				$td[] = array(
 					'class' => $this->show[$j],
 					'name'  => $this->col_en[$j],
-					'text'  => $this->e($datas['data'][$i][$this->col_en[$j]]),
+					'text'  => $this->e($datas['data'][$i][$this->col_en[$j]] ?? ''),
 				);
 			}
 			
@@ -623,6 +623,24 @@ class Yapa{
 						'uid'   => $uid,
 					));
 					break;
+				case 'module':
+					$uid = $this->getUid();
+					
+					$pre = [];
+					foreach($this->config['module'] ?? [] as $k=>$v){
+						$pre[$k] = [];
+						$pre[$k]['sql'] = str_replace('"', '\'', json_encode($v['sql']));
+						$pre[$k]['url'] = $v['url'];
+						$pre[$k]['tag'] = $v['tag'];
+					}
+					
+					$td = $this->tpl->block('modal-detail.td.module')->assign(array(
+						'meta'  => $this->col_ch[$i] . $star,
+						'value' => json_encode($pre),
+						'name'  => $this->col_en[$i],
+						'uid'   => $uid,
+					));
+					break;
 				default:
 					break;
 			}
@@ -700,12 +718,14 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'value') continue;
+				if($this->type[$i] == 'module') continue;
 				$arr_col[$i] = $this->table . '.' . $this->col_en[$i];
 			}
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'checkbox') continue;
 				if($this->type[$i] == 'value') continue;
+				if($this->type[$i] == 'module') continue;
 				if($this->chain_chk[$i] != ''){
 					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 					
@@ -736,6 +756,7 @@ class Yapa{
 							// skip
 							if($this->type[$i] == 'checkbox') continue;
 							if($this->type[$i] == 'value') continue;
+							if($this->type[$i] == 'module') continue;
 							if($this->chain_chk[$i] != ''){
 								$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
@@ -923,9 +944,11 @@ class Yapa{
 	public function dataCheck(&$data){
 		
 		$result = 'success';
+		$tmp = [];
 		
 		for($i = 0; $i < $this->col_num; $i++){
-			if($this->col_en[$i] == 'id') continue; //skip id
+			if($this->type[$i] == 'module') continue;
+			if($this->type[$i] == 'value') continue;
 			
 			if($this->empty_chk[$i] == 1){
 				switch($this->type[$i]){
@@ -958,29 +981,20 @@ class Yapa{
 					}
 				}
 			}
+			
+			// valid col
+			if(isset($data[$this->col_en[$i]])){
+				$tmp[$this->col_en[$i]] = $data[$this->col_en[$i]];
+			}
 		}
+		
+		$data = $tmp;
+		
 		return $result;
 	}
 	
-	public function searchTool(){
-		//search adv
-		
-	}
-	
-	public function optionTool(){
-		//選擇性加入工具(功能)的控制器
-		
-	}
-	
-	public function adjustTool(){
-		//調整欄位寬度與隱藏欄位功能
-		
-	}
-	
 	public function render(){
-		
 		$this->reviewTool();
-		
 	}
 	
 	public function raw($str){
