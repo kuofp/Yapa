@@ -1121,6 +1121,11 @@ class Yapa{
 			$offset = $this->tree['offset'];
 			$sub = $this->tree['sub'];
 			$alias = $this->tree['alias'];
+			$root = 0;
+			
+			if($this->config['root'] ?? 0){
+				$root = $offset[$this->config['root']];
+			}
 			
 			foreach($data['data'] as $k=>$v){
 				
@@ -1136,7 +1141,7 @@ class Yapa{
 				}
 				
 				$prefix = '';
-				for($i = $offset[$v['id']]; $i > 0; $i--){
+				for($i = $offset[$v['id']] - $root; $i > 0; $i--){
 					if($i == 1){
 						$prefix .= '　└─';
 					}else{
