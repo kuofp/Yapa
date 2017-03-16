@@ -740,6 +740,49 @@ class Yapa{
 				}
 			}
 			
+			if($this->tree['col'] !== null){
+				// tree view must ordered under plan
+				$col = $this->col_en[$this->tree['col']];
+				$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$this->tree['col']]);
+				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
+				
+				$tmp = array();
+				$alias = array();
+				foreach($datas as $v){
+					$tmp[$v['id']] = $v[$col];
+					$alias[$v['id']] = $v[$arr_tmp[1]];
+				}
+				
+				$sub = $this->treeSub($tmp);
+				$order = $this->flatten($this->to_tree($tmp));
+				
+				$offset = array();
+				foreach($order as $k=>$v){
+					$offset[$v] = explode(',', $k)[1];
+				}
+				
+				$this->tree['offset'] = $offset;
+				$this->tree['sub'] = $sub;
+				$this->tree['alias'] = $alias;
+				$this->tree['order'] = $order;
+			}
+			
+			// select only descendant
+			if($this->config['root'] ?? 0){
+				// include self
+				$id = $pdata['where']['AND']['id'] ?? 0;
+				$ids = array_merge($this->tree['sub'][$this->config['root']], [$this->config['root']]);
+				
+				if($id){
+					if(!in_array($pdata['where']['AND']['id'], $ids)){
+						// invalid user
+						exit;
+					}
+				}else{
+					$pdata['where']['AND']['id'] = $ids;
+				}
+			}
+			
 			// add table name
 			foreach($pdata['where']['AND'] ?? [] as $k=>$v){
 				$pdata['where']['AND'][$this->table . '.' . $k] = $v;
@@ -789,30 +832,7 @@ class Yapa{
 			// order
 			if($this->tree['col'] !== null){
 				// tree view must ordered under plan
-				$col = $this->col_en[$this->tree['col']];
-				$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$this->tree['col']]);
-				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
-				
-				$tmp = array();
-				$alias = array();
-				foreach($datas as $v){
-					$tmp[$v['id']] = $v[$col];
-					$alias[$v['id']] = $v[$arr_tmp[1]];
-				}
-				
-				$sub = $this->treeSub($tmp);
-				$order = $this->flatten($this->to_tree($tmp));
-				
-				$offset = array();
-				foreach($order as $k=>$v){
-					$offset[$v] = explode(',', $k)[1];
-				}
-				
-				$this->tree['offset'] = $offset;
-				$this->tree['sub'] = $sub;
-				$this->tree['alias'] = $alias;
-				
-				$pdata['where']['ORDER'] = ['id' => $order];
+				$pdata['where']['ORDER'] = ['id' => $this->tree['order']];
 				
 			}elseif(!($pdata['where']['ORDER'] ?? 0)){
 				// default order
