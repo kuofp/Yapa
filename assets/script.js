@@ -26,7 +26,7 @@ jQuery.fn.extend({
 		
 		$(tar).before(col);
 		
-		$(tar).parents('form').on('reset', function(){
+		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
 			}, 300);
@@ -74,7 +74,7 @@ jQuery.fn.extend({
 		
 		$(tar).before(col);
 		
-		$(tar).parents('form').on('reset', function(){
+		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
 			}, 300);
@@ -139,7 +139,7 @@ jQuery.fn.extend({
 		var tpl = (init.tpl || '[]').replace(/'/g, '"');
 		tpl = JSON.parse(tpl);
 		
-		$(tar).parents('form').on('reset', function(){
+		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
 			}, 300);
@@ -257,7 +257,7 @@ jQuery.fn.extend({
 			$(this).after(gallery);
 			
 			// bind form reset event
-			$(gallery).parents('form').on('reset', function(){
+			$(gallery).closest('form').on('reset', function(){
 				$(gallery).remove();
 			});
 			
@@ -783,7 +783,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 	
 	var t = $('#' + uid + '_target_id');
 	var c = $('#' + uid + '_change_complete');
-	var m = $('#' + uid + '_Modal');
+	var f = $('#' + uid + '_Modal').find('form').eq(0);
 	
 	t.change(function(){
 		var pdata={
@@ -804,7 +804,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 					
 					switch(type[i]){
 						case 'radiobox':
-							m.find('[name=' + col[i] + ']').each(function(i){
+							f.find('[name=' + col[i] + ']').each(function(i){
 								this.checked = (this.value == pdata[col[i]])? true: false;
 							});
 							break;
@@ -814,7 +814,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 								arr = pdata[col[i]].split(',');
 							}
 							//prop('checked', false) v.s. attr('checked', false) attr會使checked完全移除, form reset時預設值的checked不會勾選
-							m.find('[name=' + col[i] + ']').prop('checked', false).each(function(i){
+							f.find('[name=' + col[i] + ']').prop('checked', false).each(function(i){
 								for(var j=0; j<arr.length; j++){
 									if(arr[j] == this.value) this.checked = true;
 								}
@@ -826,10 +826,10 @@ function bindInputAjaxOnChange(uid, url, type, col){
 						case 'uploadfile':
 						case 'autocomplete':
 							// put value and trigger preset
-							m.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
+							f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
 							break;
 						default:
-							m.find('[name=' + col[i] + ']').val(pdata[col[i]]);
+							f.find('[name=' + col[i] + ']').val(pdata[col[i]]);
 							break;
 					}
 				}
@@ -850,9 +850,9 @@ jQuery.fn.extend({
 		var tpl = init.tpl || [];
 		var col = $('<tr><td colspan="2"><div></div></td></tr>');
 		
-		$(tar).parents('tr').after(col);
+		$(tar).closest('tr').after(col);
 		
-		var f = $(this).parents('form');
+		var f = $(this).closest('form');
 		
 		for(var i in tpl){
 			var opt = $('<option>' + tpl[i]['tag'] + '</option>');
@@ -882,7 +882,7 @@ jQuery.fn.extend({
 			$(this).find('option:selected').trigger('click');
 		});
 		
-		$(tar).parents('form').on('reset', function(){
+		$(tar).closest('form').on('reset', function(){
 			// remove the modules
 			$(tar).trigger('preset', {type: 'reset'});
 		});
