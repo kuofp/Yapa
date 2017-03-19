@@ -451,6 +451,11 @@ class Yapa{
 			$result['err'] = 'err_auth';
 			
 		}else{
+			
+			if(!file_exists('upload')){
+				mkdir('upload', 0755);
+			}
+			
 			$files = $_FILES ?? array();
 		
 			foreach($files as $file){
@@ -518,8 +523,8 @@ class Yapa{
 					));
 					break;
 				case 'select':
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
-					$datas = $this->database->select($arr_tmp[0], '*');
+					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$tmp = [];
 					foreach($datas as $arr){
@@ -538,9 +543,8 @@ class Yapa{
 					
 					break;
 				case 'radiobox':
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
-					
-					$datas = $this->database->select($arr_tmp[0], '*');
+					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$tmp = [];
 					foreach($datas as $arr){
@@ -558,9 +562,8 @@ class Yapa{
 					));
 					break;
 				case 'checkbox':
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
-					
-					$datas = $this->database->select($arr_tmp[0], '*');
+					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$chk = is_array($pre)? $pre: explode(',', $pre);
 					
@@ -666,24 +669,22 @@ class Yapa{
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
+					$arr_tmp = $this->split($this->chain_chk[$i], true);
 					$table = $arr_tmp[0];
 					$arr_col = array(
 						$arr_tmp[1] . '(label)',
 						$arr_tmp[2] . '(val)', // 'value' will be inserted into the input automatically, 'val' won't
 					);
 					
+					$where = [];
 					if($pdata['where']['[~]'] ?? 0){
-						$pdata['where'] = array(
-							$arr_tmp[1] . '[~]' => $pdata['where']['[~]'],
-						);
-					}elseif($pdata['where']['AND'] ?? 0){
-						$pdata['where'] = array(
-							'AND' => array($arr_tmp[2] => $pdata['where']['AND']),
-						);
+						$where[$arr_tmp[1] . '[~]'] = $pdata['where']['[~]'];
+					}elseif($pdata['where']['[=]'] ?? 0){
+						$where[$arr_tmp[2]] = $pdata['where']['[=]'];
 					}
 					// limit
-					$pdata['where']['LIMIT'] = 10;
+					$where['LIMIT'] = 10;
+					$pdata['where'] = array_replace_recursive($where, $arr_tmp[3]);
 					break;
 				}
 			}
@@ -727,7 +728,7 @@ class Yapa{
 				if($this->type[$i] == 'value') continue;
 				if($this->type[$i] == 'module') continue;
 				if($this->chain_chk[$i] != ''){
-					$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
+					$arr_tmp = $this->split($this->chain_chk[$i]);
 					
 					// tree view check
 					if($arr_tmp[0] == $this->table){
@@ -743,7 +744,7 @@ class Yapa{
 			if($this->tree['col'] !== null){
 				// tree view must ordered under plan
 				$col = $this->col_en[$this->tree['col']];
-				$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$this->tree['col']]);
+				$arr_tmp = $this->split($this->chain_chk[$this->tree['col']]);
 				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
 				
 				$tmp = array();
@@ -794,7 +795,7 @@ class Yapa{
 			
 			//for search
 			if(isset($pdata['where']['SEARCH'])){
-				$keyword = preg_split('/[\s,]+/', $pdata['where']['SEARCH']);
+				$keyword = $this->split($pdata['where']['SEARCH']);
 				
 				for($j = 0; $j < count($keyword); $j++){
 					if(!empty($keyword[$j])){
@@ -804,7 +805,7 @@ class Yapa{
 							if($this->type[$i] == 'value') continue;
 							if($this->type[$i] == 'module') continue;
 							if($this->chain_chk[$i] != ''){
-								$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$i]);
+								$arr_tmp = $this->split($this->chain_chk[$i]);
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
 							}else{
 								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $keyword[$j];
@@ -862,7 +863,7 @@ class Yapa{
 					switch($this->type[$j]){
 						case 'checkbox':
 							$arr_mark[$j] = array();
-							$arr_tmp = preg_split('/[\s,]+/', $this->chain_chk[$j]);
+							$arr_tmp = $this->split($this->chain_chk[$j]);
 							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
 							
 							foreach($datas_checkbox as $arr){
@@ -889,7 +890,7 @@ class Yapa{
 						switch($this->type[$j]){
 							case 'checkbox':
 								if($datas[$i][$key]){
-									$arr_vtmp = preg_split('/[\s,]+/', $datas[$i][$key]);
+									$arr_vtmp = $this->split($datas[$i][$key]);
 									$arr_result = array();
 									
 									foreach($arr_vtmp as $val){
@@ -1160,5 +1161,20 @@ class Yapa{
 				}
 			}
 		}
+	}
+	
+	protected function split($str, $where = false){
+		
+		$result = [];
+		
+		if($where){
+			$arr = preg_split('/[\s,]+/', $str, 4);
+			$arr[3] = json_decode($arr[3] ?? '[]', true);
+			$result = $arr;
+		}else{
+			$result = preg_split('/[\s,]+/', $str);
+		}
+		
+		return $result;
 	}
 }

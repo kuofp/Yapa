@@ -108,7 +108,7 @@ jQuery.fn.extend({
 		$(tar).on('preset', function(){
 			
 			var id = $(tar).val();
-			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {AND: id}};
+			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[=]': id}};
 			
 			if(id){
 				$.ajax({
@@ -154,6 +154,9 @@ jQuery.fn.extend({
 			var ctl = [];
 			
 			var box = $('<div class="box"></div>');
+			
+			// init
+			$(this).val(str);
 			
 			if(tpl){
 				for(var i in tpl){
@@ -246,6 +249,7 @@ jQuery.fn.extend({
 			
 			var val = $(this).val() || '[]';
 			var arr = JSON.parse(val);
+			var tpl = 100;
 			
 			$(this).siblings('div.gallery').remove();
 			
@@ -269,7 +273,7 @@ jQuery.fn.extend({
 				var dl = '<a href="' + arr[i]['url'] + '" download="' + arr[i]['name'] + '" target="_blank"><i class="fa fa-download"></i></a>';
 				var rm = ' | <a href="#" class="delete"><i class="fa fa-trash"></i></a> ';
 				
-				html += '<div style="position: relative; float: left; margin: 10px;"><a class="thumbnail" href="#"><table style="width: 100px; height: 100px;"><tr><td style="text-align: center"><img src="' + arr[i]['url'] + '" class="img-responsive" style="max-width: 100px; max-height: 100px; margin: 0 auto;"/></td></tr></table></a>         <div class="icon-set" title="' + arr[i]['name'] + '">' + dl + rm + arr[i]['name'] + '</div></div>';
+				html += '<div style="position: relative; float: left; margin: 10px;"><a class="thumbnail" href="#"><table style="width: ' + tpl + 'px; height: ' + tpl + 'px;"><tr><td style="text-align: center"><img src="' + arr[i]['url'] + '" class="img-responsive" style="max-width: ' + tpl + 'px; max-height: ' + tpl + 'px; margin: 0 auto;"/></td></tr></table></a>         <div class="icon-set" title="' + arr[i]['name'] + '">' + dl + rm + arr[i]['name'] + '</div></div>';
 			}
 			
 			// start loading
