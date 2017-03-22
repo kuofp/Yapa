@@ -1,15 +1,29 @@
 ﻿function checkScript(){}
 
+function customAlert(msg, arg){
+	var arg = arg || 0;
+	var info = ['<i class="fa fa-times-circle"></i> 錯誤', '<i class="fa fa-check-circle"></i> 成功', '<i class="fa fa-exclamation-circle"></i> 警告'];
+	var type = ['danger', 'success', 'warning'];
+	
+	var alert = $('<div style="height: 1px; width: 100%; position: fixed; top: 0px; z-index: 1500;"><div class="alert alert-' + type[arg] + '" style="width: 320px; position: relative; margin: auto;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><p><strong>' + info[arg] + ': </strong>' + msg + '</p></div></div>');
+	setTimeout(function(){
+		$(alert).fadeOut(function(){
+			$(this).remove();
+		});
+	}, 3000);
+	$('body').append(alert);
+}
+
 function open(verb, url, data, target) {
-	var form = document.createElement("form");
+	var form = document.createElement('form');
 	form.action = url;
 	form.method = verb;
-	form.target = target || "_self";
+	form.target = target || '_self';
 	if (data) {
 		for (var key in data) {
-			var input = document.createElement("textarea");
+			var input = document.createElement('textarea');
 			input.name = key;
-			input.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
+			input.value = typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
 			form.appendChild(input);
 		}
 	}
@@ -314,14 +328,6 @@ jQuery.fn.extend({
 		return this;
 	}
 });
-
-function customAlert(msg, arg){
-	var arg = arg | 0;
-	var info = ['<i class="fa fa-times-circle"></i> 錯誤', '<i class="fa fa-check-circle"></i> 成功', '<i class="fa fa-exclamation-circle"></i> 警告'];
-	var type = ['danger', 'success', 'warning'];
-	$('body').find('.err-msg-wrap').remove();
-	$('body').append("<div class='err-msg-wrap' style='width: 100%;position: fixed;top: 0px;z-index: 1500;'><script>setTimeout(function(){ $('body').find('.err-msg-wrap').fadeOut(); }, 3000);</script><div class='alert alert-" + type[arg] + "' role='alert' style='width: 320px;position: relative;margin: auto;'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p><strong>" + info[arg] + ": </strong>" + msg + "</p></div></div>");
-}
 
 function bindFormChkall(uid){
 	var f = $('#' + uid + '_panel');
