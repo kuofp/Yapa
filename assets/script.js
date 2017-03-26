@@ -33,7 +33,122 @@ function open(verb, url, data, target) {
 }
 
 jQuery.fn.extend({
-	_datepicker: function(init = ''){
+	colorpicker: function() {
+		
+		var tar = this;
+		var box = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: fixed;"></div>');
+		var cvs = $('<canvas width="100" height="100" style="border: 1px solid #c5c5c5; margin: 10px; float: left; cursor: crosshair;"></canvas>');
+		var cur = $('<div style="border: 1px solid #c5c5c5; margin: 10px; float: left; height: 40px; width: 40px"></div>');
+		var pre = $('<div style="border: 1px solid #c5c5c5; margin: 5px 10px; float: left; height: 20px; width: 20px"></div>');
+		var hex = $('<p style="float: left"></p>');
+		
+		$(tar).after(box);
+		$(box).append(cvs, cur, pre, hex);
+		
+		var ctx = $(cvs).get(0).getContext('2d');
+		var w = 100;
+		var h = 100;
+		
+		var hGrad = ctx.createLinearGradient(0, 0, w, 0);
+		var arr = ['F00', 'FF0', '0F0', '0FF', '00F', 'F0F', 'F00'];
+		for(var i in arr){
+			hGrad.addColorStop(i/6, '#' + arr[i]);
+		}
+		ctx.fillStyle = hGrad;
+		ctx.fillRect(0, 0, w, h);
+		
+		var vGrad = ctx.createLinearGradient(0, 0, 0, (h/2-3));
+		vGrad.addColorStop(0, 'rgba(255,255,255,1)');
+		vGrad.addColorStop(1, 'rgba(255,255,255,0)');
+		ctx.fillStyle = vGrad;
+		ctx.fillRect(0, 0, w, (h/2-3));
+		
+		var vGrad = ctx.createLinearGradient(0, (h/2+3), 0, h);
+		vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+		vGrad.addColorStop(1, 'rgba(0,0,0,1)');
+		ctx.fillStyle = vGrad;
+		ctx.fillRect(0, (h/2+3), w, h);
+		
+		$(tar).focus(function(){
+			// init position
+			var left = $(tar).offset().left;
+			var top = $(tar).offset().top + $(tar).outerHeight() - $(document).scrollTop();
+			$(box).css('left', left).css('top', top).show();
+			
+			$(tar).trigger('input');
+		});
+		
+		$(document).click(function(e){
+			// keep colorpicker
+			var keep = $(e.target).is(box) || $(e.target).parent().is(box) || $(e.target).is(tar);
+			if(!keep){
+				$(box).hide();
+			}
+		});
+		
+		$(tar).on('input', function(){
+			var str = $(this).val().toLowerCase().replace(/[^#\da-f]/g, '');
+			var color = '#fff';
+			
+			if(str.match(/^#?[\da-f]{6}/, str)){
+				if(str.substr(0, 1) != '#') str = '#' + str;
+				str = str.substr(0, 7);
+				color = str;
+			}
+			$(cur).css('background', color);
+			$(this).val(str);
+		});
+		
+		$(cvs).mousemove(function(e){
+			var x = e.pageX - $(this).offset().left;
+			var y = e.pageY - $(this).offset().top;
+			
+			// HEX color
+			var str = getHex(x, y);
+			
+			$(pre).css('background', str);
+			$(hex).text(str);
+		});
+		
+		$(cvs).click(function(e){
+			// getting user coordinates
+			var x = e.pageX - $(this).offset().left;
+			var y = e.pageY - $(this).offset().top;
+			
+			// HEX color
+			var str = getHex(x, y);
+			
+			$(tar).val(str);
+			$(cur).css('background', str);
+		});
+		
+		function getHex(x, y){
+			// getting image data and RGB values
+			var rgb = ctx.getImageData(x, y, 1, 1).data;
+			var R = rgb[0];
+			var G = rgb[1];
+			var B = rgb[2];
+			
+			// convert RGB to HEX
+			return '#' + rgbToHex(R,G,B);
+		}
+		
+		function rgbToHex(R, G, B){
+			return toHex(R) + toHex(G) + toHex(B);
+		}
+		
+		function toHex(n){
+			n = parseInt(n, 10);
+			if(isNaN(n)) return '00';
+			n = Math.max(0, Math.min(n, 255));
+			var ch = '0123456789abcdef';
+			return ch.charAt(Math.floor(n/16)) + ch.charAt(n%16);
+		}
+	}
+});
+
+jQuery.fn.extend({
+	_datepicker: function(init){
 		
 		var tar = this;
 		var col = $('<input class="form-control input-sm" type="text">');
@@ -80,7 +195,7 @@ jQuery.fn.extend({
 });
 
 jQuery.fn.extend({
-	_autocomplete: function(init = ''){
+	_autocomplete: function(init){
 		
 		var tar = this;
 		var url = init.url || '';
@@ -147,7 +262,7 @@ jQuery.fn.extend({
 });
 
 jQuery.fn.extend({
-	json: function(init = ''){
+	json: function(init){
 		
 		var tar = this;
 		var tpl = (init.tpl || '[]').replace(/'/g, '"');

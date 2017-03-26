@@ -332,6 +332,15 @@ if(typeof checkScript == 'undefined'){
 							</script>
 						</td>
 						<!-- @datepicker -->
+						<!-- @colorpicker -->
+						<td align="center">{meta}</td>
+						<td>
+							<input class="form-control input-sm" type="text" name="{name}" value="{value}" id="{uid}"/>
+							<script>
+								$('#{uid}').colorpicker();
+							</script>
+						</td>
+						<!-- @colorpicker -->
 						<!-- @uploadfile -->
 						<td align="center">{meta}</td>
 						<td>
