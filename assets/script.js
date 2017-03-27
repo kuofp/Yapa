@@ -36,7 +36,7 @@ jQuery.fn.extend({
 	colorpicker: function() {
 		
 		var tar = this;
-		var box = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: fixed;"></div>');
+		var box = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: fixed; z-index: 1"></div>');
 		var cvs = $('<canvas width="100" height="100" style="border: 1px solid #c5c5c5; margin: 10px; float: left; cursor: crosshair;"></canvas>');
 		var cur = $('<div style="border: 1px solid #c5c5c5; margin: 10px; float: left; height: 40px; width: 40px"></div>');
 		var pre = $('<div style="border: 1px solid #c5c5c5; margin: 5px 10px; float: left; height: 20px; width: 20px"></div>');
@@ -73,7 +73,7 @@ jQuery.fn.extend({
 			// init position
 			var left = $(tar).offset().left;
 			var top = $(tar).offset().top + $(tar).outerHeight() - $(document).scrollTop();
-			$(box).css('left', left).css('top', top).show();
+			$(box).css('left', left).css('top', top).fadeIn(200);
 			
 			$(tar).trigger('input');
 		});
@@ -82,7 +82,7 @@ jQuery.fn.extend({
 			// keep colorpicker
 			var keep = $(e.target).is(box) || $(e.target).parent().is(box) || $(e.target).is(tar);
 			if(!keep){
-				$(box).hide();
+				$(box).fadeOut(200);
 			}
 		});
 		
@@ -281,6 +281,7 @@ jQuery.fn.extend({
 			var str = ($(this).val() || '[]').replace(/'/g, '"');
 			var obj = JSON.parse(str);
 			var ctl = [];
+			var txt = [];
 			
 			var box = $('<div class="box"></div>');
 			
@@ -288,15 +289,19 @@ jQuery.fn.extend({
 			$(this).val(str);
 			
 			if(tpl){
+				var tmp = {};
 				for(var i in tpl){
-					tpl[i] = obj[i] || '';
+					var arr = i.split(/[,]+/, 2);
+					var k = arr[0];
+					tmp[k] = obj[k] || '';
+					txt[k] = arr[1] || k;
 				}
-				obj = tpl;
+				obj = tmp;
 			}
 			
 			for(var i in obj){
 				
-				ctl[i] = $('<span class="label label-default">' + i + '</span><input class="form-control input-sm" value="' + obj[i] + '">');
+				ctl[i] = $('<span class="label label-default">' + (txt[i] || i) + '</span><input class="form-control input-sm" value="' + obj[i] + '">');
 				box.append(ctl[i]);
 				
 				ctl[i].on('input', '', i, function(e){
