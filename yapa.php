@@ -460,7 +460,7 @@ class Yapa{
 		
 			foreach($files as $file){
 				// {"name":"new 2.txt","type":"text\/plain","tmp_name":"\/tmp\/phpRJ91Ks","error":0,"size":1295}
-				$url = 'upload/' . md5(time() . rand());
+				$url = 'upload/' . time() . md5(rand());
 				$result[] = array('url' => $url, 'name' => $file['name'], 'size' => $file['size']);
 				move_uploaded_file($file['tmp_name'], $url);
 			}
