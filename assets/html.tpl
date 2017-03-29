@@ -230,12 +230,13 @@ if(typeof checkScript == 'undefined'){
 <!-- @table -->
 
 <!-- @crop-img -->
-<div class="thumbnail" style="display: inline-block; margin: 0px;">
+<div class="thumbnail" style="position: relative; display: inline-block; margin: 0px;">
+	<span style="position: absolute; top: 0px; right: 6px; color: black; font-size: 11px;">.{ext}</span>
 	<table style="width: 100px; height: 100px;">
 		<tr>
 			<td class="text-center">
 				<img src="{url}" class="img-responsive {img}" style="max-width: 100px; max-height: 100px; margin: 0 auto;"/>
-				<i class="fa fa-file {icon}" style="position: relative; color: brown; font-size: 45px"><span style="position: absolute; top: 25px; left: 6px; color: white; font-size: 11px;">{ext}</span></i>
+				<span class="glyphicon glyphicon-duplicate {icon}" style="position: relative; color: brown; font-size: 45px"></span>
 			</td>
 		</tr>
 	</table>
