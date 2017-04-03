@@ -1,17 +1,20 @@
 ﻿function checkScript(){}
 
-function customAlert(msg, arg){
-	var arg = arg || 0;
-	var info = ['<i class="fa fa-times-circle"></i> 錯誤', '<i class="fa fa-check-circle"></i> 成功', '<i class="fa fa-exclamation-circle"></i> 警告'];
-	var type = ['danger', 'success', 'warning'];
+function customAlert(arr){
+	var code = arr.code || 0;
+	var text = arr.text || '';
+	var info = ['<i class="fa fa-check-circle"></i> 成功', '<i class="fa fa-times-circle"></i> 錯誤', '<i class="fa fa-exclamation-circle"></i> 警告'];
+	var type = ['success', 'danger', 'warning'];
 	
-	var alert = $('<div style="height: 1px; width: 100%; position: fixed; top: 0px; z-index: 1500;"><div class="alert alert-' + type[arg] + '" style="width: 320px; position: relative; margin: auto;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><p><strong>' + info[arg] + ': </strong>' + msg + '</p></div></div>');
-	setTimeout(function(){
-		$(alert).fadeOut(function(){
-			$(this).remove();
-		});
-	}, 3000);
-	$('body').append(alert);
+	if(text){
+		var alert = $('<div style="height: 1px; width: 100%; position: fixed; top: 0px; z-index: 1500;"><div class="alert alert-' + type[code] + '" style="width: 320px; position: relative; margin: auto;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><p><strong>' + info[code] + ': </strong>' + text + '</p></div></div>');
+		setTimeout(function(){
+			$(alert).fadeOut(function(){
+				$(this).remove();
+			});
+		}, 3000);
+		$('body').append(alert);
+	}
 }
 
 function open(verb, url, data, target) {
@@ -223,20 +226,26 @@ jQuery.fn.extend({
 				success: function(re) {
 					
 					var jdata = JSON.parse(re);
-					var arr = Object.keys(jdata).map(function (key) {return jdata[key]});
-					$(col).autocomplete({
-						source: arr,
-						select: function(event, ui){
-							$(tar).val(ui.item.val);
-						}
-					});
+					if(jdata['code']){
+						// fail
+					}else{
+						pdata = jdata['data'];
+						var arr = Object.keys(pdata).map(function (key) {return pdata[key]});
+						$(col).autocomplete({
+							source: arr,
+							select: function(event, ui){
+								$(tar).val(ui.item.val);
+							}
+						});
+					}
+					customAlert(jdata);
 				}
 			});
 		}).trigger('keypress'); //init autocomplete or words will be cut at first input
 		
 		$(tar).on('preset', function(){
 			
-			var id = $(tar).val();
+			var id = parseInt($(tar).val()); // prevent string '0' problem
 			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[=]': id}};
 			
 			if(id){
@@ -247,11 +256,17 @@ jQuery.fn.extend({
 					success: function(re) {
 						
 						var jdata = JSON.parse(re);
-						if(jdata[0]){
-							$(col).val(jdata[0]['label']);
+						if(jdata['code']){
+							// fail
 						}else{
-							$(col).val('');
+							pdata = jdata['data'];
+							if(pdata[0]){
+								$(col).val(pdata[0]['label']);
+							}else{
+								$(col).val('');
+							}
 						}
+						customAlert(jdata);
 					}
 				});
 			}else{
@@ -349,16 +364,23 @@ jQuery.fn.extend({
 				contentType: false, // Set content type to false as jQuery will tell the server its a query string request
 				success: function(re){
 					
-					var add = JSON.parse(re);
-					var val = $(tar).val() || '[]';
-					var arr = JSON.parse(val);
-					for(var i in add){
-						arr.push(add[i]);
+					var jdata = JSON.parse(re);
+					if(jdata['code']){
+						// fail
+					}else{
+						var add = jdata['data'];
+						var val = $(tar).val() || '[]';
+						var arr = JSON.parse(val);
+						for(var i in add){
+							arr.push(add[i]);
+						}
+						// render gallery
+						$(tar).val(JSON.stringify(arr)).trigger('preset');
 					}
+					customAlert(jdata);
 					
-					// clear selected files, render gallery
+					// clear selected files
 					$(upload).val('');
-					$(tar).val(JSON.stringify(arr)).trigger('preset');
 				},
 				error: function(){
 					console.log('err: ajax file upload');
@@ -579,7 +601,7 @@ function bindFormViewComplete(uid, max){
 		
 		//set newdatalist js events
 		f.find('table.review').find('.newdatalist').children().not('.chklist').click(function(){
-			t.val( $(this).parent().find(' [name=id] ').text());
+			t.val( $(this).parent().find('[name=id]').text());
 			t.trigger('change');
 			m.find('.modal-footer').children('div').hide();
 			m.find('.modal-footer').find('div.modify').show();
@@ -648,50 +670,52 @@ function bindFormAjaxOnRefresh(uid, url, max){
 				type: 'POST',
 				data: {jdata: JSON.stringify({ pdata: pdata, method: 'review' })},
 				success: function(re) {
-					var int_id = parseInt(arr_id[this.idx]);
 					
 					var jdata = JSON.parse(re);
-					//console.log('Info: refresh err ' + jdata['err'].join(', '));
-					
-					//debug for search_adv 
-					//console.log(jdata['err']);
-					
-					switch(obj.type){
+					if(jdata['code']){
+						// fail
+					}else{
 						
-						case 'review':
-							c.val(0);
-						case 'append':
+						var int_id = parseInt(arr_id[this.idx]);
+						
+						switch(obj.type){
 							
-							if(c.val() == 0){
-								f.find('table.review').find('.datalist').remove();
-							}
-							if(jdata['cnt'] > 0){
-								f.find('table.review').find('.last').append(jdata['data']);
-							}
-							if(max_ > 0 && jdata['cnt'] == max_){
-								f.find('button.review').show();
-								f.find('p.empty_text').addClass('hidden');
-							}else{
-								f.find('button.review').hide();
-								f.find('p.empty_text').removeClass('hidden');
-							}
-							break;
-						case 'create':
-							f.find('table.review').find('.last').prepend(jdata['data']);
-							break;
-						case 'modify':
-							f.find('table.review').find('[name=id]').filter(function() {
-								return $(this).text() == int_id;
-							}).parent('.datalist').replaceWith(jdata['data']);
-							break;
-						case 'delete':
-							f.find('table.review').find('[name=id]').filter(function() {
-								return $(this).text() == int_id;
-							}).parent('.datalist').remove();
-							break;
-						default:
-							break;
+							case 'review':
+								c.val(0);
+							case 'append':
+								
+								if(c.val() == 0){
+									f.find('table.review').find('.datalist').remove();
+								}
+								if(jdata['cnt'] > 0){
+									f.find('table.review').find('.last').append(jdata['data']);
+								}
+								if(max_ > 0 && jdata['cnt'] == max_){
+									f.find('button.review').show();
+									f.find('p.empty_text').addClass('hidden');
+								}else{
+									f.find('button.review').hide();
+									f.find('p.empty_text').removeClass('hidden');
+								}
+								break;
+							case 'create':
+								f.find('table.review').find('.last').prepend(jdata['data']);
+								break;
+							case 'modify':
+								f.find('table.review').find('[name=id]').filter(function() {
+									return $(this).text() == int_id;
+								}).parent('.datalist').replaceWith(jdata['data']);
+								break;
+							case 'delete':
+								f.find('table.review').find('[name=id]').filter(function() {
+									return $(this).text() == int_id;
+								}).parent('.datalist').remove();
+								break;
+							default:
+								break;
+						}
 					}
+					customAlert(jdata);
 					
 					$('.buttonLoading').button('reset');
 					r.trigger('change');
@@ -717,19 +741,20 @@ function bindFormAjaxByMethod(uid, url, method){
 			url: url,
 			type: 'POST',
 			data: { jdata: JSON.stringify({ pdata: pdata, method: method }) },
-			success: function(re) {
+			success: function(re){
 				var jdata = JSON.parse(re);
-				if(jdata['err'] == 'success'){
-					f.find('table.review').trigger('refresh',{type: method, id: jdata['id']});
+				if(jdata['code']){
+					// fail
+				}else{
+					f.find('table.review').trigger('refresh',{type: method, id: jdata['data']});
 					m.modal('hide');
-				}else if(jdata['err'] == 'err_empty'){
-					customAlert('請檢查必填欄位');
-				}else if(jdata['err'] == 'err_exist'){
-					customAlert('請檢查重複值');
-				}else console.log(re);
+				}
+				customAlert(jdata);
 				$('.buttonLoading').button('reset');
 			},
-			error: function() {alert('ajax ERROR!!!');}
+			error: function(){
+				alert('ajax ERROR!!!');
+			}
 		});
 	});
 }
@@ -778,81 +803,17 @@ function bindFormDeleteTool(uid, url){
 				data: { jdata: JSON.stringify({ pdata: pdata, method: 'delete' }) },
 				success: function(re) {
 					var jdata = JSON.parse(re);
-					if(jdata['err'] == 'success'){
-						f.find('table.review').trigger('refresh',{type:'delete', id: jdata['id']});
-						m.modal('hide');
-					}else if(jdata['err'] == 'err_delete'){
-						customAlert('刪除失敗');
-						$('.buttonLoading').button('reset');
+					if(jdata['code']){
+						// fail
+					}else{
+						f.find('table.review').trigger('refresh',{type:'delete', id: jdata['data']});
 						m.modal('hide');
 					}
-					else console.log(re);}
+					customAlert(jdata);
+					$('.buttonLoading').button('reset');
+				}
 			});
 		}
-	});
-}
-
-function bindFormMailTool(uid, url){
-	var mm = $('#' + uid + '_Mail_Modal');
-	
-	var f = $('#' + uid + '_panel');
-	var l = $('#' + uid + '_checked_list');
-	
-	var a = $('<li><a href="#">從郵件寄送</a></li>');
-	
-	f.find('ul.toollist').append(a);
-	
-	$(a).click(function(){
-		mm.find('form')[0].reset();
-		mm.find('[name=title]').val('【通知】資料報表通知: ' + $.datepicker.formatDate('yy-mm-dd', new Date()));
-		mm.find('[name=report]').empty().css('padding', 0);
-		mm.modal('show');
-		
-		var str_id = l.val();
-		var arr_id = str_id.split(',');
-		
-		genPrint(url, arr_id, function(re){
-			
-			if(re.cnt == 0){
-				mm.find('[name=report]').append('<p>未勾選資料表項目</p>');
-			}else{
-				mm.find('[name=report]').css('padding', '50px 0').append(re.data);
-			}
-		});
-	});
-	
-	mm.find('div.mail').append('<button class="btn btn-primary mail">寄送</button>');
-	
-	
-	mm.find('button.mail').click(function(){
-		$(this).addClass('buttonLoading').button('loading');
-		var pdata = {
-			data: {
-				from: mm.find('[name=mailfrom]').val(),
-				mailto: mm.find('[name=mailto]').val(),
-				mailcc: mm.find('[name=mailcc]').val(),
-				title: mm.find('[name=title]').val(),
-				content: mm.find('[name=content]').val(),
-				report: mm.find('[name=report]').html(),
-				attach: mm.find('[name=attach]').val(),
-				attach_name: mm.find('.attach_label').text()
-			}
-		};
-		
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: 'mailto' }) },
-			success: function(re) {
-				if(re == 'success'){
-					customAlert('寄送成功!', 1);
-					mm.modal('hide');
-				}
-				else if(re == 'err_mailer') customAlert('請檢查收件者等欄位');
-				
-				$('.buttonLoading').button('reset');
-			}
-		});
 	});
 }
 
@@ -903,8 +864,12 @@ function genPrint(url, arr_id, callback){
 		data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
 		success: function(re) {
 			var jdata = JSON.parse(re);
-			
-			callback(jdata);
+			if(jdata['code']){
+				// fail
+			}else{
+				callback(jdata);
+			}
+			customAlert(jdata);
 		}
 	});
 }
@@ -927,44 +892,49 @@ function bindInputAjaxOnChange(uid, url, type, col){
 			url:  url,
 			type: 'POST',
 			data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
-			success: function(re) {
+			success: function(re){
 				
 				var jdata = JSON.parse(re);
-				pdata = jdata[0];
-				for(var i in col){
-					
-					switch(type[i]){
-						case 'radiobox':
-							f.find('[name=' + col[i] + ']').each(function(i){
-								this.checked = (this.value == pdata[col[i]])? true: false;
-							});
-							break;
-						case 'checkbox':
-							var arr=[];
-							if(pdata[col[i]]){
-								arr = pdata[col[i]].split(',');
-							}
-							//prop('checked', false) v.s. attr('checked', false) attr會使checked完全移除, form reset時預設值的checked不會勾選
-							f.find('[name=' + col[i] + ']').prop('checked', false).each(function(i){
-								for(var j=0; j<arr.length; j++){
-									if(arr[j] == this.value) this.checked = true;
+				if(jdata['code']){
+					// fail
+				}else{
+					pdata = jdata['data'][0];
+					for(var i in col){
+						
+						switch(type[i]){
+							case 'radiobox':
+								f.find('[name=' + col[i] + ']').each(function(){
+									this.checked = (this.value == pdata[col[i]])? true: false;
+								});
+								break;
+							case 'checkbox':
+								var arr = [];
+								if(pdata[col[i]]){
+									arr = pdata[col[i]].split(',');
 								}
-							});
-							break;
-						case 'json':
-						case 'module':
-						case 'datepicker':
-						case 'uploadfile':
-						case 'autocomplete':
-							// put value and trigger preset
-							f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
-							break;
-						default:
-							f.find('[name=' + col[i] + ']').val(pdata[col[i]]);
-							break;
+								//prop('checked', false) v.s. attr('checked', false) attr會使checked完全移除, form reset時預設值的checked不會勾選
+								f.find('[name=' + col[i] + ']').prop('checked', false).each(function(){
+									for(var j=0; j<arr.length; j++){
+										if(arr[j] == this.value) this.checked = true;
+									}
+								});
+								break;
+							case 'json':
+							case 'module':
+							case 'datepicker':
+							case 'uploadfile':
+							case 'autocomplete':
+								// put value and trigger preset
+								f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
+								break;
+							default:
+								f.find('[name=' + col[i] + ']').val(pdata[col[i]]);
+								break;
+						}
 					}
+					c.trigger('change');
 				}
-				c.trigger('change');
+				customAlert(jdata);
 			},
 			error: function(){
 				alert('ajax ERROR!!!');

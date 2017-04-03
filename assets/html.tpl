@@ -108,62 +108,6 @@ if(typeof checkScript == 'undefined'){
 <!-- @main -->
 
 
-<!-- @mail -->
-<div class="modal fade" id="{unique_id}_Mail_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<!--div class="modal-dialog"><div class="modal-content"-->
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		<h4 class="modal-title">寄送通知</h4>
-	</div>
-	<div class="modal-body">
-		<form>
-			<table class="table table-alter">
-				<thead>
-					<tr>
-						<th class="col-xs-1 col-sm-1 col-md-1"></th>
-						<th class="col-xs-2 col-sm-2 col-md-2"></th>
-					</tr>
-				</thead>
-				<tr>
-					<td align="center">收件者(必填)</td>
-					<td><input class="form-control input-sm" name="mailto" type="text" value=""/></td>
-				</tr>
-				<tr>
-					<td align="center">副本</td>
-					<td><input class="form-control input-sm" name="mailcc" type="text" value=""/></td>
-				</tr>
-				<tr>
-					<td align="center">標題</td>
-					<td><input class="form-control input-sm" name="title" type="text" value=""/></td>
-				</tr>
-				<tr>
-					<td align="center">內文</td>
-					<td><textarea class="form-control" name="content" type="text" rows="7" style="resize: vertical"></textarea></td>
-				</tr>
-				<tr>
-					<td align="center">附檔</td>
-					<td><p class="attach_label"></p><p class="attach_link"></p><input name="attach" type="hidden"/></td>
-				</tr>
-				<tr>
-					<td colspan="2" align="center">
-						<div name="report" style="overflow-x: auto"></div>
-					</td>
-				</tr>			
-			</table>
-		</form>
-	</div>
-	<div class="modal-footer">
-		<div class="mail"></div>
-	</div>
-	<!--/div></div-->
-</div>
-
-<script>
-	bindFormMailTool('{unique_id}', '{url}');
-</script>
-<!-- @mail -->
-
-
 <!-- @create -->
 <script>
 	bindFormCreateTool('{unique_id}', '{url}');

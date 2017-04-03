@@ -6,16 +6,15 @@ class Yapa{
 	
 	public $file;
 	private $table;
-	public $col_en = array();
-	public $col_ch = array();
-	private $empty_chk = array();
-	private $exist_chk = array();
-	private $chain_chk = array();
-	public $show = array();
-	public $type = array();
-	private $auth = array();
+	public $col_en = [];
+	public $col_ch = [];
+	private $empty_chk = [];
+	private $exist_chk = [];
+	private $chain_chk = [];
+	public $show = [];
+	public $type = [];
+	private $auth = [];
 	private $database;
-	private $mail;
 	private $data;
 	private $tree;
 	private $config;
@@ -28,7 +27,7 @@ class Yapa{
 	
 	private $tpl;
 
-	public function __construct($file, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $phpmailer, $config = []){
+	public function __construct($file, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $config = []){
 		
 		$this->unique_id = 'form_' . uniqid();
 		
@@ -44,9 +43,8 @@ class Yapa{
 		$this->type = $type;
 		$this->auth = $auth;
 		$this->database = $medoo;
-		$this->mail = $phpmailer;
-		$this->data = array();
-		$this->tree = array();
+		$this->data = [];
+		$this->tree = [];
 		$this->config = $config;
 		
 		$this->col_num = count($col_en);
@@ -65,32 +63,26 @@ class Yapa{
 	
 	public function authCheck($mode){
 		
-		switch($mode){
-			case 'review':
-				if($this->auth[0] ?? 0) return 0;
-				break;
-			case 'create':
-				if($this->auth[1] ?? 0) return 0;
-				break;
-			case 'modify':
-				if($this->auth[2] ?? 0) return 0;
-				break;
-			case 'delete':
-				if($this->auth[3] ?? 0) return 0;
-				break;
+		$result = ['code' => 1, 'text' => '權限不足'];
+		$meta = ['review', 'create', 'modify', 'delete'];
+		
+		if(in_array($mode, $meta)){
+			if($this->auth[array_search($mode, $meta)] ?? $this->auth[$mode] ?? 0) $result = ['code' => 0, 'text' => ''];
+		}else{
+			if($this->auth[$mode] ?? 0) $result = ['code' => 0, 'text' => ''];
 		}
 		
-		return 1;
+		return $result;
 	}
 	
 	public function decodeJson($pdata){
 		
-		$result = array('pdata' => array());
+		$result = ['pdata' => []];
 		
 		if(isset($pdata['jdata'])){
 			$jdata = json_decode($pdata['jdata'], true);
 			
-			$result['method'] = isset($jdata['method'])? $jdata['method']: '';
+			$result['method'] = $jdata['method'] ?? '';
 			
 			//must keep keys 'data' and 'where', but remove empty array in where key
 			//array( 'data' => array())                   got error
@@ -103,10 +95,10 @@ class Yapa{
 				if(is_array($jdata['pdata']['data'])){
 					$data = $jdata['pdata']['data'];
 				}else{
-					$str = isset($jdata['pdata']['data'])? $jdata['pdata']['data']: '';
+					$str = $jdata['pdata']['data'] ?? '';
 					$arr_tmp = explode('&', $str);
-					$arr_tmp2 = array();
-					$data = array();
+					$arr_tmp2 = [];
+					$data = [];
 					foreach($arr_tmp as $arr){
 						$s = explode('=', $arr);
 						$arr_tmp2[$s[0]][] = urldecode($s[1]);
@@ -116,11 +108,11 @@ class Yapa{
 					}
 				}
 			}else{
-				$data = array();
+				$data = [];
 			}
 			
 			$result['pdata']['data'] = $data;
-			$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): array();
+			$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): [];
 			
 			//$result['pdata']['data'] = isset($jdata['pdata']['data'])? $jdata['pdata']['data']: array();
 			//$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): array();
@@ -143,9 +135,10 @@ class Yapa{
 		$query  = $_REQUEST['query']  ?? [];
 		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
-		$result = 'success';
-		if($this->authCheck('review')){
-			$result = 'err_auth';
+		$result = $this->authCheck('review');
+		
+		if($result['code']){
+			// fail
 		}else{
 			
 			$th = [];
@@ -175,7 +168,6 @@ class Yapa{
 			$this->deleteTool();
 			
 			
-			$this->mailTool();
 			$this->exportTool();
 		}
 		
@@ -238,7 +230,7 @@ class Yapa{
 		}
 		$html = $html->render(false);
 		
-		$result = array('cnt'=>count($datas['data']), 'data'=>$html, 'err'=>$datas['err']);
+		$result = ['code' => 0, 'data' => $html, 'cnt' => count($datas['data'])];
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 		
 	}
@@ -246,10 +238,10 @@ class Yapa{
 	//create
 	public function createTool(){
 		
-		$result = 'success';
+		$result = $this->authCheck('create');
 		
-		if($this->authCheck('create')){
-			$result = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
 			$this->tpl->block('create')->assign(array(
 				'unique_id'   => $this->unique_id,
@@ -262,18 +254,18 @@ class Yapa{
 	
 	public function create($pdata){
 		
-		$result = array('err'=>'success', 'id'=>0);
+		$result = $this->authCheck('create');
 		
-		if($this->authCheck('create')){
-			$result['err'] = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
 			$pdata['data']['id'] = 0; //clear id, create don't need id
-			$err = $this->dataCheck($pdata['data']);
-			if($err == 'success'){//pass dataCheck
-				$this->database->insert($this->table, $pdata['data']);
-				$result['id'] = $this->database->id();
+			$result = $this->dataCheck($pdata['data']);
+			if($result['code']){
+				// dataCheck fail
 			}else{
-				$result['err'] = $err;
+				$this->database->insert($this->table, $pdata['data']);
+				$result['data'] = $this->database->id();
 			}
 		}
 		
@@ -283,10 +275,10 @@ class Yapa{
 	//modify
 	public function modifyTool(){
 		
-		$result = 'success';
+		$result = $this->authCheck('modify');
 		
-		if($this->authCheck('modify')){
-			$result = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
 			$this->tpl->block('modify')->assign(array(
 				'unique_id'   => $this->unique_id,
@@ -299,23 +291,19 @@ class Yapa{
 	
 	public function modify($pdata){
 		
-		$result = array('err'=>'success', 'id'=>'');
+		$result = $this->authCheck('modify');
 		
-		if($this->authCheck('modify')){
-			$result['err'] = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
-			if(isset($pdata['where']['muti'])){
-				unset($pdata['where']['muti']);
-				$modify_num = $this->database->update($this->table, $pdata['data'], $pdata['where']);
-				if($modify_num>0){ $result['id'] = implode(',', $pdata['where']['OR']['id']); }
+			$result = $this->dataCheck($pdata['data']);
+			if($result['code']){
+				// dataCheck fail
 			}else{
-				$err = $this->dataCheck($pdata['data']);
-				if($err == 'success'){//pass dataCheck
-					$pdata['where']['AND']['id'] = $pdata['data']['id'];
-					$modify_num = $this->database->update($this->table, $pdata['data'], $pdata['where']);
-					if($modify_num>0){ $result['id'] = $pdata['data']['id'];}
-				}else{
-					$result['err'] = $err;
+				$pdata['where']['AND']['id'] = $pdata['data']['id'];
+				$modify_num = $this->database->update($this->table, $pdata['data'], $pdata['where']);
+				if($modify_num > 0){
+					$result['data'] = $pdata['data']['id'];
 				}
 			}
 		}
@@ -326,10 +314,10 @@ class Yapa{
 	//delete
 	public function deleteTool(){
 		
-		$result = 'success';
+		$result = $this->authCheck('delete');
 		
-		if($this->authCheck('delete')){
-			$result = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
 			$this->tpl->block('delete')->assign(array(
 				'unique_id'   => $this->unique_id,
@@ -342,81 +330,28 @@ class Yapa{
 	
 	public function delete($pdata){
 		
-		$result = array('err'=>'success', 'id'=>0);
+		$result = $this->authCheck('delete');
 		
-		if($this->authCheck('delete')){
-			$result['err'] = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
-			$delete_num = $this->database->delete($this->table, $pdata['where']);
-			if($delete_num != 1){
-				$result['err'] = 'err_delete';
+			$num = $this->database->delete($this->table, $pdata['where']);
+			if($num == 0){
+				$result = ['code' => 1, 'text' => '刪除失敗'];
 			}else{
-				$result['id'] = $pdata['where']['AND']['id'];
+				$result['data'] = $pdata['where']['AND']['id'];
 			}
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
-	public function mailto($pdata){
-		//base64 encoding http://reader.roodo.com/linpapa/archives/10000107.html
-		$result = '';
-		
-		//The message
-		$title = "=?UTF-8?B?". base64_encode($pdata['data']['title'])."?=";
-		$msg = str_replace("\n", "<br>", $pdata['data']['content']);
-		if(!empty($pdata['data']['report'])) $msg .= "<br><br>------------以下內容由系統產生------------<br>" . $pdata['data']['report'];
-		
-
-		$this->mail->From = $pdata['data']['from']; //fail
-		$this->mail->addAddress($pdata['data']['mailto']);
-		$this->mail->addReplyTo($pdata['data']['from']);
-		if(!empty($pdata['data']['mailcc'])) $this->mail->addCC($pdata['data']['mailcc']);
-		//$this->mail->addBCC('bcc@example.com');
-
-		//Add attachments
-		if(!empty($pdata['data']['attach'])){
-			if(!empty($pdata['data']['attach_name'])){
-				$str = "=?UTF-8?B?". base64_encode($pdata['data']['attach_name'])."?=";
-				$this->mail->addAttachment($pdata['data']['attach'], $str);
-			}
-			else $this->mail->addAttachment($pdata['data']['attach']);
-		}
-		
-		$this->mail->Subject = $title;
-		$this->mail->Body    = $msg;
-		
-		if(!$this->mail->send()) {
-			$result = 'err_mailer';
-		} else {
-			$result = 'success';
-		}
-		
-		return $result;
-	}
-	
-	public function mailTool(){
-		
-		$result = 'success';
-		
-		if($this->authCheck('review')){
-			$result = 'err_auth';
-		}else{
-			$this->tpl->block('mail')->assign(array(
-				'unique_id'   => $this->unique_id,
-				'url'         => $this->file,
-			))->render();
-		}
-		
-		return $result;
-	}
-	
 	public function exportTool(){
 		
-		$result = 'success';
+		$result = $this->authCheck('review');
 		
-		if($this->authCheck('review')){
-			$result = 'err_auth';
+		if($result['code']){
+			// fail
 		}else{
 			$this->tpl->block('export')->assign(array(
 				'unique_id'   => $this->unique_id,
@@ -429,41 +364,41 @@ class Yapa{
 	
 	public function excel(){
 		
-		$result = array();
+		$result = $this->authCheck('review');
 		
-		if($this->authCheck('review')){
-			$result['err'] = 'err_auth';
+		if($result['code']){
+			// fail
 			return json_encode($result, JSON_UNESCAPED_UNICODE);
 			
 		}else{
 			header('Content-type:application/vnd.ms-excel;');
 			header('Content-Disposition:filename=' . 'Export_' . date('YmdHis') . '.xls');
 			return $_REQUEST['data'] ?? '';
-			
 		}
 	}
 	
 	public function upload(){
 		
-		$result = array();
+		$result = $this->authCheck('create');
 		
-		if($this->authCheck('create')){
-			$result['err'] = 'err_auth';
-			
+		if($result['code']){
+			// fail
 		}else{
+			
+			$tmp = [];
 			
 			if(!file_exists('upload')){
 				mkdir('upload', 0755);
 			}
-			
-			$files = $_FILES ?? array();
 		
-			foreach($files as $file){
+			foreach($_FILES ?? [] as $file){
 				// {"name":"new 2.txt","type":"text\/plain","tmp_name":"\/tmp\/phpRJ91Ks","error":0,"size":1295}
 				$url = 'upload/' . time() . md5(rand());
-				$result[] = array('url' => $url, 'name' => $file['name'], 'size' => $file['size']);
+				$tmp[] = ['url' => $url, 'name' => $file['name'], 'size' => $file['size']];
 				move_uploaded_file($file['tmp_name'], $url);
 			}
+			
+			$result['data'] = $tmp;
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -476,7 +411,7 @@ class Yapa{
 	
 	public function genFormModal($preset){
 		
-		$result = 'success';
+		$result = [];
 		
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
@@ -704,26 +639,27 @@ class Yapa{
 			$arr_col = $pdata['data']?$pdata['data']:'*';
 		}
 		
-		if($this->authCheck('review')){
-			$result = 'err_auth';
-			return $result;
+		$result = $this->authCheck('review');
+		
+		if($result['code']){
+			// fail
 			
 		}else{
-			$datas = $this->database->select($table, $arr_col, $pdata['where']);
-			return json_encode($datas, JSON_UNESCAPED_UNICODE);
+			$result['data'] = $this->database->select($table, $arr_col, $pdata['where']);
+			return json_encode($result, JSON_UNESCAPED_UNICODE);
 		}
 	}
 	
 	public function getData($pdata){//translate all data
 		
-		$err = array();
-		$result = '';
-		if($this->authCheck('review')){
-			$result = 'err_auth';
+		$result = $this->authCheck('review');
+		
+		if($result['code']){
+			// fail
 		}else{
-			$arr_search = array();
-			$arr_chain = array();
-			$arr_col = array();
+			$arr_search = [];
+			$arr_chain = [];
+			$arr_col = [];
 			$this->tree['col'] = null;
 			
 			for($i = 0; $i < $this->col_num; $i++){
@@ -757,8 +693,8 @@ class Yapa{
 				$arr_tmp = $this->split($this->chain_chk[$this->tree['col']]);
 				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
 				
-				$tmp = array();
-				$alias = array();
+				$tmp = [];
+				$alias = [];
 				foreach($datas as $v){
 					$tmp[$v['id']] = $v[$col];
 					$alias[$v['id']] = $v[$arr_tmp[1]];
@@ -767,7 +703,7 @@ class Yapa{
 				$sub = $this->treeSub($tmp);
 				$order = $this->flatten($this->to_tree($tmp));
 				
-				$offset = array();
+				$offset = [];
 				foreach($order as $k=>$v){
 					$offset[$v] = explode(',', $k)[1];
 				}
@@ -866,13 +802,13 @@ class Yapa{
 			else{ $datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);}
 			
 			if($datas != ''){
-				$arr_mark = array();
+				$arr_mark = [];
 				
 				for($j = 0; $j < $this->col_num; $j++){
 					
 					switch($this->type[$j]){
 						case 'checkbox':
-							$arr_mark[$j] = array();
+							$arr_mark[$j] = [];
 							$arr_tmp = $this->split($this->chain_chk[$j]);
 							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
 							
@@ -901,7 +837,7 @@ class Yapa{
 							case 'checkbox':
 								if($datas[$i][$key]){
 									$arr_vtmp = $this->split($datas[$i][$key]);
-									$arr_result = array();
+									$arr_result = [];
 									
 									foreach($arr_vtmp as $val){
 										$arr_result[] = $arr[$val];
@@ -933,7 +869,7 @@ class Yapa{
 							case 'json':
 								$arr = json_decode($datas[$i][$key], true);
 								if(is_array($arr)){
-									$tmp = array();
+									$tmp = [];
 									foreach($arr as $k=>$v){
 										$tmp[] = $this->e($k) . ': ' . $this->e($v);
 									}
@@ -951,7 +887,7 @@ class Yapa{
 				}
 			}
 		
-			$result = array('cnt'=>count($datas), 'data'=>$datas, 'err'=>$err);
+			$result = ['data' => $datas, 'cnt' => count($datas)];
 		}
 		
 		return $result;
@@ -963,21 +899,25 @@ class Yapa{
 	
 	public function ajaxOnChange(){
 		
-		$result = 'success';
+		$result = $this->authCheck('review');
 		
-		$this->tpl->block('change')->assign(array(
-			'unique_id' => $this->unique_id,
-			'url'       => $this->file,
-			'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
-			'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
-		))->render();
+		if($result['code']){
+			// fail
+		}else{
+			$this->tpl->block('change')->assign(array(
+				'unique_id' => $this->unique_id,
+				'url'       => $this->file,
+				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
+				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
+			))->render();
+		}
 		
 		return $result;
 	}
 
 	public function dataCheck(&$data){
 		
-		$result = 'success';
+		$result = ['code' => 0, 'text' => ''];
 		$tmp = [];
 		
 		for($i = 0; $i < $this->col_num; $i++){
@@ -990,12 +930,12 @@ class Yapa{
 					case 'select':
 					case 'radiobox':
 						if(!isset($data[$this->col_en[$i]]) || $data[$this->col_en[$i]] == 0){
-							$result = 'err_empty';
+							$result = ['code' => 1, 'text' => '請檢查必填欄位'];
 						}
 						break;
 					default:
 						if(!isset($data[$this->col_en[$i]]) || $data[$this->col_en[$i]] == ''){
-							$result = 'err_empty';
+							$result = ['code' => 1, 'text' => '請檢查必填欄位'];
 						}
 						break;
 				}
@@ -1003,7 +943,7 @@ class Yapa{
 			
 			if($this->exist_chk[$i] == 1){
 				
-				if(isset($data[$this->col_en[$i]]) && $data[$this->col_en[$i]] != ''){
+				if($data[$this->col_en[$i]] ?? ''){
 					$count = 0;
 					if($data['id']){
 						$count = $this->database->count($this->table, array('AND'=>array($this->col_en[$i] => $data[$this->col_en[$i]], 'id[!]'=>$data['id']) ));
@@ -1011,7 +951,7 @@ class Yapa{
 						$count = $this->database->count($this->table, array($this->col_en[$i] => $data[$this->col_en[$i]]));
 					}
 					if($count > 0){
-						$result = 'err_exist';
+						$result = ['code' => 1, 'text' => '請檢查重複值'];
 					}
 				}
 			}
@@ -1041,9 +981,9 @@ class Yapa{
 	
 	protected function treeSub($tree){
 		
-		$arr = array();
+		$arr = [];
 		// unique pid list
-		$p = array();
+		$p = [];
 		
 		foreach($tree as $k=>$v){
 			if(empty($tree[$k])){
@@ -1072,12 +1012,12 @@ class Yapa{
 	}
 	
 	protected function to_tree($array){
-		$flat = array();
-		$tree = array();
+		$flat = [];
+		$tree = [];
 
 		foreach($array as $child => $parent){
 			if(!isset($flat[$child])){
-				$flat[$child] = array();
+				$flat[$child] = [];
 			}
 			if(!empty($parent)){
 				$flat[$parent][$child] =& $flat[$child];
@@ -1090,7 +1030,7 @@ class Yapa{
 	}
 	
 	protected function flatten($arr, $l = 0) {
-		$result = array();
+		$result = [];
 		foreach($arr as $key=>$val) {
 			$result[$key . ',' . $l] = $key;
 			if(is_array($val) && count($val)){
@@ -1107,7 +1047,7 @@ class Yapa{
 	// )
 	public function bind($data){
 		
-		$tmp = array();
+		$tmp = [];
 		
 		foreach($data as $arr){
 			foreach($arr as $k=>$v){
@@ -1143,7 +1083,7 @@ class Yapa{
 			
 			foreach($data['data'] as $k=>$v){
 				
-				$sum = array();
+				$sum = [];
 				foreach($this->data as $key=>$arr){
 					$sum[$key] = 0;
 				}
