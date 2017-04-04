@@ -13,7 +13,7 @@ if(typeof checkScript == 'undefined'){
 .table-alter {
 	table-layout:fixed;
 }
-.table-alter td {
+.table-alter td, .table-alter th{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -28,7 +28,7 @@ if(typeof checkScript == 'undefined'){
 	<input id="{unique_id}_checked_list"    type="hidden" value="">
 	<input id="{unique_id}_review_complete" type="hidden" value="trigger change when review table complete">
 	<input id="{unique_id}_change_complete" type="hidden" value="trigger change when modal fetch data complete">
-	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%">
+	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
 			<div class="btn-group toollist">
