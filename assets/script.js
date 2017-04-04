@@ -833,7 +833,7 @@ function bindFormExportTool(uid, url){
 		
 		genPrint(url, arr_id, function(re){
 			$('.genPrint').remove();
-			$('body').after('<div class="genPrint">' + t + '<br>' + re.data + '</div>');
+			$('body').after('<div class="genPrint">' + t + '<br>' + re.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
 			window.print();
 		});
 	});

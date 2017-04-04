@@ -18,33 +18,16 @@ if(typeof checkScript == 'undefined'){
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-
 .ui-autocomplete {
 	z-index: 1200;
-}
-
-@media print {
-	body{
-		display: none;
-	}
-    .genPrint {
-        visibility: visible;
-    }
-}
-
-@media screen {
-    .genPrint {
-		display: none;
-    }
 }
 </style>
 <div id="{unique_id}" style="height: 100%">
 	<input id="{unique_id}_item_cnt"        type="hidden" value="">
 	<input id="{unique_id}_target_id"       type="hidden" value="">
-	<input id="{unique_id}_review_complete" type="hidden" value="trigger change when review table complete">
 	<input id="{unique_id}_checked_list"    type="hidden" value="">
+	<input id="{unique_id}_review_complete" type="hidden" value="trigger change when review table complete">
 	<input id="{unique_id}_change_complete" type="hidden" value="trigger change when modal fetch data complete">
-		
 	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
@@ -140,7 +123,7 @@ if(typeof checkScript == 'undefined'){
 
 <!-- @table -->
 	<!-- @print -->
-		<table style="border:3px #000 solid; width:1500px; table-layout:fixed; text-align: center;" rules="all" class="pure-table">
+		<table style="border:3px #000 solid; width:1500px; table-layout:fixed; text-align: center;" rules="all">
 			<tr>
 				<!-- @th -->
 				<th style="text-align: center">{text}</th>
@@ -149,7 +132,7 @@ if(typeof checkScript == 'undefined'){
 			<!-- @tr -->
 			<tr>
 				<!-- @td -->
-				<td style="white-space: normal; overflow: visible; word-wrap: break-word;" name="{name}">{text}</td>
+				<td style="white-space: normal; overflow: visible; word-wrap: break-word;">{text}</td>
 				<!-- @td -->
 			</tr>
 			<!-- @tr -->
