@@ -13,7 +13,7 @@ if(typeof checkScript == 'undefined'){
 .table-alter {
 	table-layout:fixed;
 }
-.table-alter td, .table-alter th{
+.table-alter td, .table-alter th {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -48,7 +48,7 @@ if(typeof checkScript == 'undefined'){
 			
 			<!-- form text and info area has hidden-xs class attribute -->
 			<div class="btn-group">
-				<span class="hidden-xs">目前顯示</span>&nbsp;<div class="badge"><span class="item_cnt"></span></div><span class="hidden-xs"> 項結果</span>
+				<div class="badge item-cnt"></div>
 			</div>
 			
 			<!-- main content area -->
@@ -302,10 +302,7 @@ if(typeof checkScript == 'undefined'){
 				</table>
 			</form>
 		</div>
-		<div class="modal-footer">
-			<div class="create"></div>
-			<div class="modify"></div>
-		</div>
+		<div class="modal-footer"></div>
 	<!--/div></div-->
 </div>
 <!-- @modal-detail -->

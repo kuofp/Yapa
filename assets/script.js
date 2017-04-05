@@ -585,7 +585,7 @@ function bindFormViewComplete(uid, max){
 	
 	f.find('input.search').on('input', function (){ f.find('table.review').trigger('refresh',{type: 'review'}); });
 	f.find('input.search_adv').on('keyup keydown change', function (){ f.find('table.review').trigger('refresh',{type: 'review'}); });
-	c.change(function(){ f.find('.item_cnt').text($(this).val()); });
+	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormChkall( uid );
 	f.find('button.review').click(function(e){
@@ -594,28 +594,22 @@ function bindFormViewComplete(uid, max){
 		$(this).addClass('buttonLoading').button('loading');
 		f.find('table.review').trigger('refresh',{type: 'append', max: max});
 	});
-
-
+	
 	r.change(function(){
-		
 		
 		//set newdatalist js events
 		f.find('table.review').find('.newdatalist').children().not('.chklist').click(function(){
-			t.val( $(this).parent().find('[name=id]').text());
-			t.trigger('change');
-			m.find('.modal-footer').children('div').hide();
-			m.find('.modal-footer').find('div.modify').show();
+			t.val( $(this).parent().find('[name=id]').text()).trigger('change');
+			m.find('.hidden-create').show();
+			m.find('.hidden-modify').hide();
 			m.modal('show');
 		});
 		
-		
 		bindFormChkall2( uid );
-		
 		
 		$('.buttonLoading').button('reset');
 		f.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
 		//f.find('table.review').find('.last').sortable();
-		
 		
 		//item count
 		c.val( f.find('table.review').find('.datalist').length ).trigger('change');
@@ -764,12 +758,12 @@ function bindFormCreateTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
 	f.find('div.toollist').find('button.main').text('新增').addClass('create');
-	m.find('.modal-footer').find('div.create').append('<button class="btn btn-default create">新增</button>');
+	m.find('.modal-footer').append('<button class="btn btn-default create hidden-modify">新增</button>');
 	f.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
 		m.find('form')[0].reset();
-		m.find('.modal-footer').children('div').hide();
-		m.find('.modal-footer').find('div.create').show();
+		m.find('.hidden-create').hide();
+		m.find('.hidden-modify').show();
 		m.modal('show');
 	});
 	
@@ -780,7 +774,7 @@ function bindFormCreateTool(uid, url){
 function bindFormModifyTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
-	m.find('.modal-footer').find('div.modify').append('<button class="btn btn-default modify">儲存</button>');
+	m.find('.modal-footer').append('<button class="btn btn-default modify hidden-create">儲存</button>');
 	bindFormAjaxByMethod(uid, url, 'modify');
 }
 
@@ -790,7 +784,7 @@ function bindFormDeleteTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	var t = $('#' + uid + '_target_id');
 	
-	m.find('.modal-footer').find('div.modify').append('<button class="btn btn-danger delete"><i class="fa fa-trash-o fa-lg"></i> 刪除</button>');
+	m.find('.modal-footer').append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> 刪除</button>');
 	m.find('button.delete').click(function(){
 		if(confirm('確定要刪除?')){
 			var btn = $(this).addClass('buttonLoading').button('loading');
