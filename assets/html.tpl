@@ -23,11 +23,13 @@ if(typeof checkScript == 'undefined'){
 }
 </style>
 <div id="{unique_id}" style="height: 100%">
-	<input id="{unique_id}_item_cnt"        type="hidden" value="">
-	<input id="{unique_id}_target_id"       type="hidden" value="">
-	<input id="{unique_id}_checked_list"    type="hidden" value="">
-	<input id="{unique_id}_review_complete" type="hidden" value="trigger change when review table complete">
-	<input id="{unique_id}_change_complete" type="hidden" value="trigger change when modal fetch data complete">
+	<div class="hidden">
+		<input id="{unique_id}_item_cnt">
+		<input id="{unique_id}_target_id">
+		<input id="{unique_id}_checked_list">
+		<input id="{unique_id}_review_complete" value="trigger change when review table complete">
+		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
+	</div>
 	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
@@ -40,13 +42,13 @@ if(typeof checkScript == 'undefined'){
 				<ul class="dropdown-menu toollist"></ul>
 			</div>
 			
-			<!-- search and advance search option which can filter more keywords -->
+			<!-- search and advance search option which accept more keywords -->
 			<div class="btn-group">
 				<input class="form-control search" placeholder="搜尋" style="width: 160px"/>
 				<input class="form-control search_adv" type="hidden" value="{query}" />
 			</div>
 			
-			<!-- form text and info area has hidden-xs class attribute -->
+			<!-- info area -->
 			<div class="btn-group">
 				<div class="badge item-cnt"></div>
 			</div>
@@ -65,7 +67,7 @@ if(typeof checkScript == 'undefined'){
 				</table>
 			</div>
 			
-			<div class="table_wrap sub" style="overflow-y: scroll; height: calc(100% - 70px);">
+			<div style="overflow-y: scroll; height: calc(100% - 70px);">
 				<table class="table table-hover table-alter review" style="cursor: pointer;">
 					<tbody class="last">
 						<!-- @tr-->
