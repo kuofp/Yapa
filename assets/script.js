@@ -624,7 +624,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 	var r = $('#' + uid + '_review_complete');
 	
 	f.find('table.review').on('refresh', function (e,obj){
-		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id;
+		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
 		for(var i = 0; i < arr_id.length; i++){
 			var int_id = parseInt(arr_id[i]);
