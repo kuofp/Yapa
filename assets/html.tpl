@@ -187,7 +187,7 @@ if(typeof checkScript == 'undefined'){
 						<th class="col-xs-2 col-sm-2 col-md-2">內容</th>
 					</tr>
 				<!-- @tr -->
-					<tr>
+					<tr class="{class}">
 					<!-- @td -->
 						<!-- @hidden -->
 						<td class="hidden"></td>
@@ -198,7 +198,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @text -->
 						<td align="center">{meta}</td>
 						<td>
-							<input class="form-control input-sm" name="{name}" type="text" value="{value}"/>
+							<input class="form-control input-sm" name="{name}" type="text" value="{value}" {disabled}/>
 						</td>
 						<!-- @text -->
 						<!-- @password -->

@@ -436,6 +436,14 @@ class Yapa{
 						'value' => $pre,
 					));
 					break;
+				case 'disabled';
+					$td = $this->tpl->block('modal-detail.td.text')->assign(array(
+						'meta'  => $this->col_ch[$i] . $star,
+						'name'  => $this->col_en[$i],
+						'value' => $pre,
+						'disabled' => 'disabled',
+					));
+					break;
 				case 'text';
 					$td = $this->tpl->block('modal-detail.td.text')->assign(array(
 						'meta'  => $this->col_ch[$i] . $star,
@@ -594,7 +602,16 @@ class Yapa{
 			}
 			
 			if($td){
+				$tmp = explode(' ', $this->show[$i]);
+				$arr = [];
+				foreach($tmp as $v){
+					if(in_array($v, ['hidden-create', 'hidden-modify'])){
+						$arr[] = $v;
+					}
+				}
+				$class = implode(' ', $arr);
 				$tr[] = array(
+					'class' => $class,
 					'td' => array($td)
 				);	
 			}
