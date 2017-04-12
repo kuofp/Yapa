@@ -34,8 +34,17 @@ class Yapa{
 		$this->file = $file;
 		$this->table = $table;
 		
+		// separate label and info
+		$label = [];
+		foreach($col_ch as $v){
+			$tmp = $this->split($v, 'label');
+			$label[0][] = $tmp[0] ?? '';
+			$label[1][] = $tmp[1] ?? '';
+		}
+		
 		$this->col_en = $col_en;
-		$this->col_ch = $col_ch;
+		$this->col_ch = $label[0];
+		$this->info = $label[1];
 		$this->empty_chk = $empty_chk;
 		$this->exist_chk = $exist_chk;
 		$this->chain_chk = $chain_chk;
@@ -131,8 +140,8 @@ class Yapa{
 	//review
 	public function reviewTool(){
 		
-		$style  = $_REQUEST['style']  ?? '';
-		$query  = $_REQUEST['query']  ?? [];
+		$style  = $_REQUEST['style'] ?? '';
+		$query  = $_REQUEST['query'] ?? [];
 		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$result = $this->authCheck('review');
@@ -160,14 +169,10 @@ class Yapa{
 			))->render();
 		
 			$this->genFormModal($preset);
-			
-			
 			$this->ajaxOnChange();
 			$this->createTool();
 			$this->modifyTool();
 			$this->deleteTool();
-			
-			
 			$this->exportTool();
 		}
 		
@@ -416,12 +421,12 @@ class Yapa{
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
 			
-			$star = '';
+			$info = $this->info[$i];
 			if($this->empty_chk[$i]){
-				$star .= '(必填)';
+				$info .= '(必填)';
 			}
 			if($this->exist_chk[$i]){
-				$star .= '(唯一)';
+				$info .= '(唯一)';
 			}
 			
 			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
@@ -431,42 +436,47 @@ class Yapa{
 			switch($this->type[$i]){
 				case 'hidden':
 					$td = $this->tpl->block('modal-detail.td.hidden')->assign(array(
-						'meta' => $this->col_ch[$i] . $star,
-						'name' => $this->col_en[$i],
+						'meta'  => $this->col_ch[$i],
+						'name'  => $this->col_en[$i],
+						'info'  => $info,
 						'value' => $pre,
 					));
 					break;
 				case 'disabled';
 					$td = $this->tpl->block('modal-detail.td.text')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
 						'value' => $pre,
 						'disabled' => 'disabled',
 					));
 					break;
 				case 'text';
 					$td = $this->tpl->block('modal-detail.td.text')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
 						'value' => $pre,
 					));
 					break;
 				case 'password';
 					$td = $this->tpl->block('modal-detail.td.password')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
 						'value' => $pre,
 					));
 					break;
 				case 'textarea':
 					$td = $this->tpl->block('modal-detail.td.textarea')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
 						'value' => $pre,
 					));
 					break;
 				case 'select':
-					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
 					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$tmp = [];
@@ -479,14 +489,15 @@ class Yapa{
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.select')->assign(array(
-						'meta'   => $this->col_ch[$i] . $star,
+						'meta'   => $this->col_ch[$i],
 						'name'   => $this->col_en[$i],
+						'info'   => $info,
 						'option' => $this->tpl->block('modal-detail.td.select.option')->nest($tmp),
 					));
 					
 					break;
 				case 'radiobox':
-					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
 					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$tmp = [];
@@ -500,12 +511,13 @@ class Yapa{
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.radiobox')->assign(array(
-						'meta'   => $this->col_ch[$i] . $star,
+						'meta'   => $this->col_ch[$i],
+						'info'   => $info,
 						'option' => $this->tpl->block('modal-detail.td.radiobox.option')->nest($tmp),
 					));
 					break;
 				case 'checkbox':
-					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
 					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$chk = is_array($pre)? $pre: explode(',', $pre);
@@ -521,7 +533,8 @@ class Yapa{
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.checkbox')->assign(array(
-						'meta'   => $this->col_ch[$i] . $star,
+						'meta'   => $this->col_ch[$i],
+						'info'   => $info,
 						'option' => $this->tpl->block('modal-detail.td.checkbox.option')->nest($tmp),
 					));
 					break;
@@ -529,9 +542,10 @@ class Yapa{
 					$uid = $this->getUid();
 					
 					$td = $this->tpl->block('modal-detail.td.autocomplete')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
-						'value' => $pre,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => $pre,
 						'uid'   => $uid,
 						'url'   => $this->file,
 					));
@@ -542,9 +556,10 @@ class Yapa{
 					$pre = $pre != ''? date('Y-m-d', $pre) :date('Y-m-d');
 					
 					$td = $this->tpl->block('modal-detail.td.datepicker')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
-						'value' => $pre,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => $pre,
 						'uid'   => $uid,
 					));
 					break;
@@ -552,9 +567,10 @@ class Yapa{
 					$uid = $this->getUid();
 					
 					$td = $this->tpl->block('modal-detail.td.colorpicker')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
-						'value' => $pre,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => $pre,
 						'uid'   => $uid,
 					));
 					break;
@@ -562,9 +578,10 @@ class Yapa{
 					$uid = $this->getUid();
 					
 					$td = $this->tpl->block('modal-detail.td.uploadfile')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
-						'value' => $pre,
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => $pre,
 						'uid'   => $uid,
 						'url'   => $this->file,
 					));
@@ -573,9 +590,10 @@ class Yapa{
 					$uid = $this->getUid();
 					
 					$td = $this->tpl->block('modal-detail.td.json')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
-						'value' => str_replace('"', '\'', json_encode($pre)),
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => str_replace('"', '\'', json_encode($pre)),
 						'uid'   => $uid,
 					));
 					break;
@@ -591,9 +609,10 @@ class Yapa{
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.module')->assign(array(
-						'meta'  => $this->col_ch[$i] . $star,
-						'value' => json_encode($pre),
+						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => json_encode($pre),
 						'uid'   => $uid,
 					));
 					break;
@@ -631,7 +650,7 @@ class Yapa{
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
-					$arr_tmp = $this->split($this->chain_chk[$i], true);
+					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
 					$table = $arr_tmp[0];
 					$arr_col = array(
 						$arr_tmp[1] . '(label)',
@@ -1130,16 +1149,22 @@ class Yapa{
 		}
 	}
 	
-	protected function split($str, $where = false){
+	protected function split($str, $case = ''){
 		
 		$result = [];
 		
-		if($where){
-			$arr = preg_split('/[\s,]+/', $str, 4);
-			$arr[3] = json_decode($arr[3] ?? '[]', true);
-			$result = $arr;
-		}else{
-			$result = preg_split('/[\s,]+/', $str);
+		switch($case){
+			case 'chain':
+				$arr = preg_split('/[\s,]+/', $str, 4);
+				$arr[3] = json_decode($arr[3] ?? '[]', true);
+				$result = $arr;
+				break;
+			case 'label':
+				$result = preg_split('/[\s,]+/', $str, 2);
+				break;
+			default:
+				$result = preg_split('/[\s,]+/', $str);
+				break;
 		}
 		
 		return $result;

@@ -173,10 +173,10 @@ if(typeof checkScript == 'undefined'){
 <!-- @crop-img -->
 
 <!-- @modal-detail -->
-<div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+<div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 	<!--div class="modal-dialog"><div class="modal-content"-->
 		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
 			<h4 class="modal-title">詳細資訊</h4>
 		</div>
 		<div class="modal-body">
@@ -196,25 +196,25 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @hidden -->
 						<!-- @text -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="form-control input-sm" name="{name}" type="text" value="{value}" {disabled}/>
 						</td>
 						<!-- @text -->
 						<!-- @password -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="form-control input-sm" name="{name}" type="password" value="{value}"/>
 						</td>
 						<!-- @password -->
 						<!-- @textarea -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<textarea class="form-control input-sm" name="{name}" type="text" rows="7" style="resize: vertical">{value}</textarea>
 						</td>
 						<!-- @textarea -->
 						<!-- @select -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<select class="form-control input-sm" name="{name}">
 								<option value="0">請選擇</option>
@@ -225,7 +225,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @select -->
 						<!-- @radiobox -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<!-- @option -->
 							<div class="radio">
@@ -235,7 +235,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @radiobox -->
 						<!-- @checkbox -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<!-- @option -->
 							<div class="checkbox">
@@ -245,7 +245,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @checkbox -->
 						<!-- @autocomplete -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
 							<script>
@@ -254,7 +254,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @autocomplete -->
 						<!-- @datepicker -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
 							<script>
@@ -263,7 +263,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @datepicker -->
 						<!-- @colorpicker -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="form-control input-sm" type="text" name="{name}" value="{value}" id="{uid}"/>
 							<script>
@@ -272,7 +272,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @colorpicker -->
 						<!-- @uploadfile -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
 							<script>
@@ -281,7 +281,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @uploadfile -->
 						<!-- @json -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
 							<script>
@@ -290,7 +290,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @json -->
 						<!-- @module -->
-						<td align="center">{meta}</td>
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
 							<select class="form-control input-sm module" name="{name}" id="{uid}"></select>
 							<script>
@@ -303,6 +303,10 @@ if(typeof checkScript == 'undefined'){
 				<!-- @tr -->
 				</table>
 			</form>
+			<script>
+				// popover
+				$('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
+			</script>
 		</div>
 		<div class="modal-footer"></div>
 	<!--/div></div-->
