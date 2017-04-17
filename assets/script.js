@@ -215,7 +215,7 @@ jQuery.fn.extend({
 		//id 'label' compare with the id 'label_h' to determine if the id 'autocomplete_id' should be reset
 		//use keypress to overcome type tool problem (keyup/keydown failed)
 		//use 'input' instead of the 'change' event for rapid effect
-		$(col).on('keypress input', function(){
+		$(col).on('input', function(){
 			
 			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[~]': $(this).val()}};
 			
@@ -223,14 +223,14 @@ jQuery.fn.extend({
 				url: url,
 				type: 'POST',
 				data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
-				success: function(re) {
+				success: function(re){
 					
 					var jdata = JSON.parse(re);
 					if(jdata['code']){
 						// fail
 					}else{
 						pdata = jdata['data'];
-						var arr = Object.keys(pdata).map(function (key) {return pdata[key]});
+						var arr = Object.keys(pdata).map(function(key){return pdata[key]});
 						$(col).autocomplete({
 							source: arr,
 							select: function(event, ui){
@@ -241,7 +241,7 @@ jQuery.fn.extend({
 					customAlert(jdata);
 				}
 			});
-		}).trigger('keypress'); //init autocomplete or words will be cut at first input
+		}).trigger('input'); //init autocomplete or words will be cut at first input
 		
 		$(tar).on('preset', function(){
 			
@@ -253,7 +253,7 @@ jQuery.fn.extend({
 					url: url,
 					type: 'POST',
 					data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
-					success: function(re) {
+					success: function(re){
 						
 						var jdata = JSON.parse(re);
 						if(jdata['code']){
