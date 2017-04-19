@@ -474,19 +474,19 @@ jQuery.fn.extend({
 function bindFormChkall(uid){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
-	f.find('.chkall').click(function(){
+	f.find('th.check').click(function(){
 		if($(this).children().hasClass('fa-check-square-o')){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
 			l.val('');
 			
-			f.find('.chklist').children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			f.find('.chklist').parent('.datalist').removeAttr('style');
+			f.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
+			f.find('td.check').parent('.datalist').removeAttr('style');
 		}else if($(this).children().hasClass('fa-square-o')){
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
-			var chkall = [];
-			f.find('.chklist').parent().find('[name=id]').each(function(i){ chkall[i] = $(this).text();});
-			f.find('.chklist').parent().css('background-color', '#4285f4').css('color', '#fff').find('.chklist').children().removeClass('fa-square-o').addClass('fa-check-square-o');
-			l.val(chkall.join());
+			var check = [];
+			f.find('td.check').parent().find('[name=id]').each(function(i){ check[i] = $(this).text();});
+			f.find('td.check').parent().css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
+			l.val(check.join());
 		}
 	});
 }
@@ -532,9 +532,7 @@ function bindFormChkall2(uid){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	
-	
-	f.find('table.review').find('.newdatalist').prepend('<td class="chklist" style="width: 30px;"><i class="fa fa-square-o"></i></td>');
-	f.find('.newdatalist').find('.chklist').click(function() {
+	f.find('.newdatalist').find('td.check').click(function() {
 		if($(this).children().hasClass('fa-check-square-o')){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
 			$(this).parent('.datalist').removeAttr('style');
@@ -571,7 +569,7 @@ function bindFormChkall2(uid){
 	for(var i = 0; i < arr.length; i++){
 		f.find('table.review').find('.newdatalist').find('[name=id]').filter(function() {
 			return $(this).text() === arr[i];
-		}).parent('.newdatalist').css('background-color', '#4285f4').css('color', '#fff').find('.chklist').children().removeClass('fa-square-o').addClass('fa-check-square-o');
+		}).parent('.newdatalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
 	}
 }
 
@@ -598,7 +596,7 @@ function bindFormViewComplete(uid, max){
 	r.change(function(){
 		
 		//set newdatalist js events
-		f.find('table.review').find('.newdatalist').children().not('.chklist').click(function(){
+		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
 			t.val( $(this).parent().find('[name=id]').text()).trigger('change');
 			m.find('.hidden-create').show();
 			m.find('.hidden-modify').hide();

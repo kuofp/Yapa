@@ -208,7 +208,7 @@ class Yapa{
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
 				$td[] = array(
-					'class' => $this->show[$j],
+					'class' => $this->show[$j] . (($this->tree['col'] == $j)? ' func': ''),
 					'name'  => $this->col_en[$j],
 					'text'  => $this->e($datas['data'][$i][$this->col_en[$j]] ?? ''),
 				);
@@ -737,7 +737,7 @@ class Yapa{
 				}
 				
 				$sub = $this->treeSub($tmp);
-				$order = $this->flatten($this->to_tree($tmp));
+				$order = $this->flatten($this->toTree($tmp));
 				
 				$offset = [];
 				foreach($order as $k=>$v){
@@ -1047,7 +1047,7 @@ class Yapa{
 		return $arr;
 	}
 	
-	protected function to_tree($array){
+	protected function toTree($array){
 		$flat = [];
 		$tree = [];
 
@@ -1133,14 +1133,21 @@ class Yapa{
 				$prefix = '';
 				for($i = $offset[$v['id']] - $root; $i > 0; $i--){
 					if($i == 1){
-						$prefix .= '　└─';
+						if($sub[$v['id']]){
+							$prefix .= '　└';
+						}else{
+							$prefix .= '　└─ ';
+						}
 					}else{
 						$prefix .= '　　';
 					}
 				}
+				if($sub[$v['id']]){
+					$prefix .= '<i class="fa fa-plus-square-o" aria-hidden="true"></i> ';
+				}
 				
 				$col = $this->col_en[$this->tree['col']];
-				$data['data'][$k][$col] = $prefix . $alias[$v['id']] . '(' . count($sub[$v['id']]) . ')';
+				$data['data'][$k][$col] = [$prefix . $alias[$v['id']] . '(' . count($sub[$v['id']]) . ')'];
 				
 				foreach($this->data as $key=>$arr){
 					$data['data'][$k][$key] += $sum[$key] ?? 0;

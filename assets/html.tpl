@@ -57,9 +57,7 @@ if(typeof checkScript == 'undefined'){
 			<div style="padding-right: 16px;">
 				<table class="table table-alter" style="margin: 0px;">
 					<thead class="form_title">
-						<th class="chkall" style="width: 30px; cursor: pointer">
-							<i class="fa fa-square-o"></i>
-						</th>
+						<th class="check" style="width: 30px; cursor: pointer"><i class="fa fa-square-o"></i></th>
 						<!-- @th-->
 						<th class="{class} order" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
 						<!-- @th-->
@@ -72,6 +70,7 @@ if(typeof checkScript == 'undefined'){
 					<tbody class="last">
 						<!-- @tr-->
 						<tr class="newdatalist">
+							<td class="check func" style="width: 30px;"><i class="fa fa-square-o"></i></td>
 							<!-- @td-->
 							<td class="{class}" name="{name}">{text}</td>
 							<!-- @td-->
