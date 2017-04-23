@@ -612,6 +612,24 @@ function bindFormViewComplete(uid, max){
 		//item count
 		c.val( f.find('table.review').find('.datalist').length ).trigger('change');
 		console.log('Info: total ' + c.val() + ' items');
+		
+		
+		$('[class^=s_]').click(function(){
+			var tag = $(this).attr('class');
+			tag = tag.split(' ');
+			tag = tag[0].slice(2);
+
+			$('.p_' + tag).toggleClass('c_' + tag);
+
+			console.log(tag);
+			$('.last').trigger('tree');
+		});
+
+		$('.last').on('tree', function(){
+			$(this).find('[class^=s_]').parent().show();
+			$(this).find('[class*=c_]').parent().hide();
+		});
+		$('.last').trigger('tree');
 	});
 }
 

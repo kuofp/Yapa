@@ -208,7 +208,7 @@ class Yapa{
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
 				$td[] = array(
-					'class' => $this->show[$j] . (($this->tree['col'] == $j)? ' func': ''),
+					'class' => ($this->par[$datas['data'][$i]['id']] ?? '') . ' ' . $this->show[$j] . (($this->tree['col'] == $j)? ' func': ''),
 					'name'  => $this->col_en[$j],
 					'text'  => $this->e($datas['data'][$i][$this->col_en[$j]] ?? ''),
 				);
@@ -1018,6 +1018,7 @@ class Yapa{
 	protected function treeSub($tree){
 		
 		$arr = [];
+		$arr2 = [];
 		// unique pid list
 		$p = [];
 		
@@ -1035,7 +1036,7 @@ class Yapa{
 		foreach($tree as $k=>$v){
 			$arr[$v][$k] = $k;
 		}
-		
+		//dd($p);
 		foreach($p as $parent){
 			foreach($arr as $k => $children){
 				if(in_array($parent, $children)){
@@ -1044,6 +1045,18 @@ class Yapa{
 			}
 		}
 		
+		foreach($arr as $parent => $tmp){
+			foreach($tmp as $child){
+				$s = ($parent == 'root')? 'p_' . $parent: 'p_' . $parent . ' c_' . $parent;
+				$arr2[$child][] = $s;
+			}
+		}
+		
+		foreach($arr2 as $k=>$v){
+			$arr2[$k] = 's_' . $k . ' ' . implode(' ', $v);
+		}
+		//dd($arr2);
+		$this->par = $arr2;
 		return $arr;
 	}
 	
