@@ -56,7 +56,7 @@ if(typeof checkScript == 'undefined'){
 			<!-- main content area -->
 			<div style="padding-right: 16px;">
 				<table class="table table-alter" style="margin: 0px;">
-					<thead class="form_title">
+					<thead>
 						<th class="check" style="width: 30px; cursor: pointer"><i class="fa fa-square-o"></i></th>
 						<!-- @th-->
 						<th class="{class} order" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>

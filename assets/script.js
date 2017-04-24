@@ -578,7 +578,6 @@ function bindFormTreeView(uid){
 	var f = $('#' + uid + '_panel');
 	
 	f.find('.last').on('tree', function(){
-		console.log('tree view refresh');
 		// show()/hide() are slower
 		$(this).find('[class^=s_]').parent().removeClass('hidden');
 		$(this).find('[class*=c_]').parent().addClass('hidden');
@@ -593,15 +592,9 @@ function bindFormTreeView2(uid){
 		tag = tag.split(' ');
 		tag = tag[0].slice(2);
 		
-		if($(this).find('.fa-plus-square-o').length){
-			$(this).find('.fa-plus-square-o').attr('class', 'fa fa-minus-square-o');
-		}else{
-			$(this).find('.fa-minus-square-o').attr('class', 'fa fa-plus-square-o');
-		}
+		$(this).find('i').toggleClass('fa-plus-square-o fa-minus-square-o');
 		
 		f.find('.last').find('.p_' + tag).toggleClass('c_' + tag);
-		
-		console.log(tag);
 		f.find('.last').trigger('tree');
 	});
 	f.find('.last').trigger('tree');
