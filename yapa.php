@@ -207,8 +207,9 @@ class Yapa{
 		for($i = 0; $i < count($datas['data']); $i++){
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
+				$tree = (($this->tree['col'] == $j)? ($this->par[$datas['data'][$i]['id']] ?? '') . ' func ': '');
 				$td[] = array(
-					'class' => ($this->par[$datas['data'][$i]['id']] ?? '') . ' ' . $this->show[$j] . (($this->tree['col'] == $j)? ' func': ''),
+					'class' => $tree . $this->show[$j],
 					'name'  => $this->col_en[$j],
 					'text'  => $this->e($datas['data'][$i][$this->col_en[$j]] ?? ''),
 				);
@@ -1045,13 +1046,23 @@ class Yapa{
 			}
 		}
 		
+		$root = $this->config['root'] ?? 0;
+		
 		foreach($arr as $parent => $tmp){
 			foreach($tmp as $child){
-				$s = ($parent == 'root')? 'p_' . $parent: 'p_' . $parent . ' c_' . $parent;
-				$arr2[$child][] = $s;
+				
+				if(in_array($child, array_merge($arr[$root] ?? [], [$root]))){
+					$arr2[$child][] = '';
+				}
+				if(($root == 0) || ($root && in_array($parent, array_merge($arr[$root], [$root])))){
+					$s = ($parent == 'root')? '': (($child == ($root))? 'p_' . $parent: 'p_' . $parent . ' c_' . $parent);
+					$arr2[$child][] = $s;
+				}
 			}
 		}
 		
+		//dd(array_merge($arr[$root], [(int)$root]));
+		//dd(array_merge($arr[($this->config['root'] ?? 0)], [($this->config['root'] ?? 0)]));
 		foreach($arr2 as $k=>$v){
 			$arr2[$k] = 's_' . $k . ' ' . implode(' ', $v);
 		}

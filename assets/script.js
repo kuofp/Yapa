@@ -532,8 +532,9 @@ function bindFormChkall2(uid){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	
-	f.find('.newdatalist').find('td.check').click(function() {
+	f.find('.newdatalist').find('td.check').click(function(){
 		if($(this).children().hasClass('fa-check-square-o')){
+		//if($(this).find('fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
 			$(this).parent('.datalist').removeAttr('style');
 			
@@ -567,12 +568,44 @@ function bindFormChkall2(uid){
 	
 	//clear select and select again, filter is better than map contain values
 	for(var i = 0; i < arr.length; i++){
-		f.find('table.review').find('.newdatalist').find('[name=id]').filter(function() {
+		f.find('table.review').find('.newdatalist').find('[name=id]').filter(function(){
 			return $(this).text() === arr[i];
 		}).parent('.newdatalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
 	}
 }
 
+function bindFormTreeView(uid){
+	var f = $('#' + uid + '_panel');
+	
+	f.find('.last').on('tree', function(){
+		console.log('tree view refresh');
+		// show()/hide() are slower
+		$(this).find('[class^=s_]').parent().removeClass('hidden');
+		$(this).find('[class*=c_]').parent().addClass('hidden');
+	});
+}
+
+function bindFormTreeView2(uid){
+	var f = $('#' + uid + '_panel');
+	
+	f.find('.newdatalist').find('[class^=s_]').click(function(){
+		var tag = $(this).attr('class');
+		tag = tag.split(' ');
+		tag = tag[0].slice(2);
+		
+		if($(this).find('.fa-plus-square-o').length){
+			$(this).find('.fa-plus-square-o').attr('class', 'fa fa-minus-square-o');
+		}else{
+			$(this).find('.fa-minus-square-o').attr('class', 'fa fa-plus-square-o');
+		}
+		
+		f.find('.last').find('.p_' + tag).toggleClass('c_' + tag);
+		
+		console.log(tag);
+		f.find('.last').trigger('tree');
+	});
+	f.find('.last').trigger('tree');
+}
 
 function bindFormViewComplete(uid, max){
 	var f = $('#' + uid + '_panel');
@@ -581,11 +614,13 @@ function bindFormViewComplete(uid, max){
 	var t = $('#' + uid + '_target_id');
 	var m = $('#' + uid + '_Modal');
 	
-	f.find('input.search').on('input', function (){ f.find('table.review').trigger('refresh',{type: 'review'}); });
-	f.find('input.search_adv').on('keyup keydown change', function (){ f.find('table.review').trigger('refresh',{type: 'review'}); });
+	f.find('input.search').on('input', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
+	f.find('input.search_adv').on('keyup keydown change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormChkall( uid );
+	bindFormTreeView( uid );
+	
 	f.find('button.review').click(function(e){
 		// prevent sending post
 		e.preventDefault();
@@ -594,7 +629,6 @@ function bindFormViewComplete(uid, max){
 	});
 	
 	r.change(function(){
-		
 		//set newdatalist js events
 		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
 			t.val( $(this).parent().find('[name=id]').text()).trigger('change');
@@ -604,6 +638,7 @@ function bindFormViewComplete(uid, max){
 		});
 		
 		bindFormChkall2( uid );
+		bindFormTreeView2( uid );
 		
 		$('.buttonLoading').button('reset');
 		f.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
@@ -612,24 +647,6 @@ function bindFormViewComplete(uid, max){
 		//item count
 		c.val( f.find('table.review').find('.datalist').length ).trigger('change');
 		console.log('Info: total ' + c.val() + ' items');
-		
-		
-		$('[class^=s_]').click(function(){
-			var tag = $(this).attr('class');
-			tag = tag.split(' ');
-			tag = tag[0].slice(2);
-
-			$('.p_' + tag).toggleClass('c_' + tag);
-
-			console.log(tag);
-			$('.last').trigger('tree');
-		});
-
-		$('.last').on('tree', function(){
-			$(this).find('[class^=s_]').parent().show();
-			$(this).find('[class*=c_]').parent().hide();
-		});
-		$('.last').trigger('tree');
 	});
 }
 
