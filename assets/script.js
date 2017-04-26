@@ -171,7 +171,7 @@ jQuery.fn.extend({
 			changeMonth: true,
 			beforeShow: function(){
 				setTimeout(function(){
-					$('.ui-datepicker').css('z-index', 1070);
+					$('.ui-datepicker').css('z-index', 9527);
 				}, 100);
 			},
 			onSelect: function(date) {
@@ -182,8 +182,7 @@ jQuery.fn.extend({
 		
 		$(tar).on('preset', function(){
 			var val = $(tar).val();
-			
-			if(val){
+			if(val.match(/^-?[\d]+$/)){ // unix timestamp
 				var a = new Date(val * 1000);
 				var arr = [
 					a.getFullYear(),
