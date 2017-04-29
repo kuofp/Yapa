@@ -42,12 +42,18 @@ class Yapa{
 			$label[1][] = $tmp[1] ?? '';
 		}
 		
+		// join chain
+		$chain = [];
+		foreach($chain_chk as $v){
+			$chain[] = $v? $this->split($v, 'chain'): '';
+		}
+		
 		$this->col_en = $col_en;
 		$this->col_ch = $label[0];
 		$this->info = $label[1];
 		$this->empty_chk = $empty_chk;
 		$this->exist_chk = $exist_chk;
-		$this->chain_chk = $chain_chk;
+		$this->chain_chk = $chain;
 		$this->show = $show;
 		$this->type = $type;
 		$this->auth = $auth;
@@ -477,7 +483,7 @@ class Yapa{
 					));
 					break;
 				case 'select':
-					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
+					$arr_tmp = $this->chain_chk[$i];
 					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$tmp = [];
@@ -498,7 +504,7 @@ class Yapa{
 					
 					break;
 				case 'radiobox':
-					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
+					$arr_tmp = $this->chain_chk[$i];
 					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$tmp = [];
@@ -518,7 +524,7 @@ class Yapa{
 					));
 					break;
 				case 'checkbox':
-					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
+					$arr_tmp = $this->chain_chk[$i];
 					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 					
 					$chk = is_array($pre)? $pre: explode(',', $pre);
@@ -651,7 +657,7 @@ class Yapa{
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
-					$arr_tmp = $this->split($this->chain_chk[$i], 'chain');
+					$arr_tmp = $this->chain_chk[$i];
 					$table = $arr_tmp[0];
 					$arr_col = array(
 						$arr_tmp[1] . '(label)',
@@ -710,8 +716,8 @@ class Yapa{
 				if($this->type[$i] == 'checkbox') continue;
 				if($this->type[$i] == 'value') continue;
 				if($this->type[$i] == 'module') continue;
-				if($this->chain_chk[$i] != ''){
-					$arr_tmp = $this->split($this->chain_chk[$i]);
+				if($this->chain_chk[$i]){
+					$arr_tmp = $this->chain_chk[$i];
 					
 					// tree view check
 					if($arr_tmp[0] == $this->table){
@@ -727,7 +733,7 @@ class Yapa{
 			if($this->tree['col'] !== null){
 				// tree view must ordered under plan
 				$col = $this->col_en[$this->tree['col']];
-				$arr_tmp = $this->split($this->chain_chk[$this->tree['col']]);
+				$arr_tmp = $this->chain_chk[$this->tree['col']];
 				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
 				
 				$tmp = [];
@@ -787,8 +793,8 @@ class Yapa{
 							if($this->type[$i] == 'checkbox') continue;
 							if($this->type[$i] == 'value') continue;
 							if($this->type[$i] == 'module') continue;
-							if($this->chain_chk[$i] != ''){
-								$arr_tmp = $this->split($this->chain_chk[$i]);
+							if($this->chain_chk[$i]){
+								$arr_tmp = $this->chain_chk[$i];
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
 							}else{
 								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $keyword[$j];
@@ -846,7 +852,7 @@ class Yapa{
 					switch($this->type[$j]){
 						case 'checkbox':
 							$arr_mark[$j] = [];
-							$arr_tmp = $this->split($this->chain_chk[$j]);
+							$arr_tmp = $this->chain_chk[$j];
 							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
 							
 							foreach($datas_checkbox as $arr){
