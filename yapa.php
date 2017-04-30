@@ -44,8 +44,13 @@ class Yapa{
 		
 		// join chain
 		$chain = [];
-		foreach($chain_chk as $v){
+		$tree = ['col' => null];
+		foreach($chain_chk as $k=>$v){
 			$chain[] = $v? $this->split($v, 'chain'): '';
+			// tree view check
+			if(($chain[$k][0] ?? '') == $this->table){
+				$tree['col'] = $k;
+			}
 		}
 		
 		$this->col_en = $col_en;
@@ -59,7 +64,7 @@ class Yapa{
 		$this->auth = $auth;
 		$this->database = $medoo;
 		$this->data = [];
-		$this->tree = [];
+		$this->tree = $tree;
 		$this->config = $config;
 		
 		$this->col_num = count($col_en);
@@ -166,12 +171,13 @@ class Yapa{
 			}
 			
 			$this->tpl->block('main')->assign(array(
-				'unique_id'   => $this->unique_id,
-				'query'       => str_replace('"', '\'', json_encode($query)),
-				'url'         => $this->file,
-				'tr'          => '',
-				'th'          => $this->tpl->block('main.th')->nest($th),
-				'max'         => $this->config['perpage'] ?? 50,
+				'unique_id' => $this->unique_id,
+				'query'     => str_replace('"', '\'', json_encode($query)),
+				'url'       => $this->file,
+				'tr'        => '',
+				'th'        => $this->tpl->block('main.th')->nest($th),
+				'max'       => $this->config['perpage'] ?? 50,
+				'back'      => ($this->tree['col'] !== null)? '返回上一階': '',
 			))->render();
 		
 			$this->genFormModal($preset);
@@ -213,7 +219,7 @@ class Yapa{
 		for($i = 0; $i < count($datas['data']); $i++){
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
-				$tree = (($this->tree['col'] == $j)? ($this->par[$datas['data'][$i]['id']] ?? '') . ' func ': '');
+				$tree = (($this->tree['col'] == $j)? ($this->tree['sub'][2][$datas['data'][$i]['id']] ?? '') . ' func ': '');
 				$td[] = array(
 					'class' => $tree . $this->show[$j],
 					'name'  => $this->col_en[$j],
@@ -703,7 +709,6 @@ class Yapa{
 			$arr_search = [];
 			$arr_chain = [];
 			$arr_col = [];
-			$this->tree['col'] = null;
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
@@ -718,12 +723,6 @@ class Yapa{
 				if($this->type[$i] == 'module') continue;
 				if($this->chain_chk[$i]){
 					$arr_tmp = $this->chain_chk[$i];
-					
-					// tree view check
-					if($arr_tmp[0] == $this->table){
-						$this->tree['col'] = $i;
-					}
-					
 					$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
 					
 					$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
@@ -731,7 +730,6 @@ class Yapa{
 			}
 			
 			if($this->tree['col'] !== null){
-				// tree view must ordered under plan
 				$col = $this->col_en[$this->tree['col']];
 				$arr_tmp = $this->chain_chk[$this->tree['col']];
 				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
@@ -744,24 +742,16 @@ class Yapa{
 				}
 				
 				$sub = $this->treeSub($tmp);
-				$order = $this->flatten($this->toTree($tmp));
 				
-				$offset = [];
-				foreach($order as $k=>$v){
-					$offset[$v] = explode(',', $k)[1];
-				}
-				
-				$this->tree['offset'] = $offset;
 				$this->tree['sub'] = $sub;
 				$this->tree['alias'] = $alias;
-				$this->tree['order'] = $order;
 			}
 			
 			// select only descendant
 			if($this->config['root'] ?? 0){
 				// include self
 				$id = $pdata['where']['AND']['id'] ?? 0;
-				$ids = array_merge($this->tree['sub'][$this->config['root']], [$this->config['root']]);
+				$ids = array_merge($this->tree['sub'][1][$this->config['root']], [$this->config['root']]);
 				
 				if($id){
 					if(!is_array($id)){
@@ -823,11 +813,7 @@ class Yapa{
 			}
 			
 			// order
-			if($this->tree['col'] !== null){
-				// tree view must ordered under plan
-				$pdata['where']['ORDER'] = ['id' => $this->tree['order']];
-				
-			}elseif(!($pdata['where']['ORDER'] ?? 0)){
+			if(!($pdata['where']['ORDER'] ?? 0)){
 				// default order
 				$pdata['where']['ORDER'] = ['id' => 'DESC'];
 			}
@@ -1024,14 +1010,14 @@ class Yapa{
 	
 	protected function treeSub($tree){
 		
+		$result = [];
 		$arr = [];
-		$arr2 = [];
 		// unique pid list
 		$p = [];
 		
 		foreach($tree as $k=>$v){
 			if(empty($tree[$k])){
-				$tree[$k] = 'root';
+				$tree[$k] = '0';
 			}
 			
 			$p[$v] = $v;
@@ -1040,10 +1026,13 @@ class Yapa{
 			$arr[$k] = [];
 		}
 		
+		// direct children count
 		foreach($tree as $k=>$v){
 			$arr[$v][$k] = $k;
 		}
-		//dd($p);
+		$result[] = $arr;
+		
+		// all children count
 		foreach($p as $parent){
 			foreach($arr as $k => $children){
 				if(in_array($parent, $children)){
@@ -1051,58 +1040,15 @@ class Yapa{
 				}
 			}
 		}
+		$result[] = $arr;
 		
-		$root = $this->config['root'] ?? 0;
+		// tree view class
+		$arr = [];
+		foreach($tree as $k => $v){
+			$arr[$k] = 'tree s_' . $k . ' p_' . $v;
+		}
+		$result[] = $arr;
 		
-		foreach($arr as $parent => $tmp){
-			foreach($tmp as $child){
-				
-				if(in_array($child, array_merge($arr[$root] ?? [], [$root]))){
-					$arr2[$child][] = '';
-				}
-				if(($root == 0) || ($root && in_array($parent, array_merge($arr[$root], [$root])))){
-					$s = ($parent == 'root')? '': (($child == ($root))? 'p_' . $parent: 'p_' . $parent . ' c_' . $parent);
-					$arr2[$child][] = $s;
-				}
-			}
-		}
-		
-		//dd(array_merge($arr[$root], [(int)$root]));
-		//dd(array_merge($arr[($this->config['root'] ?? 0)], [($this->config['root'] ?? 0)]));
-		foreach($arr2 as $k=>$v){
-			$arr2[$k] = 's_' . $k . ' ' . implode(' ', $v);
-		}
-		//dd($arr2);
-		$this->par = $arr2;
-		return $arr;
-	}
-	
-	protected function toTree($array){
-		$flat = [];
-		$tree = [];
-
-		foreach($array as $child => $parent){
-			if(!isset($flat[$child])){
-				$flat[$child] = [];
-			}
-			if(!empty($parent)){
-				$flat[$parent][$child] =& $flat[$child];
-			}else{
-				$tree[$child] =& $flat[$child];
-			}
-		}
-
-		return $tree;
-	}
-	
-	protected function flatten($arr, $l = 0) {
-		$result = [];
-		foreach($arr as $key=>$val) {
-			$result[$key . ',' . $l] = $key;
-			if(is_array($val) && count($val)){
-				$result = array_merge($result, $this->flatten($val, $l+1));
-			}
-		}
 		return $result;
 	}
 	
@@ -1138,14 +1084,10 @@ class Yapa{
 	protected function tree(&$data){
 		
 		if($this->tree['col'] !== null){
-			$offset = $this->tree['offset'];
-			$sub = $this->tree['sub'];
+			$sub = $this->tree['sub'][1];
+			$dsub = $this->tree['sub'][0];
 			$alias = $this->tree['alias'];
-			$root = 0;
-			
-			if($this->config['root'] ?? 0){
-				$root = $offset[$this->config['root']];
-			}
+			$col = $this->col_en[$this->tree['col']];
 			
 			foreach($data['data'] as $k=>$v){
 				
@@ -1160,24 +1102,7 @@ class Yapa{
 					}
 				}
 				
-				$prefix = '';
-				for($i = $offset[$v['id']] - $root; $i > 0; $i--){
-					if($i == 1){
-						if($sub[$v['id']]){
-							$prefix .= '　└';
-						}else{
-							$prefix .= '　└─ ';
-						}
-					}else{
-						$prefix .= '　　';
-					}
-				}
-				if($sub[$v['id']]){
-					$prefix .= '<i class="fa fa-plus-square-o" aria-hidden="true"></i> ';
-				}
-				
-				$col = $this->col_en[$this->tree['col']];
-				$data['data'][$k][$col] = [$prefix . $alias[$v['id']] . '(' . count($sub[$v['id']]) . ')'];
+				$data['data'][$k][$col] = $this->raw($alias[$v['id']] . '(' . count($dsub[$v['id']]) . ')');
 				
 				foreach($this->data as $key=>$arr){
 					$data['data'][$k][$key] += $sum[$key] ?? 0;

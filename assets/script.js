@@ -470,7 +470,7 @@ jQuery.fn.extend({
 	}
 });
 
-function bindFormChkall(uid){
+function bindFormCheck(uid){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	f.find('th.check').click(function(){
@@ -527,7 +527,7 @@ function bindFormSort(uid){
 	});
 }
 
-function bindFormChkall2(uid){
+function bindFormCheck2(uid){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	
@@ -573,33 +573,62 @@ function bindFormChkall2(uid){
 	}
 }
 
-function bindFormTreeView(uid){
-	var f = $('#' + uid + '_panel');
+function bindFormTreeView(uid, back){
 	
+	if(!back) return;
+	
+	var f = $('#' + uid + '_panel');
+	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
+	
+	f.find('table.review').before(btn);
+	
+	$(btn).click(function(){
+		var prev = $(btn).attr('prev');
+		if(prev){
+			$(btn).attr('show', prev);
+			tag = prev.match(/p_([\d]+)/)[1];
+			if(tag != '0'){
+				tmp = f.find('.s_' + tag).attr('class');
+				prev = '.' + tmp.match(/p_[\d]+/)[0];
+			}else{
+				prev = '';
+			}
+			$(btn).attr('prev', prev);
+		}
+		f.find('.last').trigger('tree');
+	});
+
 	f.find('.last').on('tree', function(){
-		// show()/hide() are slower
-		$(this).find('[class^=s_]').parent().removeClass('hidden');
-		$(this).find('[class*=c_]').parent().addClass('hidden');
+		$(this).find('.tree').parent().addClass('hidden');
+		$(this).find($(btn).attr('show')).parent().removeClass('hidden');
+		$(btn).prop('disabled', !$('.prev').attr('prev'));
 	});
 }
 
-function bindFormTreeView2(uid){
+function bindFormTreeView2(uid, back){
+	
+	if(!back) return;
+	
 	var f = $('#' + uid + '_panel');
 	
-	f.find('.newdatalist').find('[class^=s_]').click(function(){
-		var tag = $(this).attr('class');
-		tag = tag.split(' ');
-		tag = tag[0].slice(2);
-		
-		$(this).find('i').toggleClass('fa-plus-square-o fa-minus-square-o');
-		
-		f.find('.last').find('.p_' + tag).toggleClass('c_' + tag);
-		f.find('.last').trigger('tree');
+	f.find('.newdatalist').find('td.tree').each(function(){
+		$(this).html('<a href="#">' + $(this).text() + '</a>');
 	});
+	
+	f.find('.newdatalist').find('td.tree').click(function(){
+		var tag = $(this).attr('class');
+		tag = tag.match(/s_([\d]+)/)[1];
+		if(f.find('.p_' + tag).length){
+			f.find('.prev').attr('prev', $('.prev').attr('show'));
+			f.find('.prev').attr('show', '.p_' + tag);
+			f.find('.last').trigger('tree');
+		}
+	});
+	
 	f.find('.last').trigger('tree');
 }
 
-function bindFormViewComplete(uid, max){
+function bindFormViewComplete(uid, max, back){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
@@ -610,8 +639,8 @@ function bindFormViewComplete(uid, max){
 	f.find('input.search_adv').on('keyup keydown change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
-	bindFormChkall( uid );
-	bindFormTreeView( uid );
+	bindFormCheck( uid );
+	bindFormTreeView(uid, back);
 	
 	f.find('button.review').click(function(e){
 		// prevent sending post
@@ -629,8 +658,8 @@ function bindFormViewComplete(uid, max){
 			m.modal('show');
 		});
 		
-		bindFormChkall2( uid );
-		bindFormTreeView2( uid );
+		bindFormCheck2( uid );
+		bindFormTreeView2(uid, back);
 		
 		$('.buttonLoading').button('reset');
 		f.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
