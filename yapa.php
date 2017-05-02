@@ -1045,7 +1045,7 @@ class Yapa{
 		// tree view class
 		$arr = [];
 		foreach($tree as $k => $v){
-			$arr[$k] = 'tree s_' . $k . ' p_' . $v;
+			$arr[$k] = 'tree s_' . $k . ' p_' . ($k == ($this->config['root'] ?? 0)? '0': $v);
 		}
 		$result[] = $arr;
 		
