@@ -172,7 +172,7 @@ if(typeof checkScript == 'undefined'){
 <!-- @crop-img -->
 
 <!-- @modal-detail -->
-<div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-width="760">
 	<!--div class="modal-dialog"><div class="modal-content"-->
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>

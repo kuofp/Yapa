@@ -869,7 +869,7 @@ class Yapa{
 									$arr_result = [];
 									
 									foreach($arr_vtmp as $val){
-										$arr_result[] = $arr[$val];
+										$arr_result[] = $arr[$val] ?? 0;
 									}
 									
 									$datas[$i][$key] = implode(',', $arr_result);
