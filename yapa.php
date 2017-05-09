@@ -48,8 +48,12 @@ class Yapa{
 		foreach($chain_chk as $k=>$v){
 			$chain[] = $v? $this->split($v, 'chain'): '';
 			// tree view check
-			if(($chain[$k][0] ?? '') == $this->table){
-				$tree['col'] = $k;
+			if($config['tree'] ?? 0){
+				$tree['col'] = $config['tree'];
+			}else{
+				if(($chain[$k][0] ?? '') == $this->table){
+					$tree['col'] = $k;
+				}
 			}
 		}
 		
@@ -1102,7 +1106,7 @@ class Yapa{
 					}
 				}
 				
-				$data['data'][$k][$col] = $this->raw($alias[$v['id']] . '(' . count($dsub[$v['id']]) . ')');
+				$data['data'][$k][$col] = $this->raw($alias[$v['id']] . (count($dsub[$v['id']])? '(' . count($dsub[$v['id']]) . ')': ''));
 				
 				foreach($this->data as $key=>$arr){
 					$data['data'][$k][$key] += $sum[$key] ?? 0;
