@@ -29,7 +29,7 @@ class Yapa{
 
 	public function __construct($file, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $config = []){
 		
-		$this->unique_id = 'form_' . uniqid();
+		$this->unique_id = 'form' . uniqid();
 		
 		$this->file = $file;
 		$this->table = $table;
@@ -156,7 +156,7 @@ class Yapa{
 	public function reviewTool(){
 		
 		$style  = $_REQUEST['style'] ?? '';
-		$query  = $_REQUEST['query'] ?? [];
+		$query  = json_decode($_REQUEST['query'] ?? '[]');
 		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$result = $this->authCheck('review');
@@ -199,16 +199,16 @@ class Yapa{
 		
 		$datas = $this->getData($pdata);
 		
-		// custom callback before rendering
-		if($callback){
-			$datas = call_user_func($callback, $datas);
-		}
-		
 		// apply outer data
 		$this->apply($datas);
 		
 		// tree view
 		$this->tree($datas);
+		
+		// custom callback before rendering
+		if($callback){
+			$datas = call_user_func($callback, $datas);
+		}
 		
 		$style = $_REQUEST['style'] ?? '';
 		
@@ -623,6 +623,7 @@ class Yapa{
 						$pre[$k]['sql'] = str_replace('"', '\'', json_encode($v['sql']));
 						$pre[$k]['url'] = $v['url'];
 						$pre[$k]['tag'] = $v['tag'];
+						$pre[$k]['css'] = $v['css'] ?? '';
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.module')->assign(array(
@@ -755,7 +756,7 @@ class Yapa{
 			if($this->config['root'] ?? 0){
 				// include self
 				$id = $pdata['where']['AND']['id'] ?? 0;
-				$ids = array_merge($this->tree['sub'][1][$this->config['root']], [$this->config['root']]);
+				$ids = array_merge($this->tree['sub'][1][$this->config['root']] ?? [], [$this->config['root']]);
 				
 				if($id){
 					if(!is_array($id)){
@@ -1080,7 +1081,7 @@ class Yapa{
 		
 		foreach($data['data'] as $k=>$v){
 			foreach($this->data as $key=>$arr){
-				$data['data'][$k][$key] = $this->data[$key][$v['id']] ?? 0;
+				$data['data'][$k][$key] = $this->data[$key][$v['id']] ?? '';
 			}
 		}
 	}
@@ -1096,20 +1097,24 @@ class Yapa{
 			foreach($data['data'] as $k=>$v){
 				
 				$sum = [];
-				foreach($this->data as $key=>$arr){
+				foreach($this->config['sum'] ?? [] as $key){
 					$sum[$key] = 0;
 				}
 				
 				foreach($sub[$v['id']] as $c){
 					foreach($this->data as $key=>$arr){
-						$sum[$key] += $arr[$c] ?? 0;
+						if(isset($sum[$key])){
+							$sum[$key] += $arr[$c] ?? 0;
+						}
 					}
 				}
 				
 				$data['data'][$k][$col] = $this->raw($alias[$v['id']] . (count($dsub[$v['id']])? '(' . count($dsub[$v['id']]) . ')': ''));
 				
 				foreach($this->data as $key=>$arr){
-					$data['data'][$k][$key] += $sum[$key] ?? 0;
+					if(isset($sum[$key])){
+						$data['data'][$k][$key] += $sum[$key] ?? 0;
+					}
 				}
 			}
 		}

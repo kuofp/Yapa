@@ -1001,7 +1001,7 @@ jQuery.fn.extend({
 		
 		$(tar).closest('tr').after(col);
 		
-		var f = $(this).closest('form');
+		var v = $(this).closest('form');
 		
 		for(var i in tpl){
 			var opt = $('<option>' + tpl[i]['tag'] + '</option>');
@@ -1010,17 +1010,24 @@ jQuery.fn.extend({
 				var arr = {};
 				var sql = JSON.parse(e.data['sql'].replace(/'/g, '"'));
 				var url = e.data['url'];
-		
+				var css = e.data['css'] || 'height: 300px';
+				
+				// var in search_adv
+				var uid = tar.closest('.modal').attr('id').split('_')[0];
+				var f = $('#' + uid + '_panel');
+				var str = f.find('.search_adv').val();
+				var adv = JSON.parse(str.replace(/'/g, '"'))['AND'];
+				
 				for(var i in sql){
-					arr[i] = f.find('[name=' + sql[i] + ']').val() || sql[i];
+					arr[i] = v.find('[name="' + sql[i] + '"]').val() || adv[i] || sql[i];
 				}
 				
-				$(col).find('div').attr('style', 'height: 300px').empty();
+				$(col).find('div').attr('style', css).empty();
 				$(col).find('div').load(url, {
 					preset: arr,
-					query: {
+					query: JSON.stringify({
 						AND: arr
-					}
+					})
 				});
 			});
 			
