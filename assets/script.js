@@ -1016,7 +1016,7 @@ jQuery.fn.extend({
 				var uid = tar.closest('.modal').attr('id').split('_')[0];
 				var f = $('#' + uid + '_panel');
 				var str = f.find('.search_adv').val();
-				var adv = JSON.parse(str.replace(/'/g, '"'))['AND'];
+				var adv = JSON.parse(str.replace(/'/g, '"'))['AND'] || [];
 				
 				for(var i in sql){
 					arr[i] = v.find('[name="' + sql[i] + '"]').val() || adv[i] || sql[i];

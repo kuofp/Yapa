@@ -323,8 +323,8 @@ class Yapa{
 				// dataCheck fail
 			}else{
 				$pdata['where']['AND']['id'] = $pdata['data']['id'];
-				$modify_num = $this->database->update($this->table, $pdata['data'], $pdata['where']);
-				if($modify_num > 0){
+				$modify = $this->database->update($this->table, $pdata['data'], $pdata['where']);
+				if($modify->rowCount() > 0){
 					$result['data'] = $pdata['data']['id'];
 				}
 			}
@@ -357,8 +357,8 @@ class Yapa{
 		if($result['code']){
 			// fail
 		}else{
-			$num = $this->database->delete($this->table, $pdata['where']);
-			if($num == 0){
+			$delete = $this->database->delete($this->table, $pdata['where']);
+			if($delete->rowCount() == 0){
 				$result = ['code' => 1, 'text' => '刪除失敗'];
 			}else{
 				$result['data'] = $pdata['where']['AND']['id'];
