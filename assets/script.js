@@ -710,7 +710,18 @@ function bindFormAjaxOnRefresh(uid, url, max){
 					break;
 			}
 			
-			f.find('button.review').addClass('buttonLoading').button('loading');
+			// loading
+			switch(obj.type){
+				case 'review':
+					c.val(0);
+				case 'append':
+					if(c.val() == 0){
+						f.find('table.review').find('.datalist').remove();
+					}
+					f.find('button.review').show().addClass('buttonLoading').button('loading');
+					f.find('p.end').hide();
+					break;
+			}
 			
 			$.ajax({
 				url: url,
@@ -727,35 +738,29 @@ function bindFormAjaxOnRefresh(uid, url, max){
 						var int_id = parseInt(arr_id[this.idx]);
 						
 						switch(obj.type){
-							
 							case 'review':
-								c.val(0);
 							case 'append':
-								
-								if(c.val() == 0){
-									f.find('table.review').find('.datalist').remove();
-								}
 								if(jdata['cnt'] > 0){
 									f.find('table.review').find('.last').append(jdata['data']);
 								}
 								if(max_ > 0 && jdata['cnt'] == max_){
 									f.find('button.review').show();
-									f.find('p.empty_text').addClass('hidden');
+									f.find('p.end').hide();
 								}else{
 									f.find('button.review').hide();
-									f.find('p.empty_text').removeClass('hidden');
+									f.find('p.end').show();
 								}
 								break;
 							case 'create':
 								f.find('table.review').find('.last').prepend(jdata['data']);
 								break;
 							case 'modify':
-								f.find('table.review').find('[name=id]').filter(function() {
+								f.find('table.review').find('[name=id]').filter(function(){
 									return $(this).text() == int_id;
 								}).parent('.datalist').replaceWith(jdata['data']);
 								break;
 							case 'delete':
-								f.find('table.review').find('[name=id]').filter(function() {
+								f.find('table.review').find('[name=id]').filter(function(){
 									return $(this).text() == int_id;
 								}).parent('.datalist').remove();
 								break;
@@ -765,10 +770,10 @@ function bindFormAjaxOnRefresh(uid, url, max){
 					}
 					customAlert(jdata);
 					
-					$('.buttonLoading').button('reset');
+					f.find('button.review').find('.buttonLoading').button('reset');
 					r.trigger('change');
 				},
-				error: function() {
+				error: function(){
 					alert('ajax ERROR!!!');
 				}
 			});

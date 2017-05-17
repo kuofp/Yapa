@@ -78,7 +78,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @tr-->
 					</tbody>
 				</table>
-				<p class="hidden empty_text" align="center">資料底端，沒有找到更多</p>
+				<p class="end" align="center">資料底端，沒有找到更多</p>
 				<button class="btn btn-default btn-block review">顯示更多{max}筆+</button>
 			</div>
 		</div>

@@ -220,14 +220,15 @@ class Yapa{
 		$block = $style? 'table.' . $style: 'main';
 		
 		$tr = [];
-		for($i = 0; $i < count($datas['data']); $i++){
+		
+		foreach($datas['data'] as $k=>$v){
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
-				$tree = (($this->tree['col'] == $j)? ($this->tree['sub'][2][$datas['data'][$i]['id']] ?? '') . ' func ': '');
+				$tree = (($this->tree['col'] == $j)? ($this->tree['sub'][2][$v['id']] ?? '') . ' func ': '');
 				$td[] = array(
 					'class' => $tree . $this->show[$j],
 					'name'  => $this->col_en[$j],
-					'text'  => $this->e($datas['data'][$i][$this->col_en[$j]] ?? ''),
+					'text'  => $this->e($v[$this->col_en[$j]] ?? ''),
 				);
 			}
 			
