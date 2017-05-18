@@ -224,7 +224,7 @@ class Yapa{
 		foreach($datas['data'] as $k=>$v){
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
-				$tree = (($this->tree['col'] == $j)? ($this->tree['sub'][2][$v['id']] ?? '') . ' func ': '');
+				$tree = (($this->tree['col'] === $j)? ($this->tree['sub'][2][$v['id']] ?? '') . ' func ': '');
 				$td[] = array(
 					'class' => $tree . $this->show[$j],
 					'name'  => $this->col_en[$j],
@@ -657,6 +657,7 @@ class Yapa{
 		
 		$this->tpl->block('modal-detail')->assign(array(
 			'unique_id' => $this->unique_id,
+			'width' => $this->config['modal-width'] ?? '760px',
 			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr)
 		))->render();
 		

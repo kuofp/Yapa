@@ -874,7 +874,7 @@ function bindFormExportTool(uid, url){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	var t = $('title').text();
-	
+
 	var p = $('<li><a href="#">列印表格</a></li>');
 	var e = $('<li><a href="#">匯出至Excel表格</a></li>');
 	
@@ -883,8 +883,8 @@ function bindFormExportTool(uid, url){
 	$(p).click(function(){
 		var str_id = l.val();
 		var arr_id = str_id.split(',');
-		
-		genPrint(url, arr_id, function(re){
+		var adv = $('#' + uid + '_panel').find('.search_adv').val();
+		genPrint(url, arr_id, adv, function(re){
 			$('.genPrint').remove();
 			$('body').after('<div class="genPrint">' + t + '<br>' + re.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
 			window.print();
@@ -894,18 +894,20 @@ function bindFormExportTool(uid, url){
 	$(e).click(function(){
 		var str_id = l.val();
 		var arr_id = str_id.split(',');
-		
-		genPrint(url, arr_id, function(re){
+		var adv = $('#' + uid + '_panel').find('.search_adv').val();
+		genPrint(url, arr_id, adv, function(re){
 			open('POST', url, {data: re.data, method: 'excel'}, '_blank');
 		});
 	});
 }
 
-function genPrint(url, arr_id, callback){
+function genPrint(url, arr_id, adv, callback){
 	
 	var arr = arr_id;
+	
 	var pdata = {
 		where: {
+			SEARCH_ADV: adv,
 			ORDER: {id: arr},
 			AND:   {id: arr}
 		}
