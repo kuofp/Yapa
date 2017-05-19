@@ -477,17 +477,16 @@ function bindFormCheck(uid){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	f.find('th.check').click(function(){
-		if($(this).children().hasClass('fa-check-square-o')){
+		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			l.val('');
-			
 			f.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			f.find('td.check').parent('.datalist').removeAttr('style');
-		}else if($(this).children().hasClass('fa-square-o')){
+			f.find('.datalist').removeAttr('style');
+			l.val('');
+		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
 			var check = [];
-			f.find('td.check').parent().find('[name=id]').each(function(i){ check[i] = $(this).text();});
-			f.find('td.check').parent().css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
+			f.find('.datalist').not('.hidden').find('[name=id]').each(function(i){ check[i] = $(this).text();});
+			f.find('.datalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
 			l.val(check.join());
 		}
 	});
@@ -524,7 +523,6 @@ function bindFormSort(uid){
 		}
 		
 		var q = JSON.stringify(obj).replace(/"/g, '\'');  //json in input
-		
 		s.val(q).trigger('change');
 		t.attr('class', plus);
 	});
@@ -535,45 +533,41 @@ function bindFormCheck2(uid){
 	var l = $('#' + uid + '_checked_list');
 	
 	f.find('.newdatalist').find('td.check').click(function(){
-		if($(this).children().hasClass('fa-check-square-o')){
-		//if($(this).find('fa-check-square-o').length){
-			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			$(this).parent('.datalist').removeAttr('style');
+		var id = $(this).closest('.datalist').find('[name=id]').text();
+		var str = l.val();
+		
+		if($(this).find('.fa-check-square-o').length){
 			
-			var str = l.val();
+			$(this).find('.fa').removeClass('fa-check-square-o').addClass('fa-square-o');
+			$(this).closest('.datalist').removeAttr('style');
+			
 			var arr = str.split(',');
-			
-			var val = $(this).parent().find('[name=id]').text();
-			var idx = jQuery.inArray( val, arr );
+			var idx = $.inArray( id, arr );
 			
 			//if found in array
 			if(idx != -1){
-				delete arr[idx];
-				l.val($.grep(arr,function(n){ return(n) }));
+				arr.splice(idx, 1);
+				l.val(arr.join());
 			}
 			
 		}else{
-			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
-			$(this).parent('.datalist').css('background-color', '#4285f4').css('color', '#fff');
+			$(this).find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
+			$(this).closest('.datalist').css('background-color', '#4285f4').css('color', '#fff');
 			
-			if(l.val() == ''){
-				l.val( $(this).parent().find('[name=id]').text() );
-			}else{
-				l.val( l.val() + ',' + $(this).parent().find('[name=id]').text() );
-			}
+			l.val( (str? str + ',': '') + id );
 		}
 		//console.log('Info: checked list ' + l.val());
 	});
 	
 	var str = l.val();
 	var arr = str.split(',');
-	
-	//clear select and select again, filter is better than map contain values
-	for(var i = 0; i < arr.length; i++){
-		f.find('table.review').find('.newdatalist').find('[name=id]').filter(function(){
-			return $(this).text() === arr[i];
-		}).parent('.newdatalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
-	}
+
+	//clear select and select again
+	f.find('table.review').find('.newdatalist').find('[name=id]').each(function(){
+		if($.inArray( $(this).text(), arr ) != -1){
+			$(this).closest('.newdatalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
+		}
+	});
 }
 
 function bindFormTreeView(uid, back){
