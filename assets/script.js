@@ -191,6 +191,9 @@ jQuery.fn.extend({
 				];
 				
 				$(col).val(arr.join('-'));
+			}else{
+				// invalid or null
+				$(col).val('');
 			}
 		});
 	}
