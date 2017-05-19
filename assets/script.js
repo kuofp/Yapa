@@ -680,104 +680,103 @@ function bindFormAjaxOnRefresh(uid, url, max){
 	f.find('table.review').on('refresh', function (e,obj){
 		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
-		for(var i = 0; i < arr_id.length; i++){
-			var int_id = parseInt(arr_id[i]);
-			var pdata = {data:{},where:{ AND: {}}};
-			var arr_like = {};
-			var arr_or = {};
-			var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
-			var keyword = f.find('input.search').val();
-			var keyword_adv = f.find('input.search_adv').val();
-	
-			switch(obj.type){
-				case 'review':
-					c.val(0);
-				case 'append':
-					if(max_){ // skip zero case
-						pdata['where']['LIMIT'] = [c.val(), max_];
-					}
-					pdata['where']['SEARCH'] = keyword;
-					pdata['where']['SEARCH_ADV'] = keyword_adv;
-					break;
-				case 'create':
-				case 'modify':
-				case 'delete':
-					pdata['where']['AND']['id'] = int_id;
-					pdata['where']['SEARCH'] = keyword;
-					pdata['where']['SEARCH_ADV'] = keyword_adv;
-					break;
-				default:
-					break;
-			}
-			
-			// loading
-			switch(obj.type){
-				case 'review':
-					c.val(0);
-				case 'append':
-					if(c.val() == 0){
-						f.find('table.review').find('.datalist').remove();
-					}
-					f.find('button.review').show().addClass('buttonLoading').button('loading');
-					f.find('p.end').hide();
-					break;
-			}
-			
-			$.ajax({
-				url: url,
-				idx: i,
-				type: 'POST',
-				data: {jdata: JSON.stringify({ pdata: pdata, method: 'review' })},
-				success: function(re) {
-					
-					var jdata = JSON.parse(re);
-					if(jdata['code']){
-						// fail
-					}else{
-						
-						var int_id = parseInt(arr_id[this.idx]);
-						
-						switch(obj.type){
-							case 'review':
-							case 'append':
-								if(jdata['cnt'] > 0){
-									f.find('table.review').find('.last').append(jdata['data']);
-								}
-								if(max_ > 0 && jdata['cnt'] == max_){
-									f.find('button.review').show();
-									f.find('p.end').hide();
-								}else{
-									f.find('button.review').hide();
-									f.find('p.end').show();
-								}
-								break;
-							case 'create':
-								f.find('table.review').find('.last').prepend(jdata['data']);
-								break;
-							case 'modify':
-								f.find('table.review').find('[name=id]').filter(function(){
-									return $(this).text() == int_id;
-								}).parent('.datalist').replaceWith(jdata['data']);
-								break;
-							case 'delete':
-								f.find('table.review').find('[name=id]').filter(function(){
-									return $(this).text() == int_id;
-								}).parent('.datalist').remove();
-								break;
-							default:
-								break;
-						}
-					}
-					customAlert(jdata);
-					
-					f.find('button.review').find('.buttonLoading').button('reset');
-					r.trigger('change');
-				},
-				error: function(){
-					alert('ajax ERROR!!!');
+		var pdata = {data:{},where:{ AND: {}}};
+		var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
+		var keyword = f.find('input.search').val();
+		var keyword_adv = f.find('input.search_adv').val();
+
+		switch(obj.type){
+			case 'review':
+				c.val(0);
+			case 'append':
+				if(max_){ // skip zero case
+					pdata['where']['LIMIT'] = [c.val(), max_];
 				}
-			});
+				pdata['where']['SEARCH'] = keyword;
+				pdata['where']['SEARCH_ADV'] = keyword_adv;
+				break;
+			case 'create':
+			case 'modify':
+			case 'delete':
+				pdata['where']['AND']['id'] = arr_id;
+				pdata['where']['SEARCH'] = keyword;
+				pdata['where']['SEARCH_ADV'] = keyword_adv;
+				break;
+			default:
+				break;
 		}
+		
+		// loading
+		switch(obj.type){
+			case 'review':
+				f.find('table.review').find('.datalist').remove();
+			case 'append':
+				f.find('button.review').show().addClass('buttonLoading').button('loading');
+				f.find('p.end').hide();
+				break;
+		}
+		
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: {jdata: JSON.stringify({ pdata: pdata, method: 'review' })},
+			success: function(re){
+				
+				var jdata = JSON.parse(re);
+				if(jdata['code']){
+					// fail
+				}else{
+					switch(obj.type){
+						case 'review':
+							// prevent multi ajax result
+							c.val(0);
+							f.find('table.review').find('.datalist').remove();
+						case 'append':
+							if(jdata['cnt'] > 0){
+								f.find('table.review').find('.last').append(jdata['data']);
+							}
+							if(max_ > 0 && jdata['cnt'] == max_){
+								f.find('button.review').show();
+								f.find('p.end').hide();
+							}else{
+								f.find('button.review').hide();
+								f.find('p.end').show();
+							}
+							break;
+						case 'create':
+							f.find('table.review').find('.last').prepend(jdata['data']);
+							break;
+						case 'modify':
+							var tmp = [];
+							$(jdata['data']).wrap('<tmp></tmp>').parent().find('.newdatalist').each(function(){
+								tmp[$(this).find('[name=id]').text()] = $(this);
+							});
+							f.find('table.review').find('[name=id]').filter(function(){
+								if($.inArray($(this).text(), arr_id) != -1){
+									$(this).parent('.datalist').replaceWith(tmp[$(this).text()]);
+								}
+							});
+							break;
+						case 'delete':
+							f.find('table.review').find('[name=id]').each(function(){
+								if($.inArray($(this).text(), arr_id) != -1){
+									$(this).parent('.datalist').remove();
+								}
+							});
+							break;
+						default:
+							break;
+					}
+				}
+				customAlert(jdata);
+				
+				f.find('button.review').find('.buttonLoading').button('reset');
+				r.trigger('change');
+			},
+			error: function(){
+				alert('ajax ERROR!!!');
+			}
+		});
 	}).trigger('refresh',{type: 'review'});
 }
 
