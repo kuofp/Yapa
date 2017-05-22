@@ -296,15 +296,17 @@ jQuery.fn.extend({
 			$(tar).siblings('div.box').remove();
 			
 			var str = ($(this).val() || '[]').replace(/'/g, '"');
-			var obj = JSON.parse(str);
+			try{
+				var obj = JSON.parse(str);
+			}catch(e){
+				var obj = [];
+			}
 			var ctl = [];
 			var txt = [];
 			
 			var box = $('<div class="box"></div>');
 			
 			// init
-			$(this).val(str);
-			
 			if(tpl){
 				var tmp = {};
 				for(var i in tpl){
@@ -315,6 +317,7 @@ jQuery.fn.extend({
 				}
 				obj = tmp;
 			}
+			$(tar).val(JSON.stringify(obj));
 			
 			for(var i in obj){
 				
@@ -406,12 +409,16 @@ jQuery.fn.extend({
 		$(tar).on('preset', function(){
 			
 			var val = $(this).val() || '[]';
-			var arr = JSON.parse(val);
 			var tpl = 100;
 			
-			$(this).siblings('div.gallery').remove();
-			
 			// init
+			$(this).siblings('div.gallery').remove();
+			try{
+				var arr = JSON.parse(val);
+			}catch(e){
+				var arr = [];
+				$(tar).val('[]');
+			}
 			if(!arr.length) return;
 			
 			var gallery = $('<div class="gallery"><style>.icon-set{ white-space: nowrap; text-overflow: ellipsis; overflow: hidden; position: absolute; bottom: 20px; width: 100%; padding: 5px; background-color: rgba(0,0,0,0.8); color: white} .icon-set a{color: white}</style></div>');
