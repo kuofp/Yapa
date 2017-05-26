@@ -603,9 +603,13 @@ function bindFormTreeView(uid, back){
 	});
 
 	f.find('.last').on('tree', function(){
-		$(this).find('.tree').parent().addClass('hidden');
-		$(this).find($(btn).attr('show')).parent().removeClass('hidden');
-		$(btn).prop('disabled', !$('.prev').attr('prev'));
+		if(f.find('.search').val()){
+			$(btn).prop('disabled', true);
+		}else{
+			$(this).find('.tree').parent().addClass('hidden');
+			$(this).find($(btn).attr('show')).parent().removeClass('hidden');
+			$(btn).prop('disabled', !$('.prev').attr('prev'));
+		}
 	});
 }
 
@@ -820,7 +824,7 @@ function bindFormCreateTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
 	f.find('div.toollist').find('button.main').text('新增').addClass('create');
-	m.find('.modal-footer').append('<button class="btn btn-default create hidden-modify">新增</button>');
+	m.find('.modal-footer').append('<button class="btn btn-primary create hidden-modify">新增</button>');
 	f.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
 		m.find('form')[0].reset();
@@ -836,7 +840,7 @@ function bindFormCreateTool(uid, url){
 function bindFormModifyTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
-	m.find('.modal-footer').append('<button class="btn btn-default modify hidden-create">儲存</button>');
+	m.find('.modal-footer').append('<button class="btn btn-primary modify hidden-create">儲存</button>');
 	bindFormAjaxByMethod(uid, url, 'modify');
 }
 
@@ -978,7 +982,6 @@ function bindInputAjaxOnChange(uid, url, type, col){
 								});
 								break;
 							case 'json':
-							case 'module':
 							case 'datepicker':
 							case 'uploadfile':
 							case 'autocomplete':
@@ -990,6 +993,8 @@ function bindInputAjaxOnChange(uid, url, type, col){
 								break;
 						}
 					}
+					// module
+					f.find('#' + uid + '_module').trigger('preset');
 					c.trigger('change');
 				}
 				customAlert(jdata);
@@ -1007,64 +1012,49 @@ jQuery.fn.extend({
 		
 		var tar = this;
 		var tpl = init.tpl || [];
-		var col = $('<tr><td colspan="2"><div></div></td></tr>');
 		
-		$(tar).closest('tr').after(col);
-		
-		var v = $(this).closest('form');
+		// var in search_adv
+		var uid = tar.closest('.modal').attr('id').split('_')[0];
+		var m = $('#' + uid + '_Modal');
+		var f = $('#' + uid + '_Modal').find('form').eq(0);
 		
 		for(var i in tpl){
-			var opt = $('<option>' + tpl[i]['tag'] + '</option>');
+			var t = uid + '_menu_' + i;
+			m.find('.nav-tabs').append('<li><a data-toggle="tab" href="#' + t + '">' + tpl[i]['tag'] + '</a></li>');
+			m.find('#' + uid + '_home').after('<div id="' + t + '" class="tab-pane fade"></div>');
+		}
+		
+		f.on('reset', function(){
+			// hide tabs
+			m.find('.nav-tabs a:first').tab('show');
+			m.find('.nav-tabs a').not(':first').addClass('hidden');
+		});
+		
+		$(tar).on('preset', function(e, obj){
+			// hide tabs
+			m.find('.nav-tabs a:first').tab('show');
+			m.find('.nav-tabs a').not(':first').removeClass('hidden');
 			
-			$(opt).click(tpl[i], function(e){
+			for(var i in tpl){
 				var arr = {};
-				var sql = JSON.parse(e.data['sql'].replace(/'/g, '"'));
-				var url = e.data['url'];
-				var css = e.data['css'] || 'height: 300px';
-				
-				// var in search_adv
-				var uid = tar.closest('.modal').attr('id').split('_')[0];
-				var f = $('#' + uid + '_panel');
-				var str = f.find('.search_adv').val();
+				var sql = JSON.parse(tpl[i]['sql'].replace(/'/g, '"'));
+				var url = tpl[i]['url'];
+				var css = tpl[i]['css'] || 'height: 700px';
+				var str = $('#' + uid + '_panel').find('.search_adv').val();
 				var adv = JSON.parse(str.replace(/'/g, '"'))['AND'] || [];
 				
-				for(var i in sql){
-					arr[i] = v.find('[name="' + sql[i] + '"]').val() || adv[i] || sql[i];
+				for(var j in sql){
+					arr[j] = f.find('[name="' + sql[j] + '"]').val() || adv[j] || sql[j];
 				}
 				
-				$(col).find('div').attr('style', css).empty();
-				$(col).find('div').load(url, {
+				var col = $('#' + uid + '_menu_' + i);
+				$(col).attr('style', css).empty();
+				$(col).load(url, {
 					preset: arr,
 					query: JSON.stringify({
 						AND: arr
 					})
 				});
-			});
-			
-			$(tar).append(opt);
-		}
-		
-		$(tar).change(function(){
-			$(this).find('option:selected').trigger('click');
-		});
-		
-		$(tar).closest('form').on('reset', function(){
-			// remove the modules
-			$(tar).trigger('preset', {type: 'reset'});
-		});
-		
-		$(tar).on('preset', function(e, obj){
-			
-			var d = false;
-			if(typeof obj !== 'undefined'){
-				d = ('type' in obj) && (obj.type == 'reset')? true: false;
-			}
-			
-			$(tar).prop('disabled', d);
-			if(d){
-				$(col).find('div').attr('style', '').empty();
-			}else{
-				$(tar).find('option').eq(0).prop('selected', true).trigger('click');
 			}
 		});
 	}

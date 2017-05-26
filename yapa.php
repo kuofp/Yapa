@@ -615,26 +615,6 @@ class Yapa{
 						'uid'   => $uid,
 					));
 					break;
-				case 'module':
-					$uid = $this->getUid();
-					
-					$pre = [];
-					foreach($this->config['module'] ?? [] as $k=>$v){
-						$pre[$k] = [];
-						$pre[$k]['sql'] = str_replace('"', '\'', json_encode($v['sql']));
-						$pre[$k]['url'] = $v['url'];
-						$pre[$k]['tag'] = $v['tag'];
-						$pre[$k]['css'] = $v['css'] ?? '';
-					}
-					
-					$td = $this->tpl->block('modal-detail.td.module')->assign(array(
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => json_encode($pre),
-						'uid'   => $uid,
-					));
-					break;
 				default:
 					break;
 			}
@@ -653,6 +633,29 @@ class Yapa{
 					'td' => array($td)
 				);	
 			}
+		}
+		
+		// module
+		if($this->config['module'] ?? []){
+			$uid = $this->unique_id . '_module';
+			
+			$pre = [];
+			foreach($this->config['module'] ?? [] as $k=>$v){
+				$pre[$k] = [];
+				$pre[$k]['sql'] = str_replace('"', '\'', json_encode($v['sql']));
+				$pre[$k]['url'] = $v['url'];
+				$pre[$k]['tag'] = $v['tag'];
+				$pre[$k]['css'] = $v['css'] ?? '';
+			}
+			
+			$td = $this->tpl->block('modal-detail.td.module')->assign(array(
+				'value' => json_encode($pre),
+				'uid'   => $uid,
+			));
+			$tr[] = array(
+				'class' => $class,
+				'td' => array($td)
+			);
 		}
 		
 		$this->tpl->block('modal-detail')->assign(array(
@@ -720,14 +723,12 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'value') continue;
-				if($this->type[$i] == 'module') continue;
 				$arr_col[$i] = $this->table . '.' . $this->col_en[$i];
 			}
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'checkbox') continue;
 				if($this->type[$i] == 'value') continue;
-				if($this->type[$i] == 'module') continue;
 				if($this->chain_chk[$i]){
 					$arr_tmp = $this->chain_chk[$i];
 					$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
@@ -789,7 +790,6 @@ class Yapa{
 							// skip
 							if($this->type[$i] == 'checkbox') continue;
 							if($this->type[$i] == 'value') continue;
-							if($this->type[$i] == 'module') continue;
 							if($this->chain_chk[$i]){
 								$arr_tmp = $this->chain_chk[$i];
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
@@ -957,7 +957,6 @@ class Yapa{
 		$tmp = [];
 		
 		for($i = 0; $i < $this->col_num; $i++){
-			if($this->type[$i] == 'module') continue;
 			if($this->type[$i] == 'value') continue;
 			
 			if($this->empty_chk[$i] == 1){

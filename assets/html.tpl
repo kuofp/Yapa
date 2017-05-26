@@ -176,9 +176,13 @@ if(typeof checkScript == 'undefined'){
 	<!--div class="modal-dialog"><div class="modal-content"-->
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
-			<h4 class="modal-title">詳細資訊</h4>
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#{unique_id}_home">詳細資訊</a></li>
+			</ul>
 		</div>
 		<div class="modal-body">
+			<div class="tab-content">
+				<div id="{unique_id}_home" class="tab-pane fade in active" style="min-height: 700px">
 			<form>
 				<table class="table table-alter">
 					<tr>
@@ -289,9 +293,8 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @json -->
 						<!-- @module -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
-						<td>
-							<select class="form-control input-sm module" name="{name}" id="{uid}"></select>
+						<td class="hidden" colspan="10">
+							<input class="hidden" id="{uid}">
 							<script>
 								$('#{uid}').module({tpl: {value}});
 							</script>
@@ -306,8 +309,10 @@ if(typeof checkScript == 'undefined'){
 				// popover
 				$('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
 			</script>
+			<div class="modal-footer"></div>
+				</div>
+			</div>
 		</div>
-		<div class="modal-footer"></div>
 	<!--/div></div-->
 </div>
 <!-- @modal-detail -->
