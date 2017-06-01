@@ -207,19 +207,19 @@ if(typeof checkScript == 'undefined'){
 						<!-- @password -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<input class="form-control input-sm" name="{name}" type="password" value="{value}"/>
+							<input class="form-control input-sm" name="{name}" type="password" value="{value}" {disabled}/>
 						</td>
 						<!-- @password -->
 						<!-- @textarea -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<textarea class="form-control input-sm" name="{name}" type="text" rows="7" style="resize: vertical">{value}</textarea>
+							<textarea class="form-control input-sm" name="{name}" type="text" rows="7" style="resize: vertical" {disabled}>{value}</textarea>
 						</td>
 						<!-- @textarea -->
 						<!-- @select -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<select class="form-control input-sm" name="{name}">
+							<select class="form-control input-sm" name="{name}" {disabled}>
 								<option value="0">請選擇</option>
 							<!-- @option -->
 								<option value="{value}" {selected}>{text}</option>
@@ -232,7 +232,7 @@ if(typeof checkScript == 'undefined'){
 						<td>
 							<!-- @option -->
 							<div class="radio">
-								<label><input type="radio" name="{name}" value="{value}" {checked}/>{text}</label>
+								<label><input type="radio" name="{name}" value="{value}" {checked} {disabled}/>{text}</label>
 							</div>
 							<!-- @option -->
 						</td>
@@ -242,7 +242,7 @@ if(typeof checkScript == 'undefined'){
 						<td>
 							<!-- @option -->
 							<div class="checkbox">
-								<label><input type="checkbox" name="{name}" value="{value}" {checked}/>{text}</label>
+								<label><input type="checkbox" name="{name}" value="{value}" {checked} {disabled}/>{text}</label>
 							</div>
 							<!-- @option -->
 						</td>
@@ -250,7 +250,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @autocomplete -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
 								$('#{uid}')._autocomplete({url: '{url}'});
 							</script>
@@ -259,16 +259,16 @@ if(typeof checkScript == 'undefined'){
 						<!-- @datepicker -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
-								$('#{uid}')._datepicker();
+								$('#{uid}')._datepicker({tpl: '{tpl}'});
 							</script>
 						</td>
 						<!-- @datepicker -->
 						<!-- @colorpicker -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<input class="form-control input-sm" type="text" name="{name}" value="{value}" id="{uid}"/>
+							<input class="form-control input-sm" type="text" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
 								$('#{uid}').colorpicker();
 							</script>
@@ -277,7 +277,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @uploadfile -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
 								$('#{uid}').uploadfile({url: '{url}'});
 							</script>
@@ -286,7 +286,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @json -->
 						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
 						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}"/>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
 								$('#{uid}').json({tpl: "{value}"});
 							</script>

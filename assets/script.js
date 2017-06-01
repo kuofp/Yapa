@@ -155,6 +155,9 @@ jQuery.fn.extend({
 		
 		var tar = this;
 		var col = $('<input class="form-control input-sm" type="text">');
+		var tpl = init.tpl || 'Y-m-d';
+		
+		$(col).prop('disabled', $(tar).prop('disabled'));
 		
 		$(tar).before(col);
 		
@@ -183,14 +186,21 @@ jQuery.fn.extend({
 		$(tar).on('preset', function(){
 			var val = $(tar).val();
 			if(val.match(/^-?[\d]+$/)){ // unix timestamp
-				var a = new Date(val * 1000);
-				var arr = [
-					a.getFullYear(),
-					('0'+(a.getMonth()+1)).slice(-2),
-					('0'+a.getDate()).slice(-2)
-				];
+				var d = new Date(val * 1000);
+				var arr = {
+					'Y': d.getFullYear(),
+					'm': ('0'+(d.getMonth()+1)).slice(-2),
+					'd': ('0'+d.getDate()).slice(-2),
+					'H': ('0'+d.getHours()).slice(-2),
+					'i': ('0'+d.getMinutes()).slice(-2),
+					's': ('0'+d.getSeconds()).slice(-2),
+				};
 				
-				$(col).val(arr.join('-'));
+				for(var i in arr){
+					tpl = tpl.replace(i, arr[i]);
+				}
+				$(col).val(tpl);
+				
 			}else{
 				// invalid or null
 				$(col).val('');
@@ -205,6 +215,8 @@ jQuery.fn.extend({
 		var tar = this;
 		var url = init.url || '';
 		var col = $('<input class="form-control input-sm" type="text"/>');
+		
+		$(col).prop('disabled', $(tar).prop('disabled'));
 		
 		$(tar).before(col);
 		
@@ -322,6 +334,7 @@ jQuery.fn.extend({
 			for(var i in obj){
 				
 				ctl[i] = $('<span class="label label-default">' + (txt[i] || i) + '</span><input class="form-control input-sm" value="' + obj[i] + '">');
+				$(ctl[i]).prop('disabled', $(tar).prop('disabled'));
 				box.append(ctl[i]);
 				
 				ctl[i].on('input', '', i, function(e){
@@ -346,6 +359,8 @@ jQuery.fn.extend({
 		
 		var bar = $('<div class="p" style="background-color: aquamarine; height: 3px; width: 0px; margin: 1px"></div>');
 		var ctl = $('<input type="file" multiple>');
+		
+		$(ctl).prop('disabled', $(tar).prop('disabled'));
 		
 		$(tar).before(bar);
 		$(tar).before(ctl);
@@ -436,7 +451,7 @@ jQuery.fn.extend({
 				arr[i]['ext'] = (arr[i]['name'].split('.')[1] || 'na').toLowerCase();
 				
 				var dl = '<a href="' + arr[i]['url'] + '" download="' + arr[i]['name'] + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span></a>';
-				var rm = ' | <a href="#" class="delete"><span class="glyphicon glyphicon-trash"></span></a> ';
+				var rm = ($(tar).prop('disabled'))? '': ' | <a href="#" class="delete"><span class="glyphicon glyphicon-trash"></span></a>';
 				
 				html += '<div style="position: relative; float: left; margin: 10px;"><a class="thumbnail" href="#"><span style="position: absolute; top: 0px; right: 6px; color: black; font-size: 11px;">.' + arr[i]['ext'] + '</span><table style="width: ' + tpl + 'px; height: ' + tpl + 'px;"><tr><td style="padding: 0; text-align: center"><img src="' + arr[i]['url'] + '" class="img-responsive" style="max-width: ' + tpl + 'px; max-height: ' + tpl + 'px; margin: 0 auto;"/></td></tr></table></a>         <div class="icon-set" title="' + arr[i]['name'] + '">' + dl + rm + arr[i]['name'] + '</div></div>';
 			}
