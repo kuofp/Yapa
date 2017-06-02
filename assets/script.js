@@ -797,7 +797,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 				r.trigger('change');
 			},
 			error: function(){
-				alert('ajax ERROR!!!');
+				alert('請重新整理畫面後再嘗試');
 			}
 		});
 	}).trigger('refresh',{type: 'review'});
@@ -828,7 +828,7 @@ function bindFormAjaxByMethod(uid, url, method){
 				$('.buttonLoading').button('reset');
 			},
 			error: function(){
-				alert('ajax ERROR!!!');
+				alert('請重新整理畫面後再嘗試');
 			}
 		});
 	});
@@ -1015,7 +1015,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 				customAlert(jdata);
 			},
 			error: function(){
-				alert('ajax ERROR!!!');
+				alert('請重新整理畫面後再嘗試');
 			}
 		}); 
 	});

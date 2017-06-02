@@ -147,6 +147,13 @@ class Yapa{
 			$result['pdata']['data'] = $data;
 			$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): [];
 			
+			// unset disabled cols
+			for($i = 0; $i < $this->col_num; $i++){
+				if($this->attr[$i]['disabled'] ?? 0){
+					unset($result['pdata']['data'][$this->col_en[$i]]);
+				}
+			}
+			
 			//$result['pdata']['data'] = isset($jdata['pdata']['data'])? $jdata['pdata']['data']: array();
 			//$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): array();
 			
@@ -165,7 +172,7 @@ class Yapa{
 	public function reviewTool(){
 		
 		$style  = $_REQUEST['style'] ?? '';
-		$query  = json_decode($_REQUEST['query'] ?? '[]');
+		$query  = json_decode(str_replace('\'', '"', $_REQUEST['query'] ?? '{}'));
 		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$result = $this->authCheck('review');
@@ -276,8 +283,8 @@ class Yapa{
 			// fail
 		}else{
 			$this->tpl->block('create')->assign(array(
-				'unique_id'   => $this->unique_id,
-				'url'         => $this->file,
+				'unique_id' => $this->unique_id,
+				'url'       => $this->file,
 			))->render();
 		}
 		
@@ -313,8 +320,8 @@ class Yapa{
 			// fail
 		}else{
 			$this->tpl->block('modify')->assign(array(
-				'unique_id'   => $this->unique_id,
-				'url'         => $this->file,
+				'unique_id' => $this->unique_id,
+				'url'       => $this->file,
 			))->render();
 		}
 		
@@ -333,10 +340,8 @@ class Yapa{
 				// dataCheck fail
 			}else{
 				$pdata['where']['AND']['id'] = $pdata['data']['id'];
-				$modify = $this->database->update($this->table, $pdata['data'], $pdata['where']);
-				if($modify->rowCount() > 0){
-					$result['data'] = $pdata['data']['id'];
-				}
+				$this->database->update($this->table, $pdata['data'], $pdata['where']);
+				$result['data'] = $pdata['data']['id'];
 			}
 		}
 		
@@ -352,8 +357,8 @@ class Yapa{
 			// fail
 		}else{
 			$this->tpl->block('delete')->assign(array(
-				'unique_id'   => $this->unique_id,
-				'url'         => $this->file,
+				'unique_id' => $this->unique_id,
+				'url'       => $this->file,
 			))->render();
 		}
 		
@@ -411,11 +416,11 @@ class Yapa{
 	
 	public function upload(){
 		
-		$result = $this->authCheck('create');
+		//$result = $this->authCheck('create');
 		
-		if($result['code']){
+		//if($result['code']){
 			// fail
-		}else{
+		//}else{
 			
 			$tmp = [];
 			
@@ -431,7 +436,7 @@ class Yapa{
 			}
 			
 			$result['data'] = $tmp;
-		}
+		//}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
