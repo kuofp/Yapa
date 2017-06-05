@@ -169,7 +169,7 @@ class Yapa{
 	}
 	
 	//review
-	public function reviewTool(){
+	public function reviewTool($option = []){
 		
 		$style  = $_REQUEST['style'] ?? '';
 		$query  = json_decode(str_replace('\'', '"', $_REQUEST['query'] ?? '{}'));
@@ -183,8 +183,9 @@ class Yapa{
 			
 			$th = [];
 			for($i = 0; $i < $this->col_num; $i++){
+				// order settings
 				$th[] = array(
-					'class' => $this->show[$i],
+					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' order': ''),
 					'name'  => $this->col_en[$i],
 					'text'  => $this->col_ch[$i],
 				);
@@ -198,6 +199,7 @@ class Yapa{
 				'th'        => $this->tpl->block('main.th')->nest($th),
 				'max'       => $this->config['perpage'] ?? 50,
 				'back'      => ($this->tree['col'] !== null)? '返回上一階': '',
+				'search'    => $option['search'] ?? $this->tpl->block('main.search')->render(false),
 			))->render();
 		
 			$this->genFormModal($preset);
@@ -838,6 +840,7 @@ class Yapa{
 					$pdata['where'] = array_merge_recursive($pdata['where'], $adv);
 				}
 			}
+			unset($pdata['where']['SEARCH_CUS']);
 			
 			// order
 			if(!($pdata['where']['ORDER'] ?? 0)){
@@ -1022,8 +1025,8 @@ class Yapa{
 		return $result;
 	}
 	
-	public function render(){
-		$this->reviewTool();
+	public function render($option = []){
+		$this->reviewTool($option);
 	}
 	
 	public function raw($str){

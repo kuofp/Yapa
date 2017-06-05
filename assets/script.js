@@ -35,6 +35,19 @@ function open(verb, url, data, target) {
 	form.submit();
 }
 
+function serializeJSON(obj){
+	var arr = {};
+	$(obj).each(function(i, o){
+		if(o.name in arr){
+			arr[o.name] += ',' + o.value;
+		}else{
+			arr[o.name] = o.value;
+		}
+	});
+	
+	return arr;
+}
+
 jQuery.fn.extend({
 	colorpicker: function() {
 		
@@ -517,7 +530,7 @@ function bindFormSort(uid){
 	var f = $('#' + uid + '_panel');
 	f.find('th.order').click(function(){
 		
-		var s = f.find('input.search_adv');
+		var s = $('#' + uid + '_search_adv');
 		
 		var plus = '';
 		var t = $(this).children();
@@ -597,6 +610,7 @@ function bindFormTreeView(uid, back){
 	if(!back) return;
 	
 	var f = $('#' + uid + '_panel');
+	var s = $('#' + uid + '_search_area');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
 	
 	f.find('table.review').before(btn);
@@ -618,7 +632,7 @@ function bindFormTreeView(uid, back){
 	});
 
 	f.find('.last').on('tree', function(){
-		if(f.find('.search').val()){
+		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
 		}else{
 			$(this).find('.tree').parent().addClass('hidden');
@@ -657,9 +671,11 @@ function bindFormViewComplete(uid, max, back){
 	var r = $('#' + uid + '_review_complete');
 	var t = $('#' + uid + '_target_id');
 	var m = $('#' + uid + '_Modal');
+	var a = $('#' + uid + '_search_adv');
+	var s = $('#' + uid + '_search_area');
 	
-	f.find('input.search').on('input', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
-	f.find('input.search_adv').on('keyup keydown change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
+	s.find('[name=search][auto]').on('input', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
+	a.on('change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormCheck( uid );
@@ -699,14 +715,17 @@ function bindFormAjaxOnRefresh(uid, url, max){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
+	var s = $('#' + uid + '_search_area');
+	var a = $('#' + uid + '_search_adv');
 	
 	f.find('table.review').on('refresh', function (e,obj){
 		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
 		var pdata = {data:{},where:{ AND: {}}};
 		var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
-		var keyword = f.find('input.search').val();
-		var keyword_adv = f.find('input.search_adv').val();
+		var keyword = s.find('[name=search]').val();
+		var keyword_adv = a.val();
+		var keyword_cus = serializeJSON(s.serializeArray());
 
 		switch(obj.type){
 			case 'review':
@@ -717,6 +736,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 				}
 				pdata['where']['SEARCH'] = keyword;
 				pdata['where']['SEARCH_ADV'] = keyword_adv;
+				pdata['where']['SEARCH_CUS'] = keyword_cus;
 				break;
 			case 'create':
 			case 'modify':
@@ -724,6 +744,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 				pdata['where']['AND']['id'] = arr_id;
 				pdata['where']['SEARCH'] = keyword;
 				pdata['where']['SEARCH_ADV'] = keyword_adv;
+				pdata['where']['SEARCH_CUS'] = keyword_cus;
 				break;
 			default:
 				break;
@@ -895,6 +916,8 @@ function bindFormDeleteTool(uid, url){
 function bindFormExportTool(uid, url){
 	var f = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
+	var s = $('#' + uid + '_search_area');
+	var a = $('#' + uid + '_search_adv');
 	var t = $('title').text();
 
 	var p = $('<li><a href="#">列印表格</a></li>');
@@ -905,8 +928,10 @@ function bindFormExportTool(uid, url){
 	$(p).click(function(){
 		var str_id = l.val();
 		var arr_id = str_id.split(',');
-		var adv = $('#' + uid + '_panel').find('.search_adv').val();
-		genPrint(url, arr_id, adv, function(re){
+		var adv = a.val();
+		var cus = serializeJSON(s.serializeArray());
+		
+		genPrint(url, arr_id, adv, cus, function(re){
 			$('.genPrint').remove();
 			$('body').after('<div class="genPrint">' + t + '<br>' + re.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
 			window.print();
@@ -916,22 +941,30 @@ function bindFormExportTool(uid, url){
 	$(e).click(function(){
 		var str_id = l.val();
 		var arr_id = str_id.split(',');
-		var adv = $('#' + uid + '_panel').find('.search_adv').val();
-		genPrint(url, arr_id, adv, function(re){
+		var adv = a.val();
+		var cus = serializeJSON(s.serializeArray());
+		
+		genPrint(url, arr_id, adv, cus, function(re){
 			open('POST', url, {data: re.data, method: 'excel'}, '_blank');
 		});
 	});
 }
 
-function genPrint(url, arr_id, adv, callback){
+function genPrint(url, arr_id, adv, cus, callback){
 	
 	var arr = arr_id;
+	
+	if(!arr[0]){
+		customAlert({'code':2, 'text': '請勾選至少一個項目'});
+		return;
+	}
 	
 	var pdata = {
 		where: {
 			SEARCH_ADV: adv,
+			SEARCH_CUS: cus,
 			ORDER: {id: arr},
-			AND:   {id: arr}
+			AND:   {id: arr},
 		}
 	};
 	
@@ -1032,6 +1065,7 @@ jQuery.fn.extend({
 		var uid = tar.closest('.modal').attr('id').split('_')[0];
 		var m = $('#' + uid + '_Modal');
 		var f = $('#' + uid + '_Modal').find('form').eq(0);
+		var s = $('#' + uid + '_search_area');
 		
 		for(var i in tpl){
 			var t = uid + '_menu_' + i;
@@ -1055,11 +1089,11 @@ jQuery.fn.extend({
 				var sql = JSON.parse(tpl[i]['sql'].replace(/'/g, '"'));
 				var url = tpl[i]['url'];
 				var css = tpl[i]['css'] || 'height: 700px';
-				var str = $('#' + uid + '_panel').find('.search_adv').val();
+				var str = $('#' + uid + '_search_adv').val();
 				var adv = JSON.parse(str.replace(/'/g, '"'))['AND'] || [];
 				
 				for(var j in sql){
-					arr[j] = f.find('[name="' + sql[j] + '"]').val() || adv[j] || sql[j];
+					arr[j] = f.find('[name="' + sql[j] + '"]').val() || adv[j] || s.find('[name="' + sql[j] + '"]').val() || sql[j];
 				}
 				
 				var col = $('#' + uid + '_menu_' + i);

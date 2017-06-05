@@ -29,10 +29,13 @@ if(typeof checkScript == 'undefined'){
 		<input id="{unique_id}_checked_list">
 		<input id="{unique_id}_review_complete" value="trigger change when review table complete">
 		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
+		<input id="{unique_id}_search_adv" value="{query}">
 	</div>
 	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
+			<form id="{unique_id}_search_area">
+			<!-- @search -->
 			<div class="btn-group toollist">
 				<button type="button" class="btn btn-default main">操作</button>
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -44,22 +47,22 @@ if(typeof checkScript == 'undefined'){
 			
 			<!-- search and advance search option which accept more keywords -->
 			<div class="btn-group">
-				<input class="form-control search" placeholder="搜尋" style="width: 160px"/>
-				<input class="form-control search_adv" type="hidden" value="{query}" />
+				<input class="form-control" name="search" placeholder="搜尋" style="width: 160px" auto/>
 			</div>
 			
 			<!-- info area -->
 			<div class="btn-group">
 				<div class="badge item-cnt"></div>
 			</div>
-			
+			<!-- @search -->
+			</form>
 			<!-- main content area -->
 			<div style="padding-right: 16px;">
 				<table class="table table-alter" style="margin: 0px;">
 					<thead>
 						<th class="check" style="width: 30px; cursor: pointer"><i class="fa fa-square-o"></i></th>
 						<!-- @th-->
-						<th class="{class} order" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
+						<th class="{class}" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
 						<!-- @th-->
 					</thead>
 				</table>
