@@ -147,10 +147,12 @@ class Yapa{
 			$result['pdata']['data'] = $data;
 			$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): [];
 			
-			// unset disabled cols
-			for($i = 0; $i < $this->col_num; $i++){
-				if($this->attr[$i]['disabled'] ?? 0){
-					unset($result['pdata']['data'][$this->col_en[$i]]);
+			// unset disabled cols when create and modify
+			if(in_array($result['method'], ['create', 'modify'])){
+				for($i = 0; $i < $this->col_num; $i++){
+					if($this->attr[$i]['disabled'] ?? 0){
+						unset($result['pdata']['data'][$this->col_en[$i]]);
+					}
 				}
 			}
 			
