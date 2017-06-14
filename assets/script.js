@@ -49,6 +49,52 @@ function serializeJSON(obj){
 }
 
 jQuery.fn.extend({
+	editor: function(init){
+		
+		var tar = this;
+		var col = $('<textarea></textarea>');
+		
+		$(tar).before(col);
+		$(col).ckeditor();
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			
+			if($(col).ckeditor().editor){
+				$(col).ckeditor().editor.destroy();
+				$(col).val($(tar).val());
+			}
+			$(col).ckeditor({
+				// Define the toolbar groups as it is a more accessible solution.
+				toolbarGroups: [
+					{'name':'tools'},
+					{'name':'document', 'groups':['mode']},
+					{'name':'basicstyles', 'groups':['basicstyles']},
+					{'name':'links', 'groups':['links']},
+					{'name':'paragraph', 'groups':['list', 'indent', 'align']},
+					{'name':'colors'},
+					{'name':'insert', 'groups':['insert']},
+					{'name':'styles', 'groups':['styles']},
+				],
+				// Remove the redundant buttons from toolbar groups defined above.
+				removeButtons: 'Flash,HorizontalRule,PageBreak,Iframe,Anchor,NewPage,Preview,Save,Print',
+				readOnly: $(tar).prop('disabled'),
+			}, function(){
+				$(col).ckeditor().editor.on('change', function(event){
+					// Sync textarea
+					$(tar).val($(col).val());
+				});
+			});
+		});
+	}
+});
+
+jQuery.fn.extend({
 	colorpicker: function() {
 		
 		var tar = this;
@@ -1030,6 +1076,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 								});
 								break;
 							case 'json':
+							case 'editor':
 							case 'datepicker':
 							case 'uploadfile':
 							case 'autocomplete':

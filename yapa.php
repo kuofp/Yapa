@@ -637,6 +637,18 @@ class Yapa{
 						'uid'   => $uid,
 					));
 					break;
+				case 'editor':
+					$uid = $this->getUid();
+					
+					$td = $this->tpl->block('modal-detail.td.editor')->assign(array(
+						'disabled' => $disabled,
+						'meta'  => $this->col_ch[$i],
+						'name'  => $this->col_en[$i],
+						'info'  => $info,
+						'value' => $pre,
+						'uid'   => $uid,
+					));
+					break;
 				default:
 					break;
 			}

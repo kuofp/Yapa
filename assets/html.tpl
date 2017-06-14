@@ -295,6 +295,15 @@ if(typeof checkScript == 'undefined'){
 							</script>
 						</td>
 						<!-- @json -->
+						<!-- @editor -->
+						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td>
+							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
+							<script>
+								$('#{uid}').editor();
+							</script>
+						</td>
+						<!-- @editor -->
 						<!-- @module -->
 						<td class="hidden" colspan="10">
 							<input class="hidden" id="{uid}">
