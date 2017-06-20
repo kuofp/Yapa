@@ -255,10 +255,11 @@ jQuery.fn.extend({
 					's': ('0'+d.getSeconds()).slice(-2),
 				};
 				
+				var res = tpl;
 				for(var i in arr){
-					tpl = tpl.replace(i, arr[i]);
+					res = res.replace(i, arr[i]);
 				}
-				$(col).val(tpl);
+				$(col).val(res);
 				
 			}else{
 				// invalid or null
