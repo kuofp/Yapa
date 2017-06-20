@@ -660,7 +660,8 @@ function bindFormTreeView(uid, back){
 	var s = $('#' + uid + '_search_area');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
 	
-	f.find('table.review').before(btn);
+	// before scrollable div
+	f.find('table.review').parent('div').before(btn);
 	
 	$(btn).click(function(){
 		var prev = $(btn).attr('prev');
