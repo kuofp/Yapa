@@ -739,10 +739,13 @@ function bindFormViewComplete(uid, max, back){
 	r.change(function(){
 		//set newdatalist js events
 		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
-			t.val( $(this).parent().find('[name=id]').text()).trigger('change');
-			m.find('.hidden-create').show();
-			m.find('.hidden-modify').hide();
-			m.modal('show');
+			// select text
+			if(!getSelection().toString()){
+				t.val( $(this).parent().find('[name=id]').text()).trigger('change');
+				m.find('.hidden-create').show();
+				m.find('.hidden-modify').hide();
+				m.modal('show');
+			}
 		});
 		
 		bindFormCheck2( uid );
