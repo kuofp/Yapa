@@ -825,6 +825,8 @@ class Yapa{
 							if($this->type[$i] == 'checkbox') continue;
 							if($this->type[$i] == 'value') continue;
 							if($this->type[$i] == 'uploadfile') continue;
+							if($this->type[$i] == 'datepicker') continue;
+							if($this->type[$i] == 'password') continue;
 							if($this->tree['col'] === $i) continue;
 							if($this->chain_chk[$i]){
 								$arr_tmp = $this->chain_chk[$i];

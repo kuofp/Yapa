@@ -734,6 +734,11 @@ function bindFormViewComplete(uid, max, back){
 		}, 1000);
 	});
 	
+	// prevent submit
+	s.on('submit', function(){
+		return false;
+	});
+	
 	a.on('change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
