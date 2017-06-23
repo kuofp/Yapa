@@ -275,6 +275,7 @@ jQuery.fn.extend({
 		var tar = this;
 		var url = init.url || '';
 		var col = $('<input class="form-control input-sm" type="text"/>');
+		var timer = 0;// delay loading
 		
 		$(col).prop('disabled', $(tar).prop('disabled'));
 		
@@ -293,28 +294,31 @@ jQuery.fn.extend({
 			
 			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[~]': $(this).val()}};
 			
-			$.ajax({
-				url: url,
-				type: 'POST',
-				data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
-				success: function(re){
-					
-					var jdata = JSON.parse(re);
-					if(jdata['code']){
-						// fail
-					}else{
-						pdata = jdata['data'];
-						var arr = Object.keys(pdata).map(function(key){return pdata[key]});
-						$(col).autocomplete({
-							source: arr,
-							select: function(event, ui){
-								$(tar).val(ui.item.val);
-							}
-						});
+			if(timer){ clearTimeout(timer);}
+			timer = setTimeout(function(){
+				$.ajax({
+					url: url,
+					type: 'POST',
+					data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
+					success: function(re){
+						
+						var jdata = JSON.parse(re);
+						if(jdata['code']){
+							// fail
+						}else{
+							pdata = jdata['data'];
+							var arr = Object.keys(pdata).map(function(key){return pdata[key]});
+							$(col).autocomplete({
+								source: arr,
+								select: function(event, ui){
+									$(tar).val(ui.item.val);
+								}
+							}).autocomplete('search');
+						}
+						customAlert(jdata);
 					}
-					customAlert(jdata);
-				}
-			});
+				});
+			}, 1000);
 		}).trigger('input'); //init autocomplete or words will be cut at first input
 		
 		$(tar).on('preset', function(){
@@ -721,8 +725,15 @@ function bindFormViewComplete(uid, max, back){
 	var m = $('#' + uid + '_Modal');
 	var a = $('#' + uid + '_search_adv');
 	var s = $('#' + uid + '_search_area');
+	var timer = 0;// delay loading
 	
-	s.find('[name=search][auto]').on('input', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
+	s.find('[name=search][auto]').on('input', function(){
+		if(timer){ clearTimeout(timer);}
+		timer = setTimeout(function(){
+			f.find('table.review').trigger('refresh',{type: 'review'});
+		}, 1000);
+	});
+	
 	a.on('change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
