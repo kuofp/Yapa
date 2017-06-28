@@ -64,6 +64,13 @@ class Yapa{
 			$attr[0][] = $tmp[0] ?? '';
 			$attr[1][] = json_decode($tmp[1] ?? '[]', true);
 		}
+		
+		// show and hide
+		$hide = [];
+		foreach($show as $k=>$v){
+			$tmp = $v? $this->split($v): '';
+			$hide[] = (in_array('hidden', $tmp) && $col_en[$k] != 'id')? 1: 0;
+		}
 		//dd($attr);
 		$this->col_en = $col_en;
 		$this->col_ch = $label[0];
@@ -72,6 +79,7 @@ class Yapa{
 		$this->exist_chk = $exist_chk;
 		$this->chain_chk = $chain;
 		$this->show = $show;
+		$this->hide = $hide;
 		$this->type = $attr[0];
 		$this->attr = $attr[1];
 		$this->auth = $auth;
@@ -186,6 +194,7 @@ class Yapa{
 			$th = [];
 			for($i = 0; $i < $this->col_num; $i++){
 				// order settings
+				if($style == '' && $this->hide[$i]) continue;
 				$th[] = array(
 					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' order': ''),
 					'name'  => $this->col_en[$i],
@@ -244,6 +253,7 @@ class Yapa{
 		foreach($datas['data'] as $k=>$v){
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
+				if($style == '' && $this->hide[$j]) continue;
 				$tree = (($this->tree['col'] === $j)? ($this->tree['sub'][2][$v['id']] ?? '') . ' func ': '');
 				$td[] = array(
 					'class' => $tree . $this->show[$j],
@@ -1149,7 +1159,7 @@ class Yapa{
 					}
 				}
 				
-				$data['data'][$k][$col] = $this->raw($alias[$v['id']] . (count($dsub[$v['id']])? '(' . count($dsub[$v['id']]) . ')': ''));
+				$data['data'][$k][$col] = $this->raw(count($dsub[$v['id']])? '(' . count($dsub[$v['id']]) . ')': '');
 				
 				foreach($this->data as $key=>$arr){
 					if(isset($sum[$key])){

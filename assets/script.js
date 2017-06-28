@@ -625,7 +625,7 @@ function bindFormCheck2(uid){
 		if($(this).find('.fa-check-square-o').length){
 			
 			$(this).find('.fa').removeClass('fa-check-square-o').addClass('fa-square-o');
-			$(this).closest('.datalist').removeAttr('style');
+			$(this).closest('.datalist').removeClass('highlight');
 			
 			var arr = str.split(',');
 			var idx = $.inArray( id, arr );
@@ -638,7 +638,7 @@ function bindFormCheck2(uid){
 			
 		}else{
 			$(this).find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
-			$(this).closest('.datalist').css('background-color', '#4285f4').css('color', '#fff');
+			$(this).closest('.datalist').addClass('highlight');
 			
 			l.val( (str? str + ',': '') + id );
 		}
@@ -651,7 +651,7 @@ function bindFormCheck2(uid){
 	//clear select and select again
 	f.find('table.review').find('.newdatalist').find('[name=id]').each(function(){
 		if($.inArray( $(this).text(), arr ) != -1){
-			$(this).closest('.newdatalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
+			$(this).closest('.newdatalist').addClass('highlight').find('td.check').find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
 		}
 	});
 }
@@ -662,10 +662,11 @@ function bindFormTreeView(uid, back){
 	
 	var f = $('#' + uid + '_panel');
 	var s = $('#' + uid + '_search_area');
+	var t = $('#' + uid + '_tree_view_complete');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
 	
 	// before scrollable div
-	f.find('table.review').parent('div').before(btn);
+	f.find('table.review').parent('div').css('height', 'calc(100% - 124px)').before(btn);
 	
 	$(btn).click(function(){
 		var prev = $(btn).attr('prev');
@@ -691,6 +692,10 @@ function bindFormTreeView(uid, back){
 			$(this).find($(btn).attr('show')).parent().removeClass('hidden');
 			$(btn).prop('disabled', !$('.prev').attr('prev'));
 		}
+		
+		setTimeout(function(){
+			t.trigger('change');
+		}, 300);
 	});
 }
 
@@ -753,6 +758,7 @@ function bindFormViewComplete(uid, max, back){
 	});
 	
 	r.change(function(){
+		// var t0 = performance.now();
 		//set newdatalist js events
 		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
 			// select text
@@ -767,13 +773,15 @@ function bindFormViewComplete(uid, max, back){
 		bindFormCheck2( uid );
 		bindFormTreeView2(uid, back);
 		
-		$('.buttonLoading').button('reset');
+		f.find('.buttonLoading').button('reset');
 		f.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
 		//f.find('table.review').find('.last').sortable();
 		
 		//item count
 		c.val( f.find('table.review').find('.datalist').length ).trigger('change');
 		console.log('Info: total ' + c.val() + ' items');
+		// var t1 = performance.now();
+		// console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
 	});
 }
 
@@ -820,7 +828,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 		// loading
 		switch(obj.type){
 			case 'review':
-				f.find('table.review').find('.datalist').remove();
+				f.find('table.review').find('.last').empty();
 			case 'append':
 				f.find('button.review').show().addClass('buttonLoading').button('loading');
 				f.find('p.end').hide();
@@ -841,7 +849,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 						case 'review':
 							// prevent multi ajax result
 							c.val(0);
-							f.find('table.review').find('.datalist').remove();
+							f.find('table.review').find('.last').empty();
 						case 'append':
 							if(jdata['cnt'] > 0){
 								f.find('table.review').find('.last').append(jdata['data']);

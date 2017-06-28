@@ -21,6 +21,10 @@ if(typeof checkScript == 'undefined'){
 .ui-autocomplete {
 	z-index: 1200;
 }
+.datalist.highlight{
+	background-color: #4285f4 !important;
+	color: #fff;
+}
 </style>
 <div id="{unique_id}" style="height: 100%">
 	<div class="hidden">
@@ -28,6 +32,7 @@ if(typeof checkScript == 'undefined'){
 		<input id="{unique_id}_target_id">
 		<input id="{unique_id}_checked_list">
 		<input id="{unique_id}_review_complete" value="trigger change when review table complete">
+		<input id="{unique_id}_tree_view_complete" value="trigger change when tree review table complete">
 		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
 		<input id="{unique_id}_search_adv" value="{query}">
 	</div>
@@ -68,7 +73,7 @@ if(typeof checkScript == 'undefined'){
 				</table>
 			</div>
 			
-			<div style="overflow-y: scroll; height: calc(100% - 70px);">
+			<div style="overflow-y: scroll; height: calc(100% - 90px);">
 				<table class="table table-hover table-alter review" style="cursor: pointer;">
 					<tbody class="last">
 						<!-- @tr-->
@@ -84,6 +89,8 @@ if(typeof checkScript == 'undefined'){
 				<p class="end" align="center">資料底端，沒有找到更多</p>
 				<button class="btn btn-default btn-block review">顯示更多{max}筆+</button>
 			</div>
+			
+			<div class="info"></div>
 		</div>
 	</div>
 </div>
