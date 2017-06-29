@@ -1029,19 +1029,17 @@ function genPrint(url, arr_id, adv, cus, callback){
 	
 	var arr = arr_id;
 	
-	if(!arr[0]){
-		customAlert({'code':2, 'text': '請勾選至少一個項目'});
-		return;
-	}
-	
 	var pdata = {
 		where: {
 			SEARCH_ADV: adv,
 			SEARCH_CUS: cus,
-			ORDER: {id: arr},
-			AND:   {id: arr},
 		}
 	};
+	
+	if(arr[0]){
+		pdata['where']['ORDER'] = {id: arr};
+		pdata['where']['AND'] = {id: arr};
+	}
 	
 	$.ajax({
 		url: url,
