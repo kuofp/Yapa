@@ -422,9 +422,11 @@ class Yapa{
 			return json_encode($result, JSON_UNESCAPED_UNICODE);
 			
 		}else{
+			$data = $this->review($this->arg);
+			$data = json_decode($data, true);
 			header('Content-type:application/vnd.ms-excel;');
 			header('Content-Disposition:filename=' . 'Export_' . date('YmdHis') . '.xls');
-			return $_REQUEST['data'] ?? '';
+			return $data['data'];
 		}
 	}
 	

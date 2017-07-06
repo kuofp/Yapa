@@ -30,9 +30,9 @@ function open(verb, url, data, target) {
 			form.appendChild(input);
 		}
 	}
-	form.style.display = 'none';
 	document.body.appendChild(form);
 	form.submit();
+	form.remove();
 }
 
 function serializeJSON(obj){
@@ -990,42 +990,49 @@ function bindFormDeleteTool(uid, url){
 
 function bindFormExportTool(uid, url){
 	var f = $('#' + uid + '_panel');
-	var l = $('#' + uid + '_checked_list');
-	var s = $('#' + uid + '_search_area');
-	var a = $('#' + uid + '_search_adv');
 	var t = $('title').text();
-
+	
 	var p = $('<li><a href="#">列印表格</a></li>');
 	var e = $('<li><a href="#">匯出至Excel表格</a></li>');
 	
 	f.find('ul.toollist').append(p).append(e);
 	
 	$(p).click(function(){
-		var str_id = l.val();
-		var arr_id = str_id.split(',');
-		var adv = a.val();
-		var cus = serializeJSON(s.serializeArray());
-		
-		genPrint(url, arr_id, adv, cus, function(re){
-			$('.genPrint').remove();
-			$('body').after('<div class="genPrint">' + t + '<br>' + re.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
-			window.print();
+		var pdata = genParam(uid);
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
+			success: function(re) {
+				var jdata = JSON.parse(re);
+				if(jdata['code']){
+					// fail
+				}else{
+					$('.genPrint').remove();
+					$('body').after('<div class="genPrint">' + t + '<br>' + jdata.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
+					window.print();
+				}
+				customAlert(jdata);
+			}
 		});
 	});
 	
 	$(e).click(function(){
-		var str_id = l.val();
-		var arr_id = str_id.split(',');
-		var adv = a.val();
-		var cus = serializeJSON(s.serializeArray());
-		
-		genPrint(url, arr_id, adv, cus, function(re){
-			open('POST', url, {data: re.data, method: 'excel'}, '_blank');
-		});
+		var pdata = genParam(uid);
+		open('POST', url, {jdata: JSON.stringify({ pdata: pdata, method: 'excel' }), style: 'print'}, '_blank');
 	});
 }
 
-function genPrint(url, arr_id, adv, cus, callback){
+function genParam(uid){
+	
+	var l = $('#' + uid + '_checked_list');
+	var a = $('#' + uid + '_search_adv');
+	var s = $('#' + uid + '_search_area');
+	
+	var str_id = l.val();
+	var arr_id = str_id.split(',');
+	var adv = a.val();
+	var cus = serializeJSON(s.serializeArray());
 	
 	var arr = arr_id;
 	
@@ -1041,22 +1048,8 @@ function genPrint(url, arr_id, adv, cus, callback){
 		pdata['where']['AND'] = {id: arr};
 	}
 	
-	$.ajax({
-		url: url,
-		type: 'POST',
-		data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
-		success: function(re) {
-			var jdata = JSON.parse(re);
-			if(jdata['code']){
-				// fail
-			}else{
-				callback(jdata);
-			}
-			customAlert(jdata);
-		}
-	});
+	return pdata;
 }
-
 
 function bindInputAjaxOnChange(uid, url, type, col){
 	
@@ -1127,7 +1120,6 @@ function bindInputAjaxOnChange(uid, url, type, col){
 		}); 
 	});
 }
-
 
 jQuery.fn.extend({
 	module: function(init){
