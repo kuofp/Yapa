@@ -566,13 +566,13 @@ function bindFormCheck(uid){
 		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
 			f.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			f.find('.datalist').removeAttr('style');
+			f.find('.datalist').removeClass('highlight');
 			l.val('');
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
 			var check = [];
 			f.find('.datalist').not('.hidden').find('[name=id]').each(function(i){ check[i] = $(this).text();});
-			f.find('.datalist').css('background-color', '#4285f4').css('color', '#fff').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
+			f.find('.datalist').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
 			l.val(check.join());
 		}
 	});
