@@ -1092,7 +1092,7 @@ class Yapa{
 		// all children count
 		foreach($p as $parent){
 			foreach($arr as $k => $children){
-				if(in_array($parent, $children)){
+				if($children[$parent] ?? 0){
 					$arr[$k] = $children + $arr[$parent];
 				}
 			}

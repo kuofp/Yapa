@@ -690,7 +690,7 @@ function bindFormTreeView(uid, back){
 		}else{
 			$(this).find('.tree').parent().addClass('hidden');
 			$(this).find($(btn).attr('show')).parent().removeClass('hidden');
-			$(btn).prop('disabled', !$('.prev').attr('prev'));
+			$(btn).prop('disabled', !f.find('.prev').attr('prev'));
 		}
 		
 		setTimeout(function(){
@@ -713,7 +713,7 @@ function bindFormTreeView2(uid, back){
 		var tag = $(this).attr('class');
 		tag = tag.match(/s_([\d]+)/)[1];
 		if(f.find('.p_' + tag).length){
-			f.find('.prev').attr('prev', $('.prev').attr('show'));
+			f.find('.prev').attr('prev', f.find('.prev').attr('show'));
 			f.find('.prev').attr('show', '.p_' + tag);
 			f.find('.last').trigger('tree');
 		}
