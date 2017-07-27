@@ -8,9 +8,9 @@
 		{"name": "Frank Kuo", "email": "kuofp@cs.nctu.edu.tw"}
 	],
 	"require": {
-		"php": ">=5.3",
-		"catfan/Medoo": ">=1.0",
-		"kuofp/Yatp": ">=1.2"
+		"php": ">=7",
+		"catfan/Medoo": "1.4.*",
+		"kuofp/Yatp": ">=1.1"
 	},
 	"autoload": {
 		"files": ["yapa.php"]
