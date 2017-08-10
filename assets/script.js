@@ -688,7 +688,7 @@ function bindFormTreeView(uid, back){
 		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
 		}else{
-			$(this).find('.tree').parent().addClass('hidden');
+			$(this).children().addClass('hidden');
 			$(this).find($(btn).attr('show')).parent().removeClass('hidden');
 			$(btn).prop('disabled', !f.find('.prev').attr('prev'));
 		}
