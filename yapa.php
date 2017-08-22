@@ -1147,6 +1147,12 @@ class Yapa{
 			$col = $this->col_en[$this->tree['col']];
 			
 			foreach($data['data'] as $k=>$v){
+				foreach($this->config['sum'] ?? [] as $key){
+					$this->data[$key][$v['id']] = $v[$key];
+				}
+			}
+			
+			foreach($data['data'] as $k=>$v){
 				
 				$sum = [];
 				foreach($this->config['sum'] ?? [] as $key){
