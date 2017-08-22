@@ -374,6 +374,13 @@ jQuery.fn.extend({
 			var str = ($(this).val() || '[]').replace(/'/g, '"');
 			try{
 				var obj = JSON.parse(str);
+				var tmp = {};
+				for(var i in obj){
+					var arr = i.split(/[,]+/, 2);
+					var k = arr[0];
+					tmp[k] = obj[i] || '';
+				}
+				obj = tmp;
 			}catch(e){
 				var obj = [];
 			}
@@ -1145,7 +1152,7 @@ jQuery.fn.extend({
 			m.find('.nav-tabs a').not(':first').addClass('hidden');
 		});
 		
-		$(tar).on('preset', function(e, obj){
+		$(tar).on('preset', function(){
 			// hide tabs
 			m.find('.nav-tabs a:first').tab('show');
 			m.find('.nav-tabs a').not(':first').removeClass('hidden');

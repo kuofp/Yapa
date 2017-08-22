@@ -600,7 +600,6 @@ class Yapa{
 					break;
 				case 'datepicker':
 					$uid = $this->getUid();
-					$pre = $pre != ''? date('Y-m-d', $pre) :date('Y-m-d');
 					
 					$td = $this->tpl->block('modal-detail.td.datepicker')->assign(array(
 						'disabled' => $disabled,
