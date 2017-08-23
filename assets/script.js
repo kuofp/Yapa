@@ -358,8 +358,11 @@ jQuery.fn.extend({
 	json: function(init){
 		
 		var tar = this;
+		var box = $('<div></div>');
 		var tpl = (init.tpl || '[]').replace(/'/g, '"');
 		tpl = JSON.parse(tpl);
+		
+		$(tar).before(box);
 		
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
@@ -369,7 +372,7 @@ jQuery.fn.extend({
 		
 		$(tar).on('preset', function(){
 			
-			$(tar).siblings('div.box').remove();
+			$(box).empty();
 			
 			var str = ($(this).val() || '[]').replace(/'/g, '"');
 			try{
@@ -386,8 +389,6 @@ jQuery.fn.extend({
 			}
 			var ctl = [];
 			var txt = [];
-			
-			var box = $('<div class="box"></div>');
 			
 			// init
 			if(tpl){
@@ -413,12 +414,9 @@ jQuery.fn.extend({
 					$(tar).val(JSON.stringify(obj));
 				});
 			}
-			
-			$(this).before(box);
 		});
 	}
 });
-
 
 // require jquery/bootstrap
 jQuery.fn.extend({
@@ -428,13 +426,17 @@ jQuery.fn.extend({
 		var url = init.url;
 		var col = init.col || 'col-sm-6';
 		
-		var bar = $('<div class="p" style="background-color: aquamarine; height: 3px; width: 0px; margin: 1px"></div>');
+		var bar = $('<div style="background-color: aquamarine; height: 3px; width: 0px; margin: 1px"></div>');
 		var ctl = $('<input type="file" multiple>');
+		var box = $('<div></div>');
+		var style = '<style>.icon-set{ white-space: nowrap; text-overflow: ellipsis; overflow: hidden; position: absolute; bottom: 20px; width: 100%; padding: 5px; background-color: rgba(0,0,0,0.8); color: white} .icon-set a{color: white}</style>';
 		
 		$(ctl).prop('disabled', $(tar).prop('disabled'));
 		
 		$(tar).before(bar);
 		$(tar).before(ctl);
+		$(tar).before(style);
+		$(tar).after(box);
 		
 		$(ctl).change(function(e){
 			
@@ -481,15 +483,22 @@ jQuery.fn.extend({
 					// set the onprogress event handler
 					xhr.upload.onprogress = function(evt){
 						$(bar).animate({width: (evt.loaded/evt.total*100) + '%'}, 100);
-					} ;
+					};
 					// set the onload event handler
 					xhr.upload.onload = function(){
 						$(bar).stop().animate({width: '0%'}, 10);
-					} ;
-					return xhr ;
+					};
+					return xhr;
 				}
 			});
 			return false;
+		});
+		
+		// bind form reset event
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
 		});
 		
 		$(tar).on('preset', function(){
@@ -498,7 +507,7 @@ jQuery.fn.extend({
 			var tpl = 100;
 			
 			// init
-			$(this).siblings('div.gallery').remove();
+			$(box).empty();
 			try{
 				var arr = JSON.parse(val);
 			}catch(e){
@@ -506,15 +515,6 @@ jQuery.fn.extend({
 				$(tar).val('[]');
 			}
 			if(!arr.length) return;
-			
-			var gallery = $('<div class="gallery"><style>.icon-set{ white-space: nowrap; text-overflow: ellipsis; overflow: hidden; position: absolute; bottom: 20px; width: 100%; padding: 5px; background-color: rgba(0,0,0,0.8); color: white} .icon-set a{color: white}</style></div>');
-			
-			$(this).after(gallery);
-			
-			// bind form reset event
-			$(gallery).closest('form').on('reset', function(){
-				$(gallery).remove();
-			});
 			
 			var html = '';
 			for(var i in arr){
@@ -528,16 +528,14 @@ jQuery.fn.extend({
 			}
 			
 			// start loading
-			$(gallery).append(html);
-			
-			$(gallery).find('.thumbnail').each(function(i){
+			$(box).append(html);
+			$(box).find('.thumbnail').each(function(){
 				
 				$(this).imgEvent($(tar));
 				
-				$(this).find('img').on('load', function(){
-					
-				}).on('error', function(){
-					$(this).addClass('hidden').after('<span class="glyphicon glyphicon-duplicate" style="position: relative; color: brown; font-size: 45px"></span>');
+				$(this).find('img').on('error', function(){
+					// when image not found
+					$(this).hide().after('<span class="glyphicon glyphicon-duplicate" style="position: relative; color: brown; font-size: 45px"></span>');
 				});
 			});
 		});
