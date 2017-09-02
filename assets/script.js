@@ -521,8 +521,8 @@ jQuery.fn.extend({
 				
 				arr[i]['ext'] = (arr[i]['name'].split('.')[1] || 'na').toLowerCase();
 				
-				var dl = '<a href="' + arr[i]['url'] + '" download="' + arr[i]['name'] + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span></a>';
-				var rm = ($(tar).prop('disabled'))? '': ' | <a href="#" class="delete"><span class="glyphicon glyphicon-trash"></span></a>';
+				var dl = '<a href="' + arr[i]['url'] + '" download="' + arr[i]['name'] + '" target="_blank"><i class="fa fa-download" aria-hidden="true"></i></a>';
+				var rm = ($(tar).prop('disabled'))? '': ' | <a href="#" class="delete"><i class="fa fa-trash" aria-hidden="true"></i></a>';
 				
 				html += '<div style="position: relative; float: left; margin: 10px;"><a class="thumbnail" href="#"><span style="position: absolute; top: 0px; right: 6px; color: black; font-size: 11px;">.' + arr[i]['ext'] + '</span><table style="width: ' + tpl + 'px; height: ' + tpl + 'px;"><tr><td style="padding: 0; text-align: center"><img src="' + arr[i]['url'] + '" class="img-responsive" style="max-width: ' + tpl + 'px; max-height: ' + tpl + 'px; margin: 0 auto;"/></td></tr></table></a>         <div class="icon-set" title="' + arr[i]['name'] + '">' + dl + rm + arr[i]['name'] + '</div></div>';
 			}
@@ -535,7 +535,7 @@ jQuery.fn.extend({
 				
 				$(this).find('img').on('error', function(){
 					// when image not found
-					$(this).hide().after('<span class="glyphicon glyphicon-duplicate" style="position: relative; color: brown; font-size: 45px"></span>');
+					$(this).hide().after('<i class="fa fa-file" aria-hidden="true" style="position: relative; color: brown; font-size: 45px"></i>');
 				});
 			});
 		});

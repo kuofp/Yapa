@@ -36,7 +36,7 @@ if(typeof checkScript == 'undefined'){
 		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
 		<input id="{unique_id}_search_adv" value="{query}">
 	</div>
-	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px">
+	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.175); box-shadow: 0 3px 6px rgba(0,0,0,.175);">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
 			<form id="{unique_id}_search_area">
@@ -87,7 +87,7 @@ if(typeof checkScript == 'undefined'){
 					</tbody>
 				</table>
 				<p class="end" align="center">資料底端，沒有找到更多</p>
-				<button class="btn btn-default btn-block review">顯示更多{max}筆+</button>
+				<button class="btn btn-default btn-block review" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> 載入中">顯示更多{max}筆+</button>
 			</div>
 			
 			<div class="info"></div>
@@ -174,7 +174,7 @@ if(typeof checkScript == 'undefined'){
 		<tr>
 			<td class="text-center">
 				<img src="{url}" class="img-responsive {img}" style="max-width: 100px; max-height: 100px; margin: 0 auto;"/>
-				<span class="glyphicon glyphicon-duplicate {icon}" style="position: relative; color: brown; font-size: 45px"></span>
+				<i class="fa fa-file {icon}" aria-hidden="true" style="position: relative; color: brown; font-size: 45px"></i>
 			</td>
 		</tr>
 	</table>
@@ -209,25 +209,25 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @hidden -->
 						<!-- @text -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="form-control input-sm" name="{name}" type="text" value="{value}" {disabled}/>
 						</td>
 						<!-- @text -->
 						<!-- @password -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="form-control input-sm" name="{name}" type="password" value="{value}" {disabled}/>
 						</td>
 						<!-- @password -->
 						<!-- @textarea -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<textarea class="form-control input-sm" name="{name}" type="text" rows="7" style="resize: vertical" {disabled}>{value}</textarea>
 						</td>
 						<!-- @textarea -->
 						<!-- @select -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<select class="form-control input-sm" name="{name}" {disabled}>
 								<option value="0">請選擇</option>
@@ -238,7 +238,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @select -->
 						<!-- @radiobox -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<!-- @option -->
 							<div class="radio">
@@ -248,7 +248,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @radiobox -->
 						<!-- @checkbox -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<!-- @option -->
 							<div class="checkbox">
@@ -258,7 +258,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @checkbox -->
 						<!-- @autocomplete -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
@@ -267,7 +267,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @autocomplete -->
 						<!-- @datepicker -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
@@ -276,7 +276,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @datepicker -->
 						<!-- @colorpicker -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="form-control input-sm" type="text" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
@@ -285,7 +285,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @colorpicker -->
 						<!-- @uploadfile -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
@@ -294,7 +294,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @uploadfile -->
 						<!-- @json -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
@@ -303,7 +303,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @json -->
 						<!-- @editor -->
-						<td align="center">{meta} <span class="glyphicon glyphicon-question-sign" data-content="{info}"></span></td>
+						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
