@@ -48,6 +48,54 @@ function serializeJSON(obj){
 	return arr;
 }
 
+$.fn.modal.first = '';
+$.fn.modal.media = window.matchMedia('(min-width: 768px)');
+
+$(document).on('show.bs.modal', '.modal', function(e){
+	// settle modal
+	$('body').append($(e.target));
+	
+	if(!$(e.target).is($.fn.modal.first)){
+		// prevent chained events in stacked modal
+		$.fn.modal.first = $(e.target);
+		// data-width
+		var width = ($.fn.modal.media.matches)? $(e.target).attr('data-width'): '';
+		$(e.target).children('.modal-dialog').css('width', width);
+		// modal z-index
+		$(e.target).css('z-index', 1042);
+		$('.modal').each(function(){
+			$(this).css('z-index', parseInt($(this).css('z-index')) - 1);
+		});
+	}
+});
+
+$(document).on('hide.bs.modal', '.modal', function(e){
+	// prevent chained events in stacked modal
+	$.fn.modal.first = '';
+	// modal z-index
+	$('.modal.in').each(function(){
+		$(this).css('z-index', parseInt($(this).css('z-index')) + 1);
+	});
+});
+
+// back drop consistence
+$(document).on('hidden.bs.modal', '.modal', function(e){
+	if($('.modal.in').length){
+		$('body').addClass('modal-open');
+	}
+});
+
+// media query for data-width
+$.fn.modal.media.addListener(function(e){
+	$('.modal').each(function(){
+		var width = (e.matches)? $(this).attr('data-width'): '';
+		$(this).children('.modal-dialog').css('width', width);
+	});
+});
+
+// prevent padding with scroll bar width
+$.fn.modal.Constructor.prototype.adjustDialog = function(){};
+
 jQuery.fn.extend({
 	editor: function(init){
 		

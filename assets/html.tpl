@@ -6,7 +6,7 @@ if(typeof checkScript == 'undefined'){
 		async: false,
 		data: {method: 'script'},
 		dataType: "script"
-    });
+	});
 }
 </script>
 <style>
@@ -183,7 +183,7 @@ if(typeof checkScript == 'undefined'){
 
 <!-- @modal-detail -->
 <div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-width="{width}">
-	<!--div class="modal-dialog"><div class="modal-content"-->
+	<div class="modal-dialog"><div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
 			<ul class="nav nav-tabs">
@@ -332,6 +332,6 @@ if(typeof checkScript == 'undefined'){
 				</div>
 			</div>
 		</div>
-	<!--/div></div-->
+	</div></div>
 </div>
 <!-- @modal-detail -->
