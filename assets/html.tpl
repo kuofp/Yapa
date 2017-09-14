@@ -134,26 +134,12 @@ if(typeof checkScript == 'undefined'){
 
 <!-- @table -->
 	<!-- @print -->
-		<table style="border:3px #000 solid; width:1500px; table-layout:fixed; text-align: center;" rules="all">
+		<meta charset="utf-8">
+		<style>br{ mso-data-placement: same-cell;}</style>
+		<table style="border: 3px #000 solid; width: 1500px; table-layout: fixed; text-align: center; word-wrap: break-word;" rules="all">
 			<tr>
 				<!-- @th -->
-				<th style="text-align: center">{text}</th>
-				<!-- @th -->
-			</tr>
-			<!-- @tr -->
-			<tr>
-				<!-- @td -->
-				<td style="white-space: normal; overflow: visible; word-wrap: break-word;">{text}</td>
-				<!-- @td -->
-			</tr>
-			<!-- @tr -->
-		</table>
-	<!-- @print -->
-	<!-- @excel -->
-		<table>
-			<tr>
-				<!-- @th -->
-				<th>{text}</th>
+				<th style="text-align: center;">{text}</th>
 				<!-- @th -->
 			</tr>
 			<!-- @tr -->
@@ -164,7 +150,7 @@ if(typeof checkScript == 'undefined'){
 			</tr>
 			<!-- @tr -->
 		</table>
-	<!-- @excel -->
+	<!-- @print -->
 <!-- @table -->
 
 <!-- @crop-img -->

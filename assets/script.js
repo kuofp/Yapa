@@ -1072,7 +1072,7 @@ function bindFormExportTool(uid, url){
 	
 	$(e).click(function(){
 		var pdata = genParam(uid);
-		open('POST', url, {jdata: JSON.stringify({ pdata: pdata, method: 'excel' }), style: 'print'}, '_blank');
+		open('POST', url, {jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'excel'}, '_blank');
 	});
 }
 

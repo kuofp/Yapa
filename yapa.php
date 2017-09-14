@@ -246,7 +246,7 @@ class Yapa{
 			}, $this->col_ch);
 		
 		// produce tr
-		$block = $style? 'table.' . $style: 'main';
+		$block = $style? 'table.print': 'main';
 		
 		$tr = [];
 		
@@ -263,7 +263,7 @@ class Yapa{
 			}
 			
 			$tr[] = array(
-				'td' => $this->tpl->block($block . '.td')->nest($td)
+				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false)
 			);
 		}
 		
@@ -273,7 +273,7 @@ class Yapa{
 			case 'excel':
 				$html = $this->tpl->block($block)->assign(array(
 					'th' => $this->tpl->block($block . '.th')->nest($th),
-					'tr' => $this->tpl->block($block . '.tr')->nest($tr)
+					'tr' => $this->tpl->block($block . '.tr')->nest($tr),
 				));
 				break;
 				
@@ -283,9 +283,17 @@ class Yapa{
 		}
 		$html = $html->render(false);
 		
-		$result = ['code' => 0, 'data' => $html, 'cnt' => count($datas['data'])];
-		return json_encode($result, JSON_UNESCAPED_UNICODE);
+		if($style == 'excel'){
+			
+			header('Content-type:application/vnd.ms-excel;');
+			header('Content-Disposition:filename=' . 'Export_' . date('YmdHis') . '.xls');
+			$result = $html;
+		}else{
+			$result = ['code' => 0, 'data' => $html, 'cnt' => count($datas['data'])];
+			$result = json_encode($result, JSON_UNESCAPED_UNICODE);
+		}
 		
+		return $result;
 	}
 	
 	//create
@@ -411,23 +419,6 @@ class Yapa{
 		}
 		
 		return $result;
-	}
-	
-	public function excel(){
-		
-		$result = $this->authCheck('review');
-		
-		if($result['code']){
-			// fail
-			return json_encode($result, JSON_UNESCAPED_UNICODE);
-			
-		}else{
-			$data = $this->review($this->arg);
-			$data = json_decode($data, true);
-			header('Content-type:application/vnd.ms-excel;');
-			header('Content-Disposition:filename=' . 'Export_' . date('YmdHis') . '.xls');
-			return $data['data'];
-		}
 	}
 	
 	public function upload(){
