@@ -146,7 +146,7 @@ jQuery.fn.extend({
 	colorpicker: function() {
 		
 		var tar = this;
-		var box = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: fixed; z-index: 1"></div>');
+		var box = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: absolute; z-index: 1"></div>');
 		var cvs = $('<canvas width="100" height="100" style="border: 1px solid #c5c5c5; margin: 10px; float: left; cursor: crosshair;"></canvas>');
 		var cur = $('<div style="border: 1px solid #c5c5c5; margin: 10px; float: left; height: 40px; width: 40px"></div>');
 		var pre = $('<div style="border: 1px solid #c5c5c5; margin: 5px 10px; float: left; height: 20px; width: 20px"></div>');
@@ -180,11 +180,7 @@ jQuery.fn.extend({
 		ctx.fillRect(0, (h/2+3), w, h);
 		
 		$(tar).focus(function(){
-			// init position
-			var left = $(tar).offset().left;
-			var top = $(tar).offset().top + $(tar).outerHeight() - $(document).scrollTop();
-			$(box).css('left', left).css('top', top).fadeIn(200);
-			
+			$(box).fadeIn(200);
 			$(tar).trigger('input');
 		});
 		
