@@ -318,12 +318,15 @@ jQuery.fn.extend({
 		
 		var tar = this;
 		var url = init.url || '';
-		var col = $('<input class="form-control input-sm" type="text"/>');
+		var max = init.max || 1;
+		var col = $('<input class="form-control input-sm" type="text" placeholder="&#x1F50D;"/>');
+		var box = $('<div></div>');
 		var timer = 0;// delay loading
 		
 		$(col).prop('disabled', $(tar).prop('disabled'));
 		
 		$(tar).before(col);
+		$(tar).before(box);
 		
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
@@ -331,9 +334,44 @@ jQuery.fn.extend({
 			}, 300);
 		});
 		
-		//id 'label' compare with the id 'label_h' to determine if the id 'autocomplete_id' should be reset
-		//use keypress to overcome type tool problem (keyup/keydown failed)
-		//use 'input' instead of the 'change' event for rapid effect
+		// generate checkbox list
+		function set(val, txt){
+			var tmp = $(tar).val()? $(tar).val().split(','): [];
+			var idx = tmp.indexOf(Math.abs(val) + '');
+			
+			if(val > 0 && idx == -1){
+				
+				if(max <= tmp.length){
+					$(box).find('[value=' + tmp[0] + ']').closest('.checkbox').remove();
+					tmp.splice(0, 1);
+				}
+				
+				tmp.push(val);
+				$(tar).val(tmp.join(','));
+				var btn = $('<div class="checkbox"><label><input type="checkbox" value="' + val + '" checked>' + txt + '</label></div>');
+				
+				$(box).append(btn);
+				// disabled prop
+				if($(tar).prop('disabled')){
+					$(btn).find('input').prop('disabled', $(tar).prop('disabled'));
+				}else{
+					$(btn).find('label').click(function(){
+						set(-val, '');
+						$(btn).remove();
+					});
+				}
+				
+			}else if(val < 0 && idx != -1){
+				tmp.splice(idx, 1);
+				$(tar).val(tmp.join(','));
+			}
+		}
+		
+		$(col).blur(function(){
+			$(this).val('');
+		});
+		
+		// fetch data
 		$(col).on('input', function(){
 			
 			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[~]': $(this).val()}};
@@ -355,7 +393,7 @@ jQuery.fn.extend({
 							$(col).autocomplete({
 								source: arr,
 								select: function(event, ui){
-									$(tar).val(ui.item.val);
+									set(ui.item.val, ui.item.label);
 								}
 							}).autocomplete('search');
 						}
@@ -367,10 +405,11 @@ jQuery.fn.extend({
 		
 		$(tar).on('preset', function(){
 			
-			var id = parseInt($(tar).val()); // prevent string '0' problem
+			var id = $(tar).val().split(',');
 			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[=]': id}};
+			$(box).empty();
 			
-			if(id){
+			if(parseInt(id[0])){ // prevent string '0' == true
 				$.ajax({
 					url: url,
 					type: 'POST',
@@ -381,18 +420,14 @@ jQuery.fn.extend({
 						if(jdata['code']){
 							// fail
 						}else{
-							pdata = jdata['data'];
-							if(pdata[0]){
-								$(col).val(pdata[0]['label']);
-							}else{
-								$(col).val('');
+							$(tar).val('');
+							for(var i in jdata['data']){
+								set(jdata['data'][i]['val'], jdata['data'][i]['label']);
 							}
 						}
 						customAlert(jdata);
 					}
 				});
-			}else{
-				$(col).val('');
 			}
 		});
 	}
