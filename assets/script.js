@@ -740,14 +740,22 @@ function bindFormCheck2(uid){
 	});
 }
 
-function bindFormTreeView(uid, back){
+function bindFormTreeView(uid, back, col, admin){
 	
 	if(!back) return;
 	
 	var f = $('#' + uid + '_panel');
+	var m = $('#' + uid + '_Modal');
 	var s = $('#' + uid + '_search_area');
 	var t = $('#' + uid + '_tree_view_complete');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
+	
+	m.find('form').eq(0).on('reset', function(){
+		setTimeout(function(){
+			var tmp = btn.attr('show').match(/p_([\d]+)/)[1];
+			m.find('form').eq(0).find('[name=' + col + ']').val(tmp);
+		}, 0);
+	});
 	
 	// before scrollable div
 	f.find('table.review').parent('div').css('height', 'calc(100% - 124px)').before(btn);
@@ -767,7 +775,7 @@ function bindFormTreeView(uid, back){
 		}
 		f.find('.last').trigger('tree');
 	});
-
+	
 	f.find('.last').on('tree', function(){
 		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
@@ -775,6 +783,10 @@ function bindFormTreeView(uid, back){
 			$(this).children().addClass('hidden');
 			$(this).find($(btn).attr('show')).parent().removeClass('hidden');
 			$(btn).prop('disabled', !f.find('.prev').attr('prev'));
+		}
+		
+		if(!admin){
+			f.find('div.toollist').find('button.create').prop('disabled', $(btn).prop('disabled'));
 		}
 		
 		setTimeout(function(){
@@ -796,7 +808,7 @@ function bindFormTreeView2(uid, back){
 	f.find('.newdatalist').find('td.tree').click(function(){
 		var tag = $(this).attr('class');
 		tag = tag.match(/s_([\d]+)/)[1];
-		if(f.find('.p_' + tag).length){
+		if($(this).text() != ''){
 			f.find('.prev').attr('prev', f.find('.prev').attr('show'));
 			f.find('.prev').attr('show', '.p_' + tag);
 			f.find('.last').trigger('tree');
@@ -806,7 +818,7 @@ function bindFormTreeView2(uid, back){
 	f.find('.last').trigger('tree');
 }
 
-function bindFormViewComplete(uid, max, back){
+function bindFormViewComplete(uid, max, back, col, admin){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
@@ -832,7 +844,7 @@ function bindFormViewComplete(uid, max, back){
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormCheck( uid );
-	bindFormTreeView(uid, back);
+	bindFormTreeView(uid, back, col, admin);
 	
 	f.find('button.review').click(function(e){
 		// prevent sending post

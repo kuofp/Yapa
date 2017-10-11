@@ -96,7 +96,7 @@ if(typeof checkScript == 'undefined'){
 </div>
 
 <script>
-	bindFormViewComplete('{unique_id}', '{max}', '{back}');
+	bindFormViewComplete('{unique_id}', '{max}', '{back}', '{col}', '{admin}');
 	bindFormAjaxOnRefresh('{unique_id}', '{url}', '{max}');
 </script>
 <!-- @main -->
