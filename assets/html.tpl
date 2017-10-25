@@ -248,7 +248,7 @@ if(typeof checkScript == 'undefined'){
 						<td>
 							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
 							<script>
-								$('#{uid}')._autocomplete({url: '{url}'});
+								$('#{uid}')._autocomplete({url: '{url}', max: '{max}'});
 							</script>
 						</td>
 						<!-- @autocomplete -->

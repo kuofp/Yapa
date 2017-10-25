@@ -588,6 +588,7 @@ class Yapa{
 						'value' => $pre,
 						'uid'   => $uid,
 						'url'   => $this->file,
+						'max'   => $this->attr[$i]['max'] ?? 1,
 					));
 					
 					break;
@@ -766,6 +767,7 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'checkbox') continue;
+				if($this->type[$i] == 'autocomplete') continue;
 				if($this->type[$i] == 'value') continue;
 				if($this->chain_chk[$i]){
 					$arr_tmp = $this->chain_chk[$i];
@@ -833,13 +835,20 @@ class Yapa{
 					if(!empty($keyword[$j])){
 						for($i = 0; $i < $this->col_num; $i++){
 							// skip
-							if($this->type[$i] == 'checkbox') continue;
 							if($this->type[$i] == 'value') continue;
 							if($this->type[$i] == 'uploadfile') continue;
 							if($this->type[$i] == 'datepicker') continue;
 							if($this->type[$i] == 'password') continue;
 							if($this->tree['col'] === $i) continue;
-							if($this->chain_chk[$i]){
+							if($this->type[$i] == 'autocomplete' || $this->type[$i] == 'checkbox'){
+								$arr_tmp = $this->chain_chk[$i];
+								$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $keyword[$j], 'LIMIT' => 1000]);
+								if($ids){
+									// find in a comma separated string (not a precise approach yet)
+									$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $ids;
+								}
+								
+							}else if($this->chain_chk[$i]){
 								$arr_tmp = $this->chain_chk[$i];
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
 							}else{
@@ -889,6 +898,7 @@ class Yapa{
 			
 			if($datas != ''){
 				$arr_mark = [];
+				$cnt_datas = count($datas);
 				
 				for($j = 0; $j < $this->col_num; $j++){
 					
@@ -902,6 +912,24 @@ class Yapa{
 								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
 							}
 							break;
+						case 'autocomplete':
+							// collect ids in data list for preventing too much results
+							$ids = [];
+							for($i = 0; $i < $cnt_datas; $i++){
+								$tmp = explode(',', $datas[$i][$this->col_en[$j]]);
+								foreach($tmp as $v){
+									$ids[$v] = $v;
+								}
+							}
+							
+							$arr_mark[$j] = [];
+							$arr_tmp = $this->chain_chk[$j];
+							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]), array($arr_tmp[2] => $ids));
+							
+							foreach($datas_checkbox as $arr){
+								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
+							}
+							break;
 						case 'uploadfile':
 						case 'json':
 						case 'datepicker':
@@ -910,7 +938,6 @@ class Yapa{
 					}
 				}
 				
-				$cnt_datas = count($datas);
 				for($i = 0; $i < $cnt_datas; $i++){
 					
 					//translate
@@ -921,6 +948,7 @@ class Yapa{
 						
 						switch($this->type[$idx]){
 							case 'checkbox':
+							case 'autocomplete':
 								if($datas[$i][$key]){
 									$arr_vtmp = $this->split($datas[$i][$key]);
 									$arr_result = [];
@@ -929,7 +957,7 @@ class Yapa{
 										$arr_result[] = $arr[$val] ?? 0;
 									}
 									
-									$datas[$i][$key] = implode(',', $arr_result);
+									$datas[$i][$key] = $this->raw(implode('<br>', $arr_result));
 								}
 								break;
 							

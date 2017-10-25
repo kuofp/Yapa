@@ -318,7 +318,7 @@ jQuery.fn.extend({
 		
 		var tar = this;
 		var url = init.url || '';
-		var max = init.max || 1;
+		var max = parseInt(init.max || 1);
 		var col = $('<input class="form-control input-sm" type="text" placeholder="&#x1F50D;"/>');
 		var box = $('<div></div>');
 		var timer = 0;// delay loading
