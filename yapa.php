@@ -470,189 +470,64 @@ class Yapa{
 				$info .= '(唯一)';
 			}
 			
-			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
-			$tag = ''; //select: selected, radio/checkbox: checked, autocomplete: label
-			$disabled = ($this->attr[$i]['disabled'] ?? 0)? 'disabled': '';
 			$td = '';
+			$tpl = '';
+			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
+			$uid = $this->getUid();
+			$disabled = ($this->attr[$i]['disabled'] ?? 0)? 'disabled': '';
 			
 			switch($this->type[$i]){
 				case 'hidden':
-					$td = $this->tpl->block('modal-detail.td.hidden')->assign(array(
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
+					$td = $this->tpl->block('modal-detail.td.hidden')->assign([
 						'value' => $pre,
-					));
-					break;
-				case 'text';
-					$td = $this->tpl->block('modal-detail.td.text')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-					));
+					]);
 					break;
-				case 'password';
-					$td = $this->tpl->block('modal-detail.td.password')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-					));
-					break;
-				case 'textarea':
-					$td = $this->tpl->block('modal-detail.td.textarea')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-					));
-					break;
-				case 'select':
-					$arr_tmp = $this->chain_chk[$i];
-					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
-					
-					$tmp = [];
-					foreach($datas as $arr){
-						$tmp[] = array(
-							'value'    => $arr[$arr_tmp[2]],
-							'selected' => ($pre==$arr[$arr_tmp[2]])? 'selected': '',
-							'text'     => $arr[$arr_tmp[1]],
-						);
-					}
-					
-					$td = $this->tpl->block('modal-detail.td.select')->assign(array(
-						'disabled' => $disabled,
-						'meta'   => $this->col_ch[$i],
-						'name'   => $this->col_en[$i],
-						'info'   => $info,
-						'option' => $this->tpl->block('modal-detail.td.select.option')->nest($tmp),
-					));
-					
-					break;
-				case 'radiobox':
-					$arr_tmp = $this->chain_chk[$i];
-					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
-					
-					$tmp = [];
-					foreach($datas as $arr){
-						$tmp[] = array(
-							'disabled' => $disabled,
-							'value'   => $arr[$arr_tmp[2]],
-							'checked' => ($pre==$arr[$arr_tmp[2]])? 'checked': '',
-							'text'    => $arr[$arr_tmp[1]],
-							'name'    => $this->col_en[$i],
-						);
-					}
-					
-					$td = $this->tpl->block('modal-detail.td.radiobox')->assign(array(
-						'meta'   => $this->col_ch[$i],
-						'info'   => $info,
-						'option' => $this->tpl->block('modal-detail.td.radiobox.option')->nest($tmp),
-					));
-					break;
-				case 'checkbox':
-					$arr_tmp = $this->chain_chk[$i];
-					$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
-					
-					$chk = is_array($pre)? $pre: explode(',', $pre);
-					
-					$tmp = [];
-					foreach($datas as $arr){
-						$tmp[] = array(
-							'disabled' => $disabled,
-							'value'   => $arr[$arr_tmp[2]],
-							'checked' => (in_array($arr[$arr_tmp[2]], $chk))? 'checked': '',
-							'text'    => $arr[$arr_tmp[1]],
-							'name'    => $this->col_en[$i],
-						);
-					}
-					
-					$td = $this->tpl->block('modal-detail.td.checkbox')->assign(array(
-						'meta'   => $this->col_ch[$i],
-						'info'   => $info,
-						'option' => $this->tpl->block('modal-detail.td.checkbox.option')->nest($tmp),
-					));
-					break;
-				case 'autocomplete':
-					$uid = $this->getUid();
-					
-					$td = $this->tpl->block('modal-detail.td.autocomplete')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-						'uid'   => $uid,
-						'url'   => $this->file,
-						'max'   => $this->attr[$i]['max'] ?? 1,
-					));
-					
-					break;
-				case 'datepicker':
-					$uid = $this->getUid();
-					
-					$td = $this->tpl->block('modal-detail.td.datepicker')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-						'uid'   => $uid,
-						'tpl'   => $this->attr[$i]['format'] ?? 'Y-m-d',
-					));
-					break;
-				case 'colorpicker';
-					$uid = $this->getUid();
-					
-					$td = $this->tpl->block('modal-detail.td.colorpicker')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-						'uid'   => $uid,
-					));
-					break;
-				case 'uploadfile':
-					$uid = $this->getUid();
-					
-					$td = $this->tpl->block('modal-detail.td.uploadfile')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => $pre,
-						'uid'   => $uid,
-						'url'   => $this->file,
-					));
-					break;
+				case 'text':
 				case 'json':
-					$uid = $this->getUid();
-					
-					$td = $this->tpl->block('modal-detail.td.json')->assign(array(
-						'disabled' => $disabled,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'info'  => $info,
-						'value' => str_replace('"', '\'', json_encode($pre)),
-						'uid'   => $uid,
-					));
-					break;
 				case 'editor':
-					$uid = $this->getUid();
+				case 'select':
+				case 'password':
+				case 'textarea':
+				case 'radiobox':
+				case 'checkbox':
+				case 'uploadfile':
+				case 'datepicker':
+				case 'colorpicker':
+				case 'autocomplete':
 					
-					$td = $this->tpl->block('modal-detail.td.editor')->assign(array(
+					if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
+						$arr_tmp = $this->chain_chk[$i];
+						$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
+						
+						$tpl = [];
+						foreach($datas as $arr){
+							$tpl[$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
+						}
+						$tpl = json_encode($tpl);
+					}
+					
+					if(in_array($this->type[$i], ['datepicker'])){
+						$tpl = $this->attr[$i]['format'] ?? 'Y-m-d';
+					}
+					
+					if(in_array($this->type[$i], ['json'])){
+						$tpl = json_encode($pre);
+						$pre = htmlspecialchars(json_encode($pre));
+					}
+					
+					$td = $this->tpl->block('modal-detail.td.struct')->assign([
 						'disabled' => $disabled,
+						'value' => $pre,
 						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
+						'func'  => '_' . $this->type[$i],
 						'info'  => $info,
-						'value' => $pre,
 						'uid'   => $uid,
-					));
+						'tpl'   => $tpl,
+						'max'   => $this->attr[$i]['max'] ?? 1,
+						'url'   => $this->file,
+					]);
 					break;
 				default:
 					break;

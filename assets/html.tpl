@@ -189,114 +189,19 @@ if(typeof checkScript == 'undefined'){
 					<tr class="{class}">
 					<!-- @td -->
 						<!-- @hidden -->
-						<td class="hidden"></td>
-						<td class="hidden">
+						<td class="hidden" colspan="10">
 							<input name="{name}" value="{value}"/>
 						</td>
 						<!-- @hidden -->
-						<!-- @text -->
+						<!-- @struct -->
 						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
 						<td>
-							<input class="form-control input-sm" name="{name}" type="text" value="{value}" {disabled}/>
-						</td>
-						<!-- @text -->
-						<!-- @password -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="form-control input-sm" name="{name}" type="password" value="{value}" {disabled}/>
-						</td>
-						<!-- @password -->
-						<!-- @textarea -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<textarea class="form-control input-sm" name="{name}" type="text" rows="7" style="resize: vertical" {disabled}>{value}</textarea>
-						</td>
-						<!-- @textarea -->
-						<!-- @select -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<select class="form-control input-sm" name="{name}" {disabled}>
-								<option value="0">請選擇</option>
-							<!-- @option -->
-								<option value="{value}" {selected}>{text}</option>
-							<!-- @option -->
-							</select>
-						</td>
-						<!-- @select -->
-						<!-- @radiobox -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<!-- @option -->
-							<div class="radio">
-								<label><input type="radio" name="{name}" value="{value}" {checked} {disabled}/>{text}</label>
-							</div>
-							<!-- @option -->
-						</td>
-						<!-- @radiobox -->
-						<!-- @checkbox -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<!-- @option -->
-							<div class="checkbox">
-								<label><input type="checkbox" name="{name}" value="{value}" {checked} {disabled}/>{text}</label>
-							</div>
-							<!-- @option -->
-						</td>
-						<!-- @checkbox -->
-						<!-- @autocomplete -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
+							<textarea class="hidden" name="{name}" id="{uid}" {disabled}>{value}</textarea>
 							<script>
-								$('#{uid}')._autocomplete({url: '{url}', max: '{max}'});
+								$('#{uid}').{func}({url: '{url}', max: '{max}', tpl: '{tpl}'});
 							</script>
 						</td>
-						<!-- @autocomplete -->
-						<!-- @datepicker -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
-							<script>
-								$('#{uid}')._datepicker({tpl: '{tpl}'});
-							</script>
-						</td>
-						<!-- @datepicker -->
-						<!-- @colorpicker -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="form-control input-sm" type="text" name="{name}" value="{value}" id="{uid}" {disabled}/>
-							<script>
-								$('#{uid}').colorpicker();
-							</script>
-						</td>
-						<!-- @colorpicker -->
-						<!-- @uploadfile -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
-							<script>
-								$('#{uid}').uploadfile({url: '{url}'});
-							</script>
-						</td>
-						<!-- @uploadfile -->
-						<!-- @json -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
-							<script>
-								$('#{uid}').json({tpl: "{value}"});
-							</script>
-						</td>
-						<!-- @json -->
-						<!-- @editor -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
-						<td>
-							<input class="hidden" name="{name}" value="{value}" id="{uid}" {disabled}/>
-							<script>
-								$('#{uid}').editor();
-							</script>
-						</td>
-						<!-- @editor -->
+						<!-- @struct -->
 						<!-- @module -->
 						<td class="hidden" colspan="10">
 							<input class="hidden" id="{uid}">

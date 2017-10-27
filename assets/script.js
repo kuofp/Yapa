@@ -97,7 +97,162 @@ $.fn.modal.media.addListener(function(e){
 $.fn.modal.Constructor.prototype.adjustDialog = function(){};
 
 jQuery.fn.extend({
-	editor: function(init){
+	_text: function(init){
+		$(this)._input('<input class="form-control input-sm" type="text"/>');
+	},
+	_password: function(init){
+		$(this)._input('<input class="form-control input-sm" type="password"/>');
+	},
+	_textarea: function(init){
+		$(this)._input('<textarea class="form-control input-sm" type="text" rows="7" style="resize: vertical"></textarea>');
+	},
+	
+	_input: function(str){
+		var tar = this;
+		var box = $(str);
+		
+		$(box).prop('disabled', $(tar).prop('disabled'));
+		$(tar).before(box);
+		
+		$(box).on('input', function(){
+			$(tar).val($(box).val());
+		});
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			$(box).val($(tar).val());
+		});
+	}
+});
+
+jQuery.fn.extend({
+	_select: function(init){
+		
+		var tar = this;
+		var box = $('<select class="form-control input-sm"><option value="0">請選擇</option></select>');
+		var tpl = JSON.parse(init.tpl || '[]');
+		
+		$(box).prop('disabled', $(tar).prop('disabled'));
+		$(tar).before(box);
+		
+		for(var i in tpl){
+			var opt = $('<option></option>');
+			opt.val(i).text(tpl[i]);
+			$(box).append(opt);
+		}
+		
+		$(box).change(function(){
+			$(tar).val($(box).val()).trigger('preset');
+		});
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			$(box).val($(tar).val());
+		});
+	}
+});
+
+jQuery.fn.extend({
+	_radiobox: function(init){
+		
+		var tar = this;
+		var box = $('<div></div>');
+		var tpl = JSON.parse(init.tpl || '[]');
+		var dis = $(tar).prop('disabled');
+		
+		$(tar).before(box);
+		
+		for(var i in tpl){
+			var opt = $('<div class="radio"><label><input type="radio"/></label></div>');
+			opt.find('input').prop('disabled', dis).val(i).after(tpl[i]);
+			if(!dis){
+				opt.find('input').click(function(){
+					$(tar).val($(this).val()).trigger('preset');
+				});
+			}
+			$(box).append(opt);
+		}
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			
+			var val = $(tar).val();
+			
+			$(box).find('input').each(function(){
+				$(this).prop('checked', ($(this).val() == val)? true: false);
+			});
+		});
+	}
+});
+
+jQuery.fn.extend({
+	_checkbox: function(init){
+		
+		var tar = this;
+		var box = $('<div></div>');
+		var tpl = JSON.parse(init.tpl || '[]');
+		var dis = $(tar).prop('disabled');
+		
+		$(tar).before(box);
+		
+		for(var i in tpl){
+			var opt = $('<div class="checkbox"><label><input type="checkbox"/></label></div>');
+			opt.find('input').prop('disabled', dis).val(i).after(tpl[i]);
+			if(!dis){
+				opt.find('input').click(function(){
+					var arr = [];
+					$(box).find('input:checked').each(function(){
+						arr.push($(this).val());
+					});
+					$(tar).val(arr.join(',')).trigger('preset');
+				});
+			}
+			$(box).append(opt);
+		}
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			
+			var str = $(tar).val();
+			var arr = {};
+			
+			if(str){
+				var tmp = str.split(',');
+				for(var i in tmp){
+					arr[tmp[i]] = 1;
+				}
+			}
+			//prop('checked', false) v.s. attr('checked', false) attr會使checked完全移除, form reset時預設值的checked不會勾選
+			$(box).find('input').prop('checked', false).each(function(){
+				if(arr[$(this).val()] || 0)
+					$(this).prop('checked', true);
+			});
+		});
+	}
+});
+
+jQuery.fn.extend({
+	_editor: function(init){
 		
 		var tar = this;
 		var col = $('<textarea></textarea>');
@@ -143,17 +298,20 @@ jQuery.fn.extend({
 });
 
 jQuery.fn.extend({
-	colorpicker: function() {
+	_colorpicker: function() {
 		
 		var tar = this;
-		var box = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: absolute; z-index: 1"></div>');
+		var box = $('<input class="form-control input-sm" type="text"/>');
+		var pnl = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: absolute; z-index: 1"></div>');
 		var cvs = $('<canvas width="100" height="100" style="border: 1px solid #c5c5c5; margin: 10px; float: left; cursor: crosshair;"></canvas>');
 		var cur = $('<div style="border: 1px solid #c5c5c5; margin: 10px; float: left; height: 40px; width: 40px"></div>');
 		var pre = $('<div style="border: 1px solid #c5c5c5; margin: 5px 10px; float: left; height: 20px; width: 20px"></div>');
 		var hex = $('<p style="float: left"></p>');
 		
-		$(tar).after(box);
-		$(box).append(cvs, cur, pre, hex);
+		$(box).prop('disabled', $(tar).prop('disabled'));
+		$(tar).before(box);
+		$(tar).after(pnl);
+		$(pnl).append(cvs, cur, pre, hex);
 		
 		var ctx = $(cvs).get(0).getContext('2d');
 		var w = 100;
@@ -179,20 +337,20 @@ jQuery.fn.extend({
 		ctx.fillStyle = vGrad;
 		ctx.fillRect(0, (h/2+3), w, h);
 		
-		$(tar).focus(function(){
-			$(box).fadeIn(200);
-			$(tar).trigger('input');
+		$(box).focus(function(){
+			$(pnl).fadeIn(200);
+			$(box).trigger('input');
 		});
 		
 		$(document).click(function(e){
 			// keep colorpicker
-			var keep = $(e.target).is(box) || $(e.target).parent().is(box) || $(e.target).is(tar);
+			var keep = $(e.target).is(pnl) || $(e.target).parent().is(pnl) || $(e.target).is(box);
 			if(!keep){
-				$(box).fadeOut(200);
+				$(pnl).fadeOut(200);
 			}
 		});
 		
-		$(tar).on('input', function(){
+		$(box).on('input', function(){
 			var str = $(this).val().toLowerCase().replace(/[^#\da-f]/g, '');
 			var color = '#fff';
 			
@@ -202,7 +360,7 @@ jQuery.fn.extend({
 				color = str;
 			}
 			$(cur).css('background', color);
-			$(this).val(str);
+			$(tar).val(str).trigger('preset');
 		});
 		
 		$(cvs).mousemove(function(e){
@@ -224,7 +382,7 @@ jQuery.fn.extend({
 			// HEX color
 			var str = getHex(x, y);
 			
-			$(tar).val(str);
+			$(tar).val(str).trigger('preset');
 			$(cur).css('background', str);
 		});
 		
@@ -250,6 +408,16 @@ jQuery.fn.extend({
 			var ch = '0123456789abcdef';
 			return ch.charAt(Math.floor(n/16)) + ch.charAt(n%16);
 		}
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 300);
+		});
+		
+		$(tar).on('preset', function(){
+			$(box).val($(tar).val());
+		});
 	}
 });
 
@@ -434,12 +602,11 @@ jQuery.fn.extend({
 });
 
 jQuery.fn.extend({
-	json: function(init){
+	_json: function(init){
 		
 		var tar = this;
 		var box = $('<div></div>');
-		var tpl = (init.tpl || '[]').replace(/'/g, '"');
-		tpl = JSON.parse(tpl);
+		var tpl = JSON.parse(init.tpl || '[]');
 		
 		$(tar).before(box);
 		
@@ -499,7 +666,7 @@ jQuery.fn.extend({
 
 // require jquery/bootstrap
 jQuery.fn.extend({
-	uploadfile: function(init){
+	_uploadfile: function(init){
 		
 		var tar = this;
 		var url = init.url;
@@ -1174,33 +1341,12 @@ function bindInputAjaxOnChange(uid, url, type, col){
 					for(var i in col){
 						
 						switch(type[i]){
-							case 'radiobox':
-								f.find('[name=' + col[i] + ']').each(function(){
-									this.checked = (this.value == pdata[col[i]])? true: false;
-								});
-								break;
-							case 'checkbox':
-								var arr = [];
-								if(pdata[col[i]]){
-									arr = pdata[col[i]].split(',');
-								}
-								//prop('checked', false) v.s. attr('checked', false) attr會使checked完全移除, form reset時預設值的checked不會勾選
-								f.find('[name=' + col[i] + ']').prop('checked', false).each(function(){
-									for(var j=0; j<arr.length; j++){
-										if(arr[j] == this.value) this.checked = true;
-									}
-								});
-								break;
-							case 'json':
-							case 'editor':
-							case 'datepicker':
-							case 'uploadfile':
-							case 'autocomplete':
-								// put value and trigger preset
-								f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
+							case 'hidden':
+								f.find('[name=' + col[i] + ']').val(pdata[col[i]]);
 								break;
 							default:
-								f.find('[name=' + col[i] + ']').val(pdata[col[i]]);
+								// put value and trigger preset
+								f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
 								break;
 						}
 					}
