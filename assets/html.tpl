@@ -10,15 +10,25 @@ if(typeof checkScript == 'undefined'){
 }
 </script>
 <style>
-.table-alter {
+.table-alter{
 	table-layout:fixed;
 }
-.table-alter td, .table-alter th {
+.table-alter td, .table-alter th{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.ui-autocomplete {
+.table-less>tbody>tr>td{
+	border: none;
+}
+.table-less>tbody>tr>th{
+	border: none;
+	padding: 0px;
+}
+.table-less .form-control{
+	max-width: 350px;
+}
+.ui-autocomplete{
 	z-index: 1200;
 }
 .datalist.highlight{
@@ -160,7 +170,7 @@ if(typeof checkScript == 'undefined'){
 		<tr>
 			<td class="text-center">
 				<img src="{url}" class="img-responsive {img}" style="max-width: 100px; max-height: 100px; margin: 0 auto;"/>
-				<i class="fa fa-file {icon}" aria-hidden="true" style="position: relative; color: brown; font-size: 45px"></i>
+				<i class="fa fa-file {icon}" style="position: relative; color: brown; font-size: 45px"></i>
 			</td>
 		</tr>
 	</table>
@@ -170,7 +180,7 @@ if(typeof checkScript == 'undefined'){
 <!-- @modal-detail -->
 <div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-width="{width}">
 	<div class="modal-dialog"><div class="modal-content">
-		<div class="modal-header">
+		<div class="modal-header" style="border: none">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
 			<ul class="nav nav-tabs">
 				<li class="active"><a data-toggle="tab" href="#{unique_id}_home">詳細資訊</a></li>
@@ -180,10 +190,10 @@ if(typeof checkScript == 'undefined'){
 			<div class="tab-content">
 				<div id="{unique_id}_home" class="tab-pane fade in active" style="min-height: 700px">
 			<form>
-				<table class="table table-alter">
+				<table class="table table-alter table-less">
 					<tr>
-						<th class="col-xs-1 col-sm-1 col-md-1">項目</th>
-						<th class="col-xs-2 col-sm-2 col-md-2">內容</th>
+						<th class="col-xs-1 col-sm-1 col-md-1"></th>
+						<th class="col-xs-2 col-sm-3 col-md-3"></th>
 					</tr>
 				<!-- @tr -->
 					<tr class="{class}">
@@ -194,7 +204,7 @@ if(typeof checkScript == 'undefined'){
 						</td>
 						<!-- @hidden -->
 						<!-- @struct -->
-						<td align="center">{meta} <i class="fa fa-question-circle-o" aria-hidden="true" data-content="{info}"></i></td>
+						<td align="center" style="font-weight: bold; vertical-align: middle">{meta} <i class="fa fa-question-circle-o" data-content="{info}"></i></td>
 						<td>
 							<textarea class="hidden" name="{name}" id="{uid}" {disabled}>{value}</textarea>
 							<script>

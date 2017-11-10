@@ -670,7 +670,7 @@ jQuery.fn.extend({
 		
 		var tar = this;
 		var url = init.url;
-		var col = init.col || 'col-sm-6';
+		var max = parseInt(init.max || 1);
 		
 		var bar = $('<div style="background-color: aquamarine; height: 3px; width: 0px; margin: 1px"></div>');
 		var ctl = $('<input type="file" multiple>');
@@ -685,12 +685,24 @@ jQuery.fn.extend({
 		$(tar).after(box);
 		
 		$(ctl).change(function(e){
-			
 			var upload = this;
+			var cnt = $(box).children().length;
+			
+			if(max == 1){
+				cnt = 0;
+				$(tar).val('');
+			}else if(cnt >= max){
+				//customAlert({code: 1, text: '圖片數量達上限' + max + '張'});
+				$(upload).val('');
+				return false;
+			}
+			
 			var data = new FormData();
 			var files = $(this).get(0).files;
 			
 			for(var i in files){
+				if(cnt < max) cnt++;
+				else break;
 				data.append(i, files[i]);
 			}
 			data.append('method', 'upload');
