@@ -620,7 +620,7 @@ jQuery.fn.extend({
 			
 			$(box).empty();
 			
-			var str = ($(this).val() || '[]').replace(/'/g, '"');
+			var str = ($(this).val() || '[]');
 			try{
 				var obj = JSON.parse(str);
 				var tmp = {};
@@ -849,7 +849,7 @@ function bindFormSort(uid){
 		var plus = '';
 		var t = $(this).children();
 		var n = $(this).attr('name');
-		var tmp = JSON.parse(s.val().replace(/'/g, '"')); //json in input
+		var tmp = JSON.parse(s.val()); //json in input
 		var obj = {};
 		
 		for(var i in tmp){
@@ -871,7 +871,7 @@ function bindFormSort(uid){
 			plus = 'fa fa-sort-alpha-asc';
 		}
 		
-		var q = JSON.stringify(obj).replace(/"/g, '\'');  //json in input
+		var q = JSON.stringify(obj);  //json in input
 		s.val(q).trigger('change');
 		t.attr('class', plus);
 	});
@@ -1406,11 +1406,11 @@ jQuery.fn.extend({
 			
 			for(var i in tpl){
 				var arr = {};
-				var sql = JSON.parse(tpl[i]['sql'].replace(/'/g, '"'));
+				var sql = tpl[i]['sql'];
 				var url = tpl[i]['url'];
 				var css = tpl[i]['css'] || 'height: 700px';
 				var str = $('#' + uid + '_search_adv').val();
-				var adv = JSON.parse(str.replace(/'/g, '"'))['AND'] || [];
+				var adv = JSON.parse(str)['AND'] || [];
 				
 				for(var j in sql){
 					arr[j] = f.find('[name="' + sql[j] + '"]').val() || adv[j] || s.find('[name="' + sql[j] + '"]').val() || sql[j];

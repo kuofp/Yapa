@@ -182,7 +182,7 @@ class Yapa{
 	public function reviewTool($option = []){
 		
 		$style  = $_REQUEST['style'] ?? '';
-		$query  = json_decode(str_replace('\'', '"', $_REQUEST['query'] ?? '{}'));
+		$query  = json_decode($_REQUEST['query'] ?? '{}');
 		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$result = $this->authCheck('review');
@@ -204,7 +204,7 @@ class Yapa{
 			
 			$this->tpl->block('main')->assign(array(
 				'unique_id' => $this->unique_id,
-				'query'     => str_replace('"', '\'', json_encode($query)),
+				'query'     => $this->e(json_encode($query)),
 				'url'       => $this->file,
 				'tr'        => '',
 				'th'        => $this->tpl->block('main.th')->nest($th),
@@ -513,7 +513,7 @@ class Yapa{
 					
 					if(in_array($this->type[$i], ['json'])){
 						$tpl = json_encode($pre);
-						$pre = htmlspecialchars(json_encode($pre));
+						$pre = $this->e(json_encode($pre));
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.struct')->assign([
@@ -556,7 +556,7 @@ class Yapa{
 			$pre = [];
 			foreach($this->config['module'] ?? [] as $k=>$v){
 				$pre[$k] = [];
-				$pre[$k]['sql'] = str_replace('"', '\'', json_encode($v['sql']));
+				$pre[$k]['sql'] = $v['sql'];
 				$pre[$k]['url'] = $v['url'];
 				$pre[$k]['tag'] = $v['tag'];
 				$pre[$k]['css'] = $v['css'] ?? '';
@@ -739,7 +739,7 @@ class Yapa{
 			//search advance
 			if($pdata['where']['SEARCH_ADV'] ?? 0){
 				
-				$adv = json_decode(str_replace('\'', '"', $pdata['where']['SEARCH_ADV']), true);
+				$adv = json_decode($pdata['where']['SEARCH_ADV'], true);
 				foreach($adv['AND'] ?? [] as $k=>$v){
 					//table.id (join)
 					$adv['AND'][$this->table . '.' . $k] = $v;
