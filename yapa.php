@@ -583,7 +583,11 @@ class Yapa{
 	
 	public function getJson($pdata){//get raw data
 		
-		if($pdata['data']['autocomplete'] ?? 0){
+		$result = $this->authCheck('review');
+		
+		if($result['code']){
+			// fail
+		}else if($pdata['data']['autocomplete'] ?? 0){
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
@@ -594,14 +598,34 @@ class Yapa{
 						$arr_tmp[2] . '(val)', // 'value' will be inserted into the input automatically, 'val' won't
 					);
 					
-					$where = [];
+					$where = ['LIMIT' => 10];
 					if($pdata['where']['[~]'] ?? 0){
-						$where[$arr_tmp[1] . '[~]'] = $pdata['where']['[~]'];
-					}elseif($pdata['where']['[=]'] ?? 0){
+						$match = [$arr_tmp[1] => $pdata['where']['[~]']];
+						$fuzzy = [$arr_tmp[1] . '[~]' => $pdata['where']['[~]']];
+						
+						$pdata['where'] = array_replace_recursive($where, $match, $arr_tmp[3]);
+						$arr1 = $this->database->select($table, $arr_col, $pdata['where']);
+						$pdata['where'] = array_replace_recursive($where, $fuzzy, $arr_tmp[3]);
+						$arr2 = $this->database->select($table, $arr_col, $pdata['where']);
+						
+						$tmp = [];
+						foreach($arr1 as $k=>$v){
+							$tmp[$v['val']] = $v['label'];
+						}
+						foreach($arr2 as $k=>$v){
+							if($tmp[$v['val']] ?? 0){
+								// duplicate
+							}else{
+								$arr1[] = $v;
+							}
+						}
+						
+						$result['data'] = array_slice($arr1, 0, 10);
+						
+					}else if($pdata['where']['[=]'] ?? 0){
 						$where[$arr_tmp[2]] = $pdata['where']['[=]'];
 					}
-					// limit
-					$where['LIMIT'] = 10;
+					
 					$pdata['where'] = array_replace_recursive($where, $arr_tmp[3]);
 					break;
 				}
@@ -609,18 +633,16 @@ class Yapa{
 			
 		}else{
 			$table = $this->table;
-			$arr_col = $pdata['data']?$pdata['data']:'*';
+			$arr_col = $pdata['data']? $pdata['data']: '*';
 		}
-		
-		$result = $this->authCheck('review');
 		
 		if($result['code']){
 			// fail
-			
 		}else{
-			$result['data'] = $this->database->select($table, $arr_col, $pdata['where']);
-			return json_encode($result, JSON_UNESCAPED_UNICODE);
+			$result['data'] = $result['data'] ?? $this->database->select($table, $arr_col, $pdata['where']);
 		}
+		
+		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
 	public function getData($pdata){//translate all data
