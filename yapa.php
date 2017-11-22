@@ -663,14 +663,15 @@ class Yapa{
 			}
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
-				if($this->type[$i] == 'checkbox') continue;
-				if($this->type[$i] == 'autocomplete') continue;
 				if($this->type[$i] == 'value') continue;
 				if($this->chain_chk[$i]){
-					$arr_tmp = $this->chain_chk[$i];
-					$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
-					
-					$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
+					if(!in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+						$arr_tmp = $this->chain_chk[$i];
+						$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
+						$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
+					}
+					// keep original id
+					$arr_col[$i + $this->col_num] = $this->table . '.' . $this->col_en[$i] . '(__' . $this->col_en[$i] . ')';
 				}
 			}
 			
