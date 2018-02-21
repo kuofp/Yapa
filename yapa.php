@@ -1101,35 +1101,24 @@ class Yapa{
 			
 			foreach($data['data'] as $k=>$v){
 				foreach($this->config['sum'] ?? [] as $key){
-					$this->data[$key][$v['id']] = $v[$key];
+					$this->data[$key][$v['id']] = $v[$key] ?? 0;
 				}
 			}
 			
 			foreach($data['data'] as $k=>$v){
-				
-				$sum = [];
 				foreach($this->config['sum'] ?? [] as $key){
-					$sum[$key] = 0;
-				}
-				
-				foreach($sub[$v['id']] as $c){
-					foreach($this->data as $key=>$arr){
-						if(isset($sum[$key])){
-							$sum[$key] += $arr[$c] ?? 0;
-						}
+					$sum = 0;
+					$sum += ($this->data[$key][$v['id']] ?? 0);
+					foreach($sub[$v['id']] as $c){
+						$sum += $this->data[$key][$c] ?? 0;
 					}
+					$data['data'][$k][$key] = $sum;
 				}
 				
 				if($this->config['level'] ?? 0){
 					$data['data'][$k][$col] = ($offset[$v['id']] < ($this->config['level'] ?? 0) -1)? '(' . count($dsub[$v['id']]) . ')': '';
 				}else{
 					$data['data'][$k][$col] = count($dsub[$v['id']])? '(' . count($dsub[$v['id']]) . ')': '';
-				}
-				
-				foreach($this->data as $key=>$arr){
-					if(isset($sum[$key])){
-						$data['data'][$k][$key] += $sum[$key] ?? 0;
-					}
 				}
 			}
 		}
