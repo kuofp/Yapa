@@ -1068,17 +1068,13 @@ class Yapa{
 	// )
 	public function bind($data){
 		
-		$tmp = [];
-		
 		foreach($data as $arr){
 			foreach($arr as $k=>$v){
 				if($k != 'id'){
-					$tmp[$k][$arr['id']] = $v;
+					$this->data[$k][$arr['id']] = $v;
 				}
 			}
 		}
-		
-		$this->data = $tmp;
 	}
 	
 	protected function apply(&$data){
