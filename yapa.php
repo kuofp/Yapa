@@ -829,9 +829,17 @@ class Yapa{
 							}
 							break;
 						case 'uploadfile':
-						case 'json':
 						case 'datepicker':
 							$arr_mark[$j] = 1;
+							break;
+						case 'json':
+							$arr_tmp = $this->config['preset'][$this->col_en[$j]] ?? [];
+							$tmp = [];
+							foreach($arr_tmp as $k=>$v){
+								$txt = explode(',', $k);
+								$tmp[($txt[0] ?? '')] = ($txt[1] ?? '')?: ($txt[0] ?? '');
+							}
+							$arr_mark[$j] = $tmp;
 							break;
 					}
 				}
@@ -879,14 +887,12 @@ class Yapa{
 								break;
 								
 							case 'json':
-								$arr = json_decode($datas[$i][$key], true);
-								if(is_array($arr)){
-									$tmp = [];
-									foreach($arr as $k=>$v){
-										$tmp[] = $this->e($k) . ': ' . $this->e($v);
-									}
-									$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
+								$tmp = [];
+								foreach($arr as $k=>$v){
+									$arr = json_decode($datas[$i][$key], true);
+									$tmp[] = $this->e($v) . ': ' . $this->e($arr[$k]);
 								}
+								$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
 								break;
 								
 							case 'datepicker':
