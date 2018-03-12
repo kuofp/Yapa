@@ -890,7 +890,7 @@ class Yapa{
 								$tmp = [];
 								foreach($arr as $k=>$v){
 									$arr = json_decode($datas[$i][$key], true);
-									$tmp[] = $this->e($v) . ': ' . $this->e($arr[$k]);
+									$tmp[] = $this->e($v) . ': ' . $this->e($arr[$k] ?? '');
 								}
 								$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
 								break;
