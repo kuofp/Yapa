@@ -651,7 +651,11 @@ jQuery.fn.extend({
 			
 			for(var i in obj){
 				
-				ctl[i] = $('<span class="label label-default">' + (txt[i] || i) + '</span><input class="form-control input-sm" value="' + obj[i] + '">');
+				// prevernt xss
+				ctl[i] = $('<span class="label label-default"></span><input class="form-control input-sm">');
+				ctl[i].eq(0).text(txt[i] || i);
+				ctl[i].eq(1).val(obj[i]);
+				
 				$(ctl[i]).prop('disabled', $(tar).prop('disabled'));
 				box.append(ctl[i]);
 				
