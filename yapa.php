@@ -830,6 +830,7 @@ class Yapa{
 							break;
 						case 'uploadfile':
 						case 'datepicker':
+						case 'value':
 							$arr_mark[$j] = 1;
 							break;
 						case 'json':
@@ -899,6 +900,10 @@ class Yapa{
 								if($datas[$i][$key]){
 									$datas[$i][$key] = date($this->attr[$idx]['format'] ?? 'Y-m-d', (int)$datas[$i][$key]);
 								}
+								break;
+								
+							case 'value':
+								$datas[$i][$key] = '';
 								break;
 						}
 					}
