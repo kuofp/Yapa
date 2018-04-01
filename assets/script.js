@@ -935,7 +935,7 @@ function bindFormTreeView(uid, back, col, admin){
 	
 	m.find('form').eq(0).on('reset', function(){
 		setTimeout(function(){
-			var tmp = btn.attr('show').match(/p_([\d]+)/)[1];
+			var tmp = btn.attr('show').match(/p_([\w]+)/)[1];
 			m.find('form').eq(0).find('[name=' + col + ']').val(tmp);
 		}, 0);
 	});
@@ -947,10 +947,10 @@ function bindFormTreeView(uid, back, col, admin){
 		var prev = $(btn).attr('prev');
 		if(prev){
 			$(btn).attr('show', prev);
-			tag = prev.match(/p_([\d]+)/)[1];
+			tag = prev.match(/p_([\w]+)/)[1];
 			if(tag != '0'){
 				tmp = f.find('.s_' + tag).attr('class');
-				prev = '.' + tmp.match(/p_[\d]+/)[0];
+				prev = '.' + tmp.match(/p_[\w]+/)[0];
 			}else{
 				prev = '';
 			}
@@ -990,7 +990,7 @@ function bindFormTreeView2(uid, back){
 	
 	f.find('.newdatalist').find('td.tree').click(function(){
 		var tag = $(this).attr('class');
-		tag = tag.match(/s_([\d]+)/)[1];
+		tag = tag.match(/s_([\w]+)/)[1];
 		if($(this).text() != ''){
 			f.find('.prev').attr('prev', f.find('.prev').attr('show'));
 			f.find('.prev').attr('show', '.p_' + tag);

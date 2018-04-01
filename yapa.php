@@ -88,6 +88,8 @@ class Yapa{
 		$this->tree = $tree;
 		$this->config = $config;
 		
+		$this->config['root'] = $this->split($this->config['root'] ?? '');
+		
 		$this->col_num = count($col_en);
 		$this->uid = 0;
 		
@@ -701,10 +703,14 @@ class Yapa{
 			}
 			
 			// select only descendant
-			if($this->config['root'] ?? 0){
+			if($this->config['root'][0]){
+				$arr = [];
+				foreach($this->config['root'] as $v){
+					$arr = array_merge($arr, $this->tree['sub'][1][$v] ?? []);
+				}
 				// include self
 				$id = $pdata['where']['AND']['id'] ?? 0;
-				$ids = array_merge($this->tree['sub'][1][$this->config['root']] ?? [], [$this->config['root']]);
+				$ids = array_merge($arr, $this->config['root']);
 				
 				if($id){
 					if(!is_array($id)){
@@ -1038,7 +1044,7 @@ class Yapa{
 		// tree view class
 		$arr = [];
 		foreach($tree as $k => $v){
-			$arr[$k] = 'tree s_' . $k . ' p_' . ($k == ($this->config['root'] ?? 0)? '0': $v);
+			$arr[$k] = 'tree s_' . $k . ' p_' . ((in_array($k, $this->config['root']) || !isset($tree[$v]))? '0': $v);
 		}
 		$result[] = $arr;
 		
@@ -1052,7 +1058,7 @@ class Yapa{
 			if(!isset($flat[$child])){
 				$flat[$child] = [];
 			}
-			if(!empty($parent)){
+			if(isset($array[$parent])){
 				$flat[$parent][$child] = &$flat[$child];
 			}else{
 				$tree[$child] = &$flat[$child];
