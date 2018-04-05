@@ -258,17 +258,18 @@ class Yapa{
 			$td = [];
 			for($j = 0; $j < $this->col_num; $j++){
 				if($style == '' && $this->hide[$j]) continue;
-				$tree = (($this->tree['col'] === $j)? ($this->tree['sub'][2][$v['id']] ?? '') . ' func ': '');
+				$tree = (($this->tree['col'] === $j)? ' tree func': '');
 				$td[] = array(
-					'class' => $tree . $this->show[$j],
+					'class' => $this->show[$j] . $tree,
 					'name'  => $this->col_en[$j],
 					'text'  => $this->e($v[$this->col_en[$j]] ?? ''),
 				);
 			}
 			
+			$tree = $this->tree['col']? ($this->tree['sub'][2][$v['id']] ?? ''): '';
 			$tr[] = array(
 				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
-				'attr' => 'data-id="' . $v['id'] . '"',
+				'attr' => 'data-id="' . $v['id'] . '" class="newdatalist ' . $tree . '"',
 			);
 		}
 		
@@ -1045,7 +1046,7 @@ class Yapa{
 		// tree view class
 		$arr = [];
 		foreach($tree as $k => $v){
-			$arr[$k] = 'tree s_' . $k . ' p_' . ((in_array($k, $this->config['root']) || !isset($tree[$v]))? '0': $v);
+			$arr[$k] = 's_' . $k . ' p_' . ((in_array($k, $this->config['root']) || !isset($tree[$v]))? '0': $v);
 		}
 		$result[] = $arr;
 		

@@ -886,7 +886,7 @@ function bindFormCheck2(uid){
 	var l = $('#' + uid + '_checked_list');
 	
 	f.find('.newdatalist').find('td.check').click(function(){
-		var id = $(this).closest('[data-id]').attr('data-id');
+		var id = $(this).closest('.datalist').attr('data-id');
 		var str = l.val();
 		
 		if($(this).find('.fa-check-square-o').length){
@@ -964,7 +964,7 @@ function bindFormTreeView(uid, back, col, admin){
 			$(btn).prop('disabled', true);
 		}else{
 			$(this).children().addClass('hidden');
-			$(this).find($(btn).attr('show')).parent().removeClass('hidden');
+			$(this).find($(btn).attr('show')).removeClass('hidden');
 			$(btn).prop('disabled', !f.find('.prev').attr('prev'));
 		}
 		
@@ -989,7 +989,7 @@ function bindFormTreeView2(uid, back){
 	});
 	
 	f.find('.newdatalist').find('td.tree').click(function(){
-		var tag = $(this).attr('class');
+		var tag = $(this).closest('.datalist').attr('class');
 		tag = tag.match(/s_([\w]+)/)[1];
 		if($(this).text() != ''){
 			f.find('.prev').attr('prev', f.find('.prev').attr('show'));
@@ -1042,7 +1042,7 @@ function bindFormViewComplete(uid, max, back, col, admin){
 		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
 			// select text
 			if(!getSelection().toString()){
-				t.val( $(this).closest('[data-id]').attr('data-id')).trigger('change');
+				t.val( $(this).closest('.datalist').attr('data-id')).trigger('change');
 				m.find('.hidden-create').show();
 				m.find('.hidden-modify').hide();
 				m.modal('show');

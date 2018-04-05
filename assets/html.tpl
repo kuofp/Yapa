@@ -87,7 +87,7 @@ if(typeof checkScript == 'undefined'){
 				<table class="table table-hover table-alter review" style="cursor: pointer;">
 					<tbody class="last">
 						<!-- @tr-->
-						<tr class="newdatalist" {attr}>
+						<tr {attr}>
 							<td class="check func" style="width: 30px;"><i class="fa fa-square-o"></i></td>
 							<!-- @td-->
 							<td class="{class}" name="{name}">{text}</td>
