@@ -267,7 +267,8 @@ class Yapa{
 			}
 			
 			$tr[] = array(
-				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false)
+				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
+				'attr' => 'data-id="' . $v['id'] . '"',
 			);
 		}
 		

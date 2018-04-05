@@ -838,7 +838,7 @@ function bindFormCheck(uid){
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
 			var check = [];
-			f.find('.datalist').not('.hidden').find('[name=id]').each(function(i){ check[i] = $(this).text();});
+			f.find('.datalist').not('.hidden').each(function(i){ check[i] = $(this).attr('data-id');});
 			f.find('.datalist').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
 			l.val(check.join());
 		}
@@ -886,7 +886,7 @@ function bindFormCheck2(uid){
 	var l = $('#' + uid + '_checked_list');
 	
 	f.find('.newdatalist').find('td.check').click(function(){
-		var id = $(this).closest('.datalist').find('[name=id]').text();
+		var id = $(this).closest('[data-id]').attr('data-id');
 		var str = l.val();
 		
 		if($(this).find('.fa-check-square-o').length){
@@ -914,10 +914,10 @@ function bindFormCheck2(uid){
 	
 	var str = l.val();
 	var arr = str.split(',');
-
+	
 	//clear select and select again
-	f.find('table.review').find('.newdatalist').find('[name=id]').each(function(){
-		if($.inArray( $(this).text(), arr ) != -1){
+	f.find('table.review').find('.newdatalist').each(function(){
+		if($.inArray( $(this).attr('data-id'), arr ) != -1){
 			$(this).closest('.newdatalist').addClass('highlight').find('td.check').find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
 		}
 	});
@@ -1042,7 +1042,7 @@ function bindFormViewComplete(uid, max, back, col, admin){
 		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
 			// select text
 			if(!getSelection().toString()){
-				t.val( $(this).parent().find('[name=id]').text()).trigger('change');
+				t.val( $(this).closest('[data-id]').attr('data-id')).trigger('change');
 				m.find('.hidden-create').show();
 				m.find('.hidden-modify').hide();
 				m.modal('show');
@@ -1145,22 +1145,15 @@ function bindFormAjaxOnRefresh(uid, url, max){
 							f.find('table.review').find('.last').prepend(jdata['data']);
 							break;
 						case 'modify':
-							var tmp = [];
-							$(jdata['data']).wrap('<tmp></tmp>').parent().find('.newdatalist').each(function(){
-								tmp[$(this).find('[name=id]').text()] = $(this);
-							});
-							f.find('table.review').find('[name=id]').filter(function(){
-								if($.inArray($(this).text(), arr_id) != -1){
-									$(this).parent('.datalist').replaceWith(tmp[$(this).text()]);
-								}
-							});
+							var tmp = $(jdata['data']);
+							for(var i in arr_id){
+								f.find('table.review').find('[data-id=' + arr_id[i] + ']').replaceWith(tmp.filter('[data-id=' + arr_id[i] + ']'));
+							}
 							break;
 						case 'delete':
-							f.find('table.review').find('[name=id]').each(function(){
-								if($.inArray($(this).text(), arr_id) != -1){
-									$(this).parent('.datalist').remove();
-								}
-							});
+							for(var i in arr_id){
+								f.find('table.review').find('[data-id=' + arr_id[i] + ']').remove();
+							}
 							break;
 						default:
 							break;
