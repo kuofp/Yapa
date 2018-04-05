@@ -1142,18 +1142,18 @@ class Yapa{
 	protected function split($str, $case = ''){
 		
 		$result = [];
-		
+		$regex = '/,[\s]*/'; // with a leading comma
 		switch($case){
 			case 'chain':
-				$arr = preg_split('/[\s,]+/', $str, 4);
+				$arr = preg_split($regex, $str, 4);
 				$arr[3] = json_decode($arr[3] ?? '[]', true);
 				$result = $arr;
 				break;
 			case 'label':
-				$result = preg_split('/[\s,]+/', $str, 2);
+				$result = preg_split($regex, $str, 2);
 				break;
 			default:
-				$result = preg_split('/[\s,]+/', $str);
+				$result = preg_split($regex, $str);
 				break;
 		}
 		
