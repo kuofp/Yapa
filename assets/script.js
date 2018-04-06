@@ -1014,7 +1014,7 @@ function bindFormViewComplete(uid, max, back, col, admin){
 	s.find('[name=search][auto]').on('input', function(){
 		if(timer){ clearTimeout(timer);}
 		timer = setTimeout(function(){
-			f.find('table.review').trigger('refresh',{type: 'review'});
+			f.find('table.review').trigger('refresh', {type: 'review'});
 		}, 1000);
 	});
 	
@@ -1023,7 +1023,11 @@ function bindFormViewComplete(uid, max, back, col, admin){
 		return false;
 	});
 	
-	a.on('change', function(){ f.find('table.review').trigger('refresh',{type: 'review'}); });
+	s.find('[refresh]').click(function(){
+		f.find('table.review').trigger('refresh', {type: 'review'});
+	});
+	
+	a.on('change', function(){ f.find('table.review').trigger('refresh', {type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormCheck( uid );

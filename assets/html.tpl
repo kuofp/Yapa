@@ -69,6 +69,11 @@ if(typeof checkScript == 'undefined'){
 			<div class="btn-group">
 				<div class="badge item-cnt"></div>
 			</div>
+			
+			<!-- refresh -->
+			<div class="btn btn-default pull-right" refresh>
+				<i class="fa fa-repeat"></i>
+			</div>
 			<!-- @search -->
 			</form>
 			<!-- main content area -->
