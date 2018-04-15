@@ -932,6 +932,7 @@ function bindFormTreeView(uid, back, col, admin){
 	var s = $('#' + uid + '_search_area');
 	var t = $('#' + uid + '_tree_view_complete');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
+	var box = {};
 	
 	m.find('form').eq(0).on('reset', function(){
 		setTimeout(function(){
@@ -960,6 +961,11 @@ function bindFormTreeView(uid, back, col, admin){
 	});
 	
 	f.find('.last').on('tree', function(){
+		// detach and gather td's
+		$(this).children().not('.hidden').each(function(){
+			box[$(this).attr('data-id')] = $(this).children().detach();
+		});
+		
 		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
 		}else{
@@ -967,6 +973,15 @@ function bindFormTreeView(uid, back, col, admin){
 			$(this).find($(btn).attr('show')).removeClass('hidden');
 			$(btn).prop('disabled', !f.find('.prev').attr('prev'));
 		}
+		
+		// detach or append
+		$(this).children().each(function(){
+			if($(this).hasClass('hidden')){
+				$(this).children().detach();
+			}else{
+				$(this).append(box[$(this).attr('data-id')]);
+			}
+		});
 		
 		if(!admin){
 			f.find('div.toollist').find('button.create').prop('disabled', $(btn).prop('disabled'));
