@@ -538,7 +538,7 @@ class Yapa{
 			}
 			
 			if($td){
-				$tmp = explode(' ', $this->show[$i]);
+				$tmp = $this->split($this->show[$i], 'space');
 				$arr = [];
 				foreach($tmp as $v){
 					if(in_array($v, ['hidden-create', 'hidden-modify'])){
@@ -735,7 +735,7 @@ class Yapa{
 			
 			//for search
 			if(isset($pdata['where']['SEARCH'])){
-				$keyword = $this->split($pdata['where']['SEARCH']);
+				$keyword = $this->split($pdata['where']['SEARCH'], 'space');
 				
 				for($j = 0; $j < count($keyword); $j++){
 					if(!empty($keyword[$j])){
@@ -1142,18 +1142,24 @@ class Yapa{
 	protected function split($str, $case = ''){
 		
 		$result = [];
-		$regex = '/,[\s]*/'; // with a leading comma
+		$regex = [
+			'/,[\s]*/', // with a leading comma
+			'/[\s]+/',  // at least one space
+		];
 		switch($case){
 			case 'chain':
-				$arr = preg_split($regex, $str, 4);
+				$arr = preg_split($regex[0], $str, 4);
 				$arr[3] = json_decode($arr[3] ?? '[]', true);
 				$result = $arr;
 				break;
 			case 'label':
-				$result = preg_split($regex, $str, 2);
+				$result = preg_split($regex[0], $str, 2);
+				break;
+			case 'space':
+				$result = preg_split($regex[1], trim($str));
 				break;
 			default:
-				$result = preg_split($regex, $str);
+				$result = preg_split($regex[0], $str);
 				break;
 		}
 		
