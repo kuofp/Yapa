@@ -98,21 +98,22 @@ $.fn.modal.Constructor.prototype.adjustDialog = function(){};
 
 jQuery.fn.extend({
 	_text: function(init){
-		$(this)._input('<input class="form-control input-sm" type="text"/>');
+		$(this)._input('<input type="text"/>');
 	},
 	_password: function(init){
-		$(this)._input('<input class="form-control input-sm" type="password"/>');
+		$(this)._input('<input type="password"/>');
 	},
 	_textarea: function(init){
-		$(this)._input('<textarea class="form-control input-sm" type="text" rows="7" style="resize: vertical"></textarea>');
+		$(this)._input('<textarea type="text" rows="7" style="resize: vertical"></textarea>');
 	},
 	
 	_input: function(str){
 		var tar = this;
 		var box = $(str);
 		
-		$(box).prop('disabled', $(tar).prop('disabled'));
+		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
 		$(tar).before(box);
+		$(tar).attr('class', 'hidden');
 		
 		$(box).on('input', function(){
 			$(tar).val($(box).val());
@@ -134,11 +135,12 @@ jQuery.fn.extend({
 	_select: function(init){
 		
 		var tar = this;
-		var box = $('<select class="form-control input-sm"><option value="0">請選擇</option></select>');
+		var box = $('<select><option value="0">請選擇</option></select>');
 		var tpl = JSON.parse(init.tpl || '[]');
 		
-		$(box).prop('disabled', $(tar).prop('disabled'));
+		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
 		$(tar).before(box);
+		$(tar).attr('class', 'hidden');
 		
 		for(var i in tpl){
 			var opt = $('<option></option>');
@@ -171,6 +173,7 @@ jQuery.fn.extend({
 		var dis = $(tar).prop('disabled');
 		
 		$(tar).before(box);
+		$(tar).attr('class', 'hidden');
 		
 		for(var i in tpl){
 			var opt = $('<div class="radio"><label><input type="radio"/></label></div>');
@@ -209,6 +212,7 @@ jQuery.fn.extend({
 		var dis = $(tar).prop('disabled');
 		
 		$(tar).before(box);
+		$(tar).attr('class', 'hidden');
 		
 		for(var i in tpl){
 			var opt = $('<div class="checkbox"><label><input type="checkbox"/></label></div>');
@@ -258,6 +262,7 @@ jQuery.fn.extend({
 		var col = $('<textarea></textarea>');
 		
 		$(tar).before(col);
+		$(tar).attr('class', 'hidden');
 		$(col).ckeditor();
 		
 		$(tar).closest('form').on('reset', function(){
@@ -301,15 +306,16 @@ jQuery.fn.extend({
 	_colorpicker: function() {
 		
 		var tar = this;
-		var box = $('<input class="form-control input-sm" type="text"/>');
+		var box = $('<input type="text"/>');
 		var pnl = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 190px; background: white; position: absolute; z-index: 1"></div>');
 		var cvs = $('<canvas width="100" height="100" style="border: 1px solid #c5c5c5; margin: 10px; float: left; cursor: crosshair;"></canvas>');
 		var cur = $('<div style="border: 1px solid #c5c5c5; margin: 10px; float: left; height: 40px; width: 40px"></div>');
 		var pre = $('<div style="border: 1px solid #c5c5c5; margin: 5px 10px; float: left; height: 20px; width: 20px"></div>');
 		var hex = $('<p style="float: left"></p>');
 		
-		$(box).prop('disabled', $(tar).prop('disabled'));
+		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
 		$(tar).before(box);
+		$(tar).attr('class', 'hidden');
 		$(tar).after(pnl);
 		$(pnl).append(cvs, cur, pre, hex);
 		
@@ -425,11 +431,11 @@ jQuery.fn.extend({
 	_datepicker: function(init){
 		
 		var tar = this;
-		var col = $('<input class="form-control input-sm" type="text">');
+		var col = $('<input type="text">');
 		var tpl = init.tpl || 'Y-m-d';
 		
-		$(col).prop('disabled', $(tar).prop('disabled'));
-		
+		$(col).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
+		$(tar).attr('class', 'hidden');
 		$(tar).before(col);
 		
 		$(tar).closest('form').on('reset', function(){
@@ -491,9 +497,9 @@ jQuery.fn.extend({
 		var box = $('<div></div>');
 		var timer = 0;// delay loading
 		
-		$(col).prop('disabled', $(tar).prop('disabled'));
-		
+		$(col).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
 		$(tar).before(col);
+		$(tar).attr('class', 'hidden');
 		$(tar).before(box);
 		
 		$(tar).closest('form').on('reset', function(){
@@ -607,8 +613,10 @@ jQuery.fn.extend({
 		var tar = this;
 		var box = $('<div></div>');
 		var tpl = JSON.parse(init.tpl || '[]');
+		var cls = $(tar).attr('class');
 		
 		$(tar).before(box);
+		$(tar).attr('class', 'hidden');
 		
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
@@ -652,9 +660,9 @@ jQuery.fn.extend({
 			for(var i in obj){
 				
 				// prevernt xss
-				ctl[i] = $('<span class="label label-default"></span><input class="form-control input-sm">');
+				ctl[i] = $('<span class="label label-default"></span><input>');
 				ctl[i].eq(0).text(txt[i] || i);
-				ctl[i].eq(1).val(obj[i]);
+				ctl[i].eq(1).attr('class', cls).val(obj[i]);
 				
 				$(ctl[i]).prop('disabled', $(tar).prop('disabled'));
 				box.append(ctl[i]);
@@ -687,6 +695,7 @@ jQuery.fn.extend({
 		$(tar).before(ctl);
 		$(tar).before(style);
 		$(tar).after(box);
+		$(tar).attr('class', 'hidden');
 		
 		$(ctl).change(function(e){
 			var upload = this;
