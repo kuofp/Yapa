@@ -93,11 +93,19 @@ class Yapa{
 		$this->col_num = count($col_en);
 		$this->uid = 0;
 		
-		$this->tpl = new Yatp(__DIR__ . '/assets/html.tpl');
+		$this->path_html = $this->config['path_html'] ?? (__DIR__ . '/assets/html.tpl');
+		$this->path_js   = $this->config['path_js']   ?? (__DIR__ . '/assets/script.js');
+		
+		$this->tpl = new Yatp($this->path_html);
 	}
 	
 	public function __destruct(){
 		
+	}
+	
+	public function script(){
+		
+		echo file_get_contents($this->path_js);
 	}
 	
 	public function getTable(){
@@ -452,11 +460,6 @@ class Yapa{
 		//}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
-	}
-	
-	public function script(){
-		
-		echo file_get_contents(__DIR__ . '/assets/script.js');
 	}
 	
 	public function genFormModal($preset){
