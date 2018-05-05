@@ -52,7 +52,7 @@ if(typeof checkScript == 'undefined'){
 			<form id="{unique_id}_search_area">
 			<!-- @search -->
 			<div class="btn-group toollist">
-				<button type="button" class="btn btn-default main">操作</button>
+				<button type="button" class="btn btn-default main"><i class="fa fa-cog" aria-hidden="true"></i></button>
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<span class="caret"></span>
 					<span class="sr-only">Toggle Dropdown</span>
@@ -62,7 +62,7 @@ if(typeof checkScript == 'undefined'){
 			
 			<!-- search and advance search option which accept more keywords -->
 			<div class="btn-group">
-				<input class="form-control" name="search" placeholder="搜尋" style="width: 160px" auto/>
+				<input class="form-control" name="search" style="width: 160px" auto/>
 			</div>
 			
 			<!-- info area -->
@@ -101,8 +101,8 @@ if(typeof checkScript == 'undefined'){
 						<!-- @tr-->
 					</tbody>
 				</table>
-				<p class="end" align="center">資料底端，沒有找到更多</p>
-				<button class="btn btn-default btn-block review" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> 載入中">顯示更多{max}筆+</button>
+				<p class="end" align="center"></p>
+				<button class="btn btn-default btn-block review"></button>
 			</div>
 			
 			<div class="info"></div>
@@ -188,7 +188,7 @@ if(typeof checkScript == 'undefined'){
 		<div class="modal-header" style="border: none">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
 			<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#{unique_id}_home">詳細資訊</a></li>
+				<li class="active"><a data-toggle="tab" href="#{unique_id}_home"></a></li>
 			</ul>
 		</div>
 		<div class="modal-body">

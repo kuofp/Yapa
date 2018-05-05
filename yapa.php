@@ -105,7 +105,8 @@ class Yapa{
 	
 	public function script(){
 		
-		echo file_get_contents($this->path_js);
+		$lang = new Yatp(__DIR__ . '/assets/lang.php');
+		echo file_get_contents($this->path_js) . $lang->render(false);
 	}
 	
 	public function getTable(){
@@ -219,7 +220,7 @@ class Yapa{
 				'tr'        => '',
 				'th'        => $this->tpl->block('main.th')->nest($th),
 				'max'       => $this->config['perpage'] ?? 50,
-				'back'      => ($this->tree['col'] !== null)? '返回上一階': '',
+				'back'      => ($this->tree['col'] !== null),
 				'search'    => $option['search'] ?? $this->tpl->block('main.search')->render(false),
 				'col'       => $this->col_en[$this->tree['col']] ?? '',
 				'admin'     => $this->config['admin'] ?? '',
@@ -582,7 +583,7 @@ class Yapa{
 		$this->tpl->block('modal-detail')->assign(array(
 			'unique_id' => $this->unique_id,
 			'width' => $this->config['modal-width'] ?? '760px',
-			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr)
+			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr),
 		))->render();
 		
 		return $result;

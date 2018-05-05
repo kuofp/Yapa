@@ -1,13 +1,20 @@
 ﻿function checkScript(){}
 
+function _gettext(str){
+	// see lang.php
+	var i18n = {};
+	
+	return i18n[str] || str;
+}
+
 function customAlert(arr){
 	var code = arr.code || 0;
 	var text = arr.text || '';
-	var info = ['<i class="fa fa-check-circle"></i> 成功', '<i class="fa fa-times-circle"></i> 錯誤', '<i class="fa fa-exclamation-circle"></i> 警告'];
+	var info = ['<i class="fa fa-check-circle"></i> ', '<i class="fa fa-times-circle"></i> ', '<i class="fa fa-exclamation-circle"></i> '];
 	var type = ['success', 'danger', 'warning'];
 	
 	if(text){
-		var alert = $('<div style="height: 1px; width: 100%; position: fixed; top: 0px; z-index: 1500;"><div class="alert alert-' + type[code] + '" style="width: 320px; position: relative; margin: auto;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><p><strong>' + info[code] + ': </strong>' + text + '</p></div></div>');
+		var alert = $('<div style="height: 1px; width: 100%; position: fixed; top: 0px; z-index: 1500;"><div class="alert alert-' + type[code] + '" style="width: 320px; position: relative; margin: auto;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><p><strong>' + info[code] + '</strong>' + text + '</p></div></div>');
 		setTimeout(function(){
 			$(alert).fadeOut(function(){
 				$(this).remove();
@@ -17,16 +24,16 @@ function customAlert(arr){
 	}
 }
 
-function open(verb, url, data, target) {
+function open(verb, url, data, target){
 	var form = document.createElement('form');
 	form.action = url;
 	form.method = verb;
 	form.target = target || '_self';
-	if (data) {
-		for (var key in data) {
+	if(data){
+		for(var key in data){
 			var input = document.createElement('textarea');
 			input.name = key;
-			input.value = typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
+			input.value = typeof data[key] === 'object'? JSON.stringify(data[key]): data[key];
 			form.appendChild(input);
 		}
 	}
@@ -135,7 +142,7 @@ jQuery.fn.extend({
 	_select: function(init){
 		
 		var tar = this;
-		var box = $('<select><option value="0">請選擇</option></select>');
+		var box = $('<select><option value="0"></option></select>');
 		var tpl = JSON.parse(init.tpl || '[]');
 		
 		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
@@ -246,7 +253,7 @@ jQuery.fn.extend({
 					arr[tmp[i]] = 1;
 				}
 			}
-			//prop('checked', false) v.s. attr('checked', false) attr會使checked完全移除, form reset時預設值的checked不會勾選
+			// prop('checked', false) v.s. attr('checked', false): attr() would remove `checked` completely, and `checked` cant be added while form is reset
 			$(box).find('input').prop('checked', false).each(function(){
 				if(arr[$(this).val()] || 0)
 					$(this).prop('checked', true);
@@ -705,7 +712,7 @@ jQuery.fn.extend({
 				cnt = 0;
 				$(tar).val('');
 			}else if(cnt >= max){
-				//customAlert({code: 1, text: '圖片數量達上限' + max + '張'});
+				//customAlert({code: 1, text: 'exceed limit ' + max});
 				$(upload).val('');
 				return false;
 			}
@@ -940,7 +947,7 @@ function bindFormTreeView(uid, back, col, admin){
 	var m = $('#' + uid + '_Modal');
 	var s = $('#' + uid + '_search_area');
 	var t = $('#' + uid + '_tree_view_complete');
-	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + back + '</button>');
+	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + _gettext('Back to previous level') + '</button>');
 	var box = {};
 	
 	m.find('form').eq(0).on('reset', function(){
@@ -1035,6 +1042,8 @@ function bindFormViewComplete(uid, max, back, col, admin){
 	var s = $('#' + uid + '_search_area');
 	var timer = 0;// delay loading
 	
+	s.find('[name=search][auto]').attr('placeholder', _gettext('Search'));
+	
 	s.find('[name=search][auto]').on('input', function(){
 		if(timer){ clearTimeout(timer);}
 		timer = setTimeout(function(){
@@ -1099,6 +1108,10 @@ function bindFormAjaxOnRefresh(uid, url, max){
 	var r = $('#' + uid + '_review_complete');
 	var s = $('#' + uid + '_search_area');
 	var a = $('#' + uid + '_search_adv');
+	
+	f.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
+	f.find('button.review').text(_gettext('Show more items +') + max);
+	f.find('p.end').text(_gettext('Reach the bottom of list'));
 	
 	f.find('table.review').on('refresh', function (e,obj){
 		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
@@ -1193,7 +1206,7 @@ function bindFormAjaxOnRefresh(uid, url, max){
 				r.trigger('change');
 			},
 			error: function(){
-				alert('請重新整理畫面後再嘗試');
+				alert(_gettext('Reload the page and try again'));
 			}
 		});
 	}).trigger('refresh',{type: 'review'});
@@ -1202,6 +1215,8 @@ function bindFormAjaxOnRefresh(uid, url, max){
 function bindFormAjaxByMethod(uid, url, method){
 	var f = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
+	
+	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
 	
 	m.find('button.' + method).click(function(){
 		var btn = $(this).addClass('buttonLoading').button('loading');
@@ -1224,7 +1239,7 @@ function bindFormAjaxByMethod(uid, url, method){
 				$('.buttonLoading').button('reset');
 			},
 			error: function(){
-				alert('請重新整理畫面後再嘗試');
+				alert(_gettext('Reload the page and try again'));
 			}
 		});
 	});
@@ -1234,8 +1249,8 @@ function bindFormCreateTool(uid, url){
 	var f = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	
-	f.find('div.toollist').find('button.main').text('新增').addClass('create');
-	m.find('.modal-footer').append('<button class="btn btn-primary create hidden-modify">新增</button>');
+	f.find('div.toollist').find('button.main').text(_gettext('Add')).addClass('create');
+	m.find('.modal-footer').append('<button class="btn btn-primary create hidden-modify">' + _gettext('Save') + '</button>');
 	f.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
 		m.find('form')[0].reset();
@@ -1251,7 +1266,7 @@ function bindFormCreateTool(uid, url){
 function bindFormModifyTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
-	m.find('.modal-footer').append('<button class="btn btn-primary modify hidden-create">儲存</button>');
+	m.find('.modal-footer').append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
 	bindFormAjaxByMethod(uid, url, 'modify');
 }
 
@@ -1261,9 +1276,9 @@ function bindFormDeleteTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	var t = $('#' + uid + '_target_id');
 	
-	m.find('.modal-footer').append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> 刪除</button>');
+	m.find('.modal-footer').append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
 	m.find('button.delete').click(function(){
-		if(confirm('確定要刪除?')){
+		if(confirm(_gettext('Are you sure to DELETE this?'))){
 			var btn = $(this).addClass('buttonLoading').button('loading');
 			var pdata={data:{},where:{ AND:{}}};
 			
@@ -1292,8 +1307,8 @@ function bindFormExportTool(uid, url){
 	var f = $('#' + uid + '_panel');
 	var t = $('title').text();
 	
-	var p = $('<li><a href="#">列印表格</a></li>');
-	var e = $('<li><a href="#">匯出至Excel表格</a></li>');
+	var p = $('<li><a href="#">' + _gettext('Print') + '</a></li>');
+	var e = $('<li><a href="#">' + _gettext('Export to xls') + '</a></li>');
 	
 	f.find('ul.toollist').append(p).append(e);
 	
@@ -1394,7 +1409,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 				customAlert(jdata);
 			},
 			error: function(){
-				alert('請重新整理畫面後再嘗試');
+				alert(_gettext('Reload the page and try again'));
 			}
 		}); 
 	});
