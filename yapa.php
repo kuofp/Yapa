@@ -247,6 +247,16 @@ class Yapa{
 		// tree view
 		$this->tree($datas);
 		
+		foreach($datas['data'] as $k=>$v){
+			for($i = 0; $i < $this->col_num; $i++){
+				if($this->attr[$i]['i18n'] ?? 0){
+					$text = $v[$this->col_en[$i]] ?? '';
+					$text = _($text);
+					$datas['data'][$k][$this->col_en[$i]] = $text;
+				}
+			}
+		}
+		
 		// custom callback before rendering
 		if($callback){
 			$datas = call_user_func($callback, $datas);
@@ -265,13 +275,13 @@ class Yapa{
 		
 		foreach($datas['data'] as $k=>$v){
 			$td = [];
-			for($j = 0; $j < $this->col_num; $j++){
-				if($style == '' && $this->hide[$j]) continue;
-				$tree = (($this->tree['col'] === $j)? ' tree func': '');
+			for($i = 0; $i < $this->col_num; $i++){
+				if($style == '' && $this->hide[$i]) continue;
+				$tree = (($this->tree['col'] === $i)? ' tree func': '');
 				$td[] = array(
-					'class' => $this->show[$j] . $tree,
-					'name'  => $this->col_en[$j],
-					'text'  => $this->e($v[$this->col_en[$j]] ?? ''),
+					'class' => $this->show[$i] . $tree,
+					'name'  => $this->col_en[$i],
+					'text'  => $this->e($v[$this->col_en[$i]] ?? ''),
 				);
 			}
 			
@@ -510,7 +520,11 @@ class Yapa{
 						
 						$tpl = [];
 						foreach($datas as $arr){
-							$tpl[$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
+							$text = $arr[$arr_tmp[1]];
+							if($this->attr[$i]['i18n'] ?? 0){
+								$text = _($text);
+							}
+							$tpl[$arr[$arr_tmp[2]]] = $text;
 						}
 						$tpl = json_encode($tpl);
 					}
