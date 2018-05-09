@@ -1,7 +1,7 @@
 ﻿
 function _gettext(str){
 	var i18n = {
-		'Reload the page could fix this': '<?=_('Reload the page and try again')?>',
+		'Reload the page and try again': '<?=_('Reload the page and try again')?>',
 		'Are you sure to DELETE this?': '<?=_('Are you sure to DELETE this?')?>',
 		'Search': '<?=_('Search')?>',
 		'Add': '<?=_('Add')?>',
