@@ -1218,8 +1218,6 @@ function bindFormAjaxByMethod(uid, url, method){
 	var f = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	
-	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
-	
 	m.find('button.' + method).click(function(){
 		var btn = $(this).addClass('buttonLoading').button('loading');
 		var pdata={data:{},where:{AND:{}}};
@@ -1373,6 +1371,9 @@ function bindInputAjaxOnChange(uid, url, type, col){
 	var t = $('#' + uid + '_target_id');
 	var c = $('#' + uid + '_change_complete');
 	var f = $('#' + uid + '_Modal').find('form').eq(0);
+	var m = $('#' + uid + '_Modal');
+	
+	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
 	
 	t.change(function(){
 		var pdata={
