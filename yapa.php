@@ -265,8 +265,8 @@ class Yapa{
 		$style = $_REQUEST['style'] ?? '';
 		
 		$th = array_map(function($v){
-				return array('text' => $v);
-			}, $this->col_ch);
+			return array('text' => $v);
+		}, $this->col_ch);
 		
 		// produce tr
 		$block = $style? 'table.print': 'main';
@@ -655,7 +655,7 @@ class Yapa{
 			
 		}else{
 			$table = $this->table;
-			$arr_col = $pdata['data']? $pdata['data']: '*';
+			$arr_col = $pdata['data']?: '*';
 		}
 		
 		if($result['code']){
@@ -816,7 +816,7 @@ class Yapa{
 			
 			//dd($pdata['where']);
 			
-			$where = isset($pdata['where'])?$pdata['where']:'';
+			$where = $pdata['where'] ?? '';
 			if(empty($arr_chain)){ $datas = $this->database->select($this->table, '*', $where);}
 			else{ $datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);}
 			
