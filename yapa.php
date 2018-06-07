@@ -524,7 +524,7 @@ class Yapa{
 							if($this->attr[$i]['i18n'] ?? 0){
 								$text = _($text);
 							}
-							$tpl[$arr[$arr_tmp[2]]] = $text;
+							$tpl[] = [$arr[$arr_tmp[2]], $text]; // JS won't ensure the order of numeric keys
 						}
 						$tpl = json_encode($tpl);
 					}

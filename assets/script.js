@@ -151,7 +151,7 @@ jQuery.fn.extend({
 		
 		for(var i in tpl){
 			var opt = $('<option></option>');
-			opt.val(i).text(tpl[i]);
+			opt.val(tpl[i][0]).text(tpl[i][1]);
 			$(box).append(opt);
 		}
 		
@@ -184,7 +184,7 @@ jQuery.fn.extend({
 		
 		for(var i in tpl){
 			var opt = $('<div class="radio"><label><input type="radio"/></label></div>');
-			opt.find('input').prop('disabled', dis).val(i).after(tpl[i]);
+			opt.find('input').prop('disabled', dis).val(tpl[i][0]).after(tpl[i][1]);
 			if(!dis){
 				opt.find('input').click(function(){
 					$(tar).val($(this).val()).trigger('preset');
@@ -223,7 +223,7 @@ jQuery.fn.extend({
 		
 		for(var i in tpl){
 			var opt = $('<div class="checkbox"><label><input type="checkbox"/></label></div>');
-			opt.find('input').prop('disabled', dis).val(i).after(tpl[i]);
+			opt.find('input').prop('disabled', dis).val(tpl[i][0]).after(tpl[i][1]);
 			if(!dis){
 				opt.find('input').click(function(){
 					var arr = [];
