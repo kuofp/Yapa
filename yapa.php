@@ -8,8 +8,6 @@ class Yapa{
 	private $table;
 	public $col_en = [];
 	public $col_ch = [];
-	private $empty_chk = [];
-	private $exist_chk = [];
 	private $chain_chk = [];
 	public $show = [];
 	public $type = [];
@@ -27,7 +25,7 @@ class Yapa{
 	
 	private $tpl;
 	
-	public function __construct($file, $table, $col_en, $col_ch, $empty_chk, $exist_chk, $chain_chk, $show, $type, $auth, $medoo, $config = []){
+	public function __construct($file, $table, $col_en, $col_ch, $chain_chk, $show, $type, $auth, $medoo, $config = []){
 		
 		$this->unique_id = 'form' . uniqid();
 		
@@ -75,8 +73,6 @@ class Yapa{
 		$this->col_en = $col_en;
 		$this->col_ch = $label[0];
 		$this->info = $label[1];
-		$this->empty_chk = $empty_chk;
-		$this->exist_chk = $exist_chk;
 		$this->chain_chk = $chain;
 		$this->show = $show;
 		$this->hide = $hide;
@@ -97,6 +93,8 @@ class Yapa{
 		$this->path_js   = $this->config['path_js']   ?? (__DIR__ . '/assets/script.js');
 		
 		$this->tpl = new Yatp($this->path_html);
+		
+		$this->decodeJson();
 	}
 	
 	public function __destruct(){
@@ -127,7 +125,9 @@ class Yapa{
 		return $result;
 	}
 	
-	public function decodeJson($pdata){
+	public function decodeJson(){
+		
+		$pdata = $_REQUEST;
 		
 		$result = ['pdata' => []];
 		
@@ -346,13 +346,8 @@ class Yapa{
 			// fail
 		}else{
 			$pdata['data']['id'] = 0; //clear id, create don't need id
-			$result = $this->dataCheck($pdata['data']);
-			if($result['code']){
-				// dataCheck fail
-			}else{
-				$this->database->insert($this->table, $pdata['data']);
-				$result['data'] = $this->database->id();
-			}
+			$this->database->insert($this->table, $pdata['data']);
+			$result['data'] = $this->database->id();
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -382,14 +377,9 @@ class Yapa{
 		if($result['code']){
 			// fail
 		}else{
-			$result = $this->dataCheck($pdata['data']);
-			if($result['code']){
-				// dataCheck fail
-			}else{
-				$pdata['where']['AND']['id'] = $pdata['data']['id'];
-				$this->database->update($this->table, $pdata['data'], $pdata['where']);
-				$result['data'] = $pdata['data']['id'];
-			}
+			$pdata['where']['AND']['id'] = $pdata['data']['id'];
+			$this->database->update($this->table, $pdata['data'], $pdata['where']);
+			$result['data'] = $pdata['data']['id'];
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -481,12 +471,6 @@ class Yapa{
 		for($i = 0; $i < $this->col_num; $i++){
 			
 			$info = $this->info[$i];
-			if($this->empty_chk[$i]){
-				$info .= '(必填)';
-			}
-			if($this->exist_chk[$i]){
-				$info .= '(唯一)';
-			}
 			
 			$td = '';
 			$tpl = '';
@@ -960,57 +944,6 @@ class Yapa{
 				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
 			))->render();
 		}
-		
-		return $result;
-	}
-	
-	public function dataCheck(&$data){
-		
-		$result = ['code' => 0, 'text' => ''];
-		$tmp = [];
-		
-		for($i = 0; $i < $this->col_num; $i++){
-			if($this->type[$i] == 'value') continue;
-			
-			if($this->empty_chk[$i] == 1){
-				switch($this->type[$i]){
-					case 'autocomplete':
-					case 'select':
-					case 'radiobox':
-						if(!isset($data[$this->col_en[$i]]) || $data[$this->col_en[$i]] == 0){
-							$result = ['code' => 1, 'text' => '請檢查必填欄位'];
-						}
-						break;
-					default:
-						if(!isset($data[$this->col_en[$i]]) || $data[$this->col_en[$i]] == ''){
-							$result = ['code' => 1, 'text' => '請檢查必填欄位'];
-						}
-						break;
-				}
-			}
-			
-			if($this->exist_chk[$i] == 1){
-				
-				if($data[$this->col_en[$i]] ?? ''){
-					$count = 0;
-					if($data['id']){
-						$count = $this->database->count($this->table, array('AND'=>array($this->col_en[$i] => $data[$this->col_en[$i]], 'id[!]'=>$data['id']) ));
-					}else{
-						$count = $this->database->count($this->table, array($this->col_en[$i] => $data[$this->col_en[$i]]));
-					}
-					if($count > 0){
-						$result = ['code' => 1, 'text' => '請檢查重複值'];
-					}
-				}
-			}
-			
-			// valid col
-			if(isset($data[$this->col_en[$i]])){
-				$tmp[$this->col_en[$i]] = $data[$this->col_en[$i]];
-			}
-		}
-		
-		$data = $tmp;
 		
 		return $result;
 	}
