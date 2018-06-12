@@ -330,8 +330,13 @@ class Yapa{
 			// fail
 		}else{
 			$pdata['data']['id'] = 0; //clear id, create don't need id
-			$this->database->insert($this->table, $pdata['data']);
-			$result['data'] = $this->database->id();
+			$data = $this->database->insert($this->table, $pdata['data']);
+			
+			if($data->rowCount()){
+				$result['data'] = $this->database->id();
+			}else{
+				$result = ['code' => 1, 'text' => '操作失敗'];
+			}
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -345,8 +350,13 @@ class Yapa{
 			// fail
 		}else{
 			$pdata['where']['AND']['id'] = $pdata['data']['id'];
-			$this->database->update($this->table, $pdata['data'], $pdata['where']);
-			$result['data'] = $pdata['data']['id'];
+			$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
+			
+			if($data->rowCount()){
+				$result['data'] = $pdata['data']['id'];
+			}else{
+				$result = ['code' => 1, 'text' => '操作失敗'];
+			}
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -359,11 +369,12 @@ class Yapa{
 		if($result['code']){
 			// fail
 		}else{
-			$delete = $this->database->delete($this->table, $pdata['where']);
-			if($delete->rowCount() == 0){
-				$result = ['code' => 1, 'text' => '刪除失敗'];
-			}else{
+			$data = $this->database->delete($this->table, $pdata['where']);
+			
+			if($data->rowCount()){
 				$result['data'] = $pdata['where']['AND']['id'];
+			}else{
+				$result = ['code' => 1, 'text' => '操作失敗'];
 			}
 		}
 		
