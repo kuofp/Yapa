@@ -97,18 +97,10 @@ class Yapa{
 		$this->decodeJson();
 	}
 	
-	public function __destruct(){
-		
-	}
-	
 	public function script(){
 		
 		$lang = new Yatp(__DIR__ . '/assets/lang.php');
 		echo file_get_contents($this->path_js) . $lang->render(false);
-	}
-	
-	public function getTable(){
-		return $this->table;
 	}
 	
 	public function authCheck($mode){
