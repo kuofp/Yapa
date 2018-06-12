@@ -347,11 +347,12 @@ class Yapa{
 		}else{
 			$pdata['where']['AND']['id'] = $pdata['data']['id'];
 			$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
+			$result['data'] = $pdata['data']['id'];
 			
 			if($data->rowCount()){
-				$result['data'] = $pdata['data']['id'];
+				
 			}else{
-				$result = ['code' => 1, 'text' => '操作失敗'];
+				$result['text'] = '無任何變更';
 			}
 		}
 		
