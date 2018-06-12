@@ -228,10 +228,19 @@ class Yapa{
 		
 			$this->genFormModal($preset);
 			$this->ajaxOnChange();
-			$this->createTool();
-			$this->modifyTool();
-			$this->deleteTool();
-			$this->exportTool();
+			
+			foreach(['create', 'modify', 'delete', 'export'] as $v){
+				$auth = ($v == 'export')? 'review': $v;
+				$result = $this->authCheck($auth);
+				if($result['code']){
+					// fail
+				}else{
+					$this->tpl->block($v)->assign(array(
+						'unique_id' => $this->unique_id,
+						'url' => $this->file,
+					))->render();
+				}
+			}
 		}
 		
 		return $result;
@@ -321,23 +330,6 @@ class Yapa{
 		return $result;
 	}
 	
-	//create
-	public function createTool(){
-		
-		$result = $this->authCheck('create');
-		
-		if($result['code']){
-			// fail
-		}else{
-			$this->tpl->block('create')->assign(array(
-				'unique_id' => $this->unique_id,
-				'url'       => $this->file,
-			))->render();
-		}
-		
-		return $result;
-	}
-	
 	public function create($pdata){
 		
 		$result = $this->authCheck('create');
@@ -353,23 +345,6 @@ class Yapa{
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
-	//modify
-	public function modifyTool(){
-		
-		$result = $this->authCheck('modify');
-		
-		if($result['code']){
-			// fail
-		}else{
-			$this->tpl->block('modify')->assign(array(
-				'unique_id' => $this->unique_id,
-				'url'       => $this->file,
-			))->render();
-		}
-		
-		return $result;
-	}
-	
 	public function modify($pdata){
 		
 		$result = $this->authCheck('modify');
@@ -383,23 +358,6 @@ class Yapa{
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
-	}
-	
-	//delete
-	public function deleteTool(){
-		
-		$result = $this->authCheck('delete');
-		
-		if($result['code']){
-			// fail
-		}else{
-			$this->tpl->block('delete')->assign(array(
-				'unique_id' => $this->unique_id,
-				'url'       => $this->file,
-			))->render();
-		}
-		
-		return $result;
 	}
 	
 	public function delete($pdata){
@@ -418,22 +376,6 @@ class Yapa{
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
-	}
-	
-	public function exportTool(){
-		
-		$result = $this->authCheck('review');
-		
-		if($result['code']){
-			// fail
-		}else{
-			$this->tpl->block('export')->assign(array(
-				'unique_id'   => $this->unique_id,
-				'url'         => $this->file,
-			))->render();
-		}
-		
-		return $result;
 	}
 	
 	public function upload(){
