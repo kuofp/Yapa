@@ -4,11 +4,11 @@ class Yapa{
 	
 	public $unique_id;
 	
-	public $file;
+	public $url;
 	private $table;
 	public $col_en = [];
 	public $col_ch = [];
-	private $chain_chk = [];
+	private $join = [];
 	public $show = [];
 	public $type = [];
 	private $auth = [];
@@ -25,11 +25,11 @@ class Yapa{
 	
 	private $tpl;
 	
-	public function __construct($file, $table, $col_en, $col_ch, $chain_chk, $show, $type, $auth, $medoo, $config = []){
+	public function __construct($url, $table, $col_en, $col_ch, $join, $show, $type, $auth, $medoo, $config = []){
 		
 		$this->unique_id = 'form' . uniqid();
 		
-		$this->file = $file;
+		$this->url = $url;
 		$this->table = $table;
 		
 		// separate label and info
@@ -40,10 +40,10 @@ class Yapa{
 			$label[1][] = $tmp[1] ?? '';
 		}
 		
-		// join chain
+		// join
 		$chain = [];
 		$tree = ['col' => null];
-		foreach($chain_chk as $k=>$v){
+		foreach($join as $k=>$v){
 			$chain[] = $v? $this->split($v, 'chain'): '';
 			// tree view check
 			if($config['tree'] ?? 0){
@@ -73,7 +73,7 @@ class Yapa{
 		$this->col_en = $col_en;
 		$this->col_ch = $label[0];
 		$this->info = $label[1];
-		$this->chain_chk = $chain;
+		$this->join = $chain;
 		$this->show = $show;
 		$this->hide = $hide;
 		$this->type = $attr[0];
@@ -208,7 +208,7 @@ class Yapa{
 			$this->tpl->block('main')->assign(array(
 				'unique_id' => $this->unique_id,
 				'query'     => $this->e(json_encode($query)),
-				'url'       => $this->file,
+				'url'       => $this->url,
 				'tr'        => '',
 				'th'        => $this->tpl->block('main.th')->nest($th),
 				'max'       => $this->config['perpage'] ?? 50,
@@ -229,7 +229,7 @@ class Yapa{
 				}else{
 					$this->tpl->block($v)->assign(array(
 						'unique_id' => $this->unique_id,
-						'url' => $this->file,
+						'url' => $this->url,
 					))->render();
 				}
 			}
@@ -433,7 +433,7 @@ class Yapa{
 				case 'autocomplete':
 					
 					if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
-						$arr_tmp = $this->chain_chk[$i];
+						$arr_tmp = $this->join[$i];
 						$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 						
 						$tpl = [];
@@ -466,7 +466,7 @@ class Yapa{
 						'uid'   => $uid,
 						'tpl'   => $tpl,
 						'max'   => $this->attr[$i]['max'] ?? 1,
-						'url'   => $this->file,
+						'url'   => $this->url,
 					]);
 					break;
 				default:
@@ -531,7 +531,7 @@ class Yapa{
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
-					$arr_tmp = $this->chain_chk[$i];
+					$arr_tmp = $this->join[$i];
 					$table = $arr_tmp[0];
 					$arr_col = array(
 						$arr_tmp[1] . '(label)',
@@ -604,9 +604,9 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				// skip
 				if($this->type[$i] == 'value') continue;
-				if($this->chain_chk[$i]){
+				if($this->join[$i]){
 					if(!in_array($this->type[$i], ['checkbox', 'autocomplete'])){
-						$arr_tmp = $this->chain_chk[$i];
+						$arr_tmp = $this->join[$i];
 						$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
 						$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
 					}
@@ -617,7 +617,7 @@ class Yapa{
 			
 			if($this->tree['col'] !== null){
 				$col = $this->col_en[$this->tree['col']];
-				$arr_tmp = $this->chain_chk[$this->tree['col']];
+				$arr_tmp = $this->join[$this->tree['col']];
 				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
 				
 				$tmp = [];
@@ -683,15 +683,15 @@ class Yapa{
 							if($this->type[$i] == 'password') continue;
 							if($this->tree['col'] === $i) continue;
 							if($this->type[$i] == 'autocomplete' || $this->type[$i] == 'checkbox'){
-								$arr_tmp = $this->chain_chk[$i];
+								$arr_tmp = $this->join[$i];
 								$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $keyword[$j], 'LIMIT' => 1000]);
 								if($ids){
 									// find in a comma separated string (not a precise approach yet)
 									$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $ids;
 								}
 								
-							}else if($this->chain_chk[$i]){
-								$arr_tmp = $this->chain_chk[$i];
+							}else if($this->join[$i]){
+								$arr_tmp = $this->join[$i];
 								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
 							}else{
 								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $keyword[$j];
@@ -747,7 +747,7 @@ class Yapa{
 					switch($this->type[$j]){
 						case 'checkbox':
 							$arr_mark[$j] = [];
-							$arr_tmp = $this->chain_chk[$j];
+							$arr_tmp = $this->join[$j];
 							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
 							
 							foreach($datas_checkbox as $arr){
@@ -765,7 +765,7 @@ class Yapa{
 							}
 							
 							$arr_mark[$j] = [];
-							$arr_tmp = $this->chain_chk[$j];
+							$arr_tmp = $this->join[$j];
 							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]), array($arr_tmp[2] => $ids));
 							
 							foreach($datas_checkbox as $arr){
@@ -873,7 +873,7 @@ class Yapa{
 		}else{
 			$this->tpl->block('change')->assign(array(
 				'unique_id' => $this->unique_id,
-				'url'       => $this->file,
+				'url'       => $this->url,
 				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
 				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
 			))->render();
