@@ -184,10 +184,6 @@ class Yapa{
 	//review
 	public function reviewTool($option = []){
 		
-		$style  = $_REQUEST['style'] ?? '';
-		$query  = json_decode($_REQUEST['query'] ?? '{}');
-		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
-		
 		$result = $this->authCheck('review');
 		
 		if($result['code']){
@@ -197,7 +193,7 @@ class Yapa{
 			$th = [];
 			for($i = 0; $i < $this->col_num; $i++){
 				// order settings
-				if($style == '' && $this->hide[$i]) continue;
+				if($this->hide[$i]) continue;
 				$th[] = array(
 					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' order': ''),
 					'name'  => $this->col_en[$i],
@@ -207,7 +203,7 @@ class Yapa{
 			
 			$this->tpl->block('main')->assign(array(
 				'unique_id' => $this->unique_id,
-				'query'     => $this->e(json_encode($query)),
+				'query'     => $this->e($_REQUEST['query'] ?? '{}'),
 				'url'       => $this->url,
 				'tr'        => '',
 				'th'        => $this->tpl->block('main.th')->nest($th),
@@ -218,7 +214,7 @@ class Yapa{
 				'admin'     => $this->config['admin'] ?? '',
 			))->render();
 		
-			$this->genFormModal($preset);
+			$this->genFormModal();
 			$this->ajaxOnChange();
 			
 			foreach(['create', 'modify', 'delete', 'export'] as $v){
@@ -408,9 +404,10 @@ class Yapa{
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
-	public function genFormModal($preset){
+	public function genFormModal(){
 		
 		$result = [];
+		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
