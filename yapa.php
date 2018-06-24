@@ -682,18 +682,16 @@ class Yapa{
 			if(isset($pdata['where']['SEARCH'])){
 				$keyword = $this->split($pdata['where']['SEARCH'], 'space');
 				
-				for($j = 0; $j < count($keyword); $j++){
-					if(!empty($keyword[$j])){
+				foreach($keyword as $k=>$word){
+					if($word){
 						for($i = 0; $i < $this->col_num; $i++){
 							// skip
-							if($this->type[$i] == 'value') continue;
-							if($this->type[$i] == 'uploadfile') continue;
-							if($this->type[$i] == 'datepicker') continue;
-							if($this->type[$i] == 'password') continue;
+							if(in_array($this->type[$i], ['value', 'password', 'uploadfile', 'datepicker'])) continue;
 							if($this->tree['col'] === $i) continue;
-							if($this->type[$i] == 'autocomplete' || $this->type[$i] == 'checkbox'){
+							
+							if(in_array($this->type[$i], ['checkbox', 'autocomplete'])){
 								$arr_tmp = $this->join[$i];
-								$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $keyword[$j], 'LIMIT' => 1000]);
+								$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $word, 'LIMIT' => 1000]);
 								if($ids){
 									// find in a comma separated string (not a precise approach yet)
 									$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $ids;
@@ -701,12 +699,12 @@ class Yapa{
 								
 							}else if($this->join[$i]){
 								$arr_tmp = $this->join[$i];
-								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $keyword[$j];
+								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $word;
 							}else{
-								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $keyword[$j];
+								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $word;
 							}
 						}
-						$pdata['where']['AND']['OR #muti keyword' . $j] = $arr_search;
+						$pdata['where']['AND']['OR #muti keyword' . $k] = $arr_search;
 					}
 				}
 				unset($pdata['where']['SEARCH']);
