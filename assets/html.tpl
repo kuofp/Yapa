@@ -77,7 +77,7 @@ if(typeof checkScript == 'undefined'){
 			<!-- @search -->
 			</form>
 			<!-- main content area -->
-			<div style="padding-right: 16px;">
+			<div style="padding-right: 16px; overflow: hidden">
 				<table class="table table-alter" style="margin: 0px;">
 					<thead>
 						<th class="check" style="width: 30px; cursor: pointer"><i class="fa fa-square-o"></i></th>
@@ -101,7 +101,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @tr-->
 					</tbody>
 				</table>
-				<p class="end" align="center"></p>
+				<p class="end text-center" style="width: 100%"></p>
 				<button class="btn btn-default btn-block review"></button>
 			</div>
 			

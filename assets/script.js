@@ -1065,6 +1065,13 @@ function bindFormViewComplete(uid, max, back, col, admin){
 		f.find('table.review').trigger('refresh', {type: 'review'});
 	});
 	
+	f.find('table.review').parent().scroll(function(){
+		var left = $(this).scrollLeft();
+		f.find('.table-alter').eq(0).css('margin-left', -left);
+		f.find('.end').css('margin-left', left);
+		f.find('button.review').css('margin-left', left);
+	});
+	
 	a.on('change', function(){ f.find('table.review').trigger('refresh', {type: 'review'}); });
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
