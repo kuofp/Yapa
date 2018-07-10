@@ -66,8 +66,12 @@ class Yapa{
 		// show and hide
 		$hide = [];
 		foreach($show as $k=>$v){
-			$tmp = $v? $this->split($v): '';
+			$tmp = $v? $this->split($v, 'space'): '';
 			$hide[] = (in_array('hidden', $tmp) && $col_en[$k] != 'id')? 1: 0;
+			
+			foreach(array_intersect(['disabled', 'disabled-create', 'disabled-modify'], $tmp) as $w){
+				$attr[1][$k][$w] = 1;
+			}
 		}
 		//dd($attr);
 		$this->col_en = $col_en;
@@ -161,7 +165,7 @@ class Yapa{
 			// unset disabled cols when create and modify
 			if(in_array($result['method'], ['create', 'modify'])){
 				for($i = 0; $i < $this->col_num; $i++){
-					if($this->attr[$i]['disabled'] ?? 0){
+					if(($this->attr[$i]['disabled'] ?? 0) || ($this->attr[$i]['disabled-' . $result['method']] ?? 0)){
 						unset($result['pdata']['data'][$this->col_en[$i]]);
 					}
 				}
@@ -419,7 +423,6 @@ class Yapa{
 			$tpl = '';
 			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
 			$uid = $this->getUid();
-			$disabled = ($this->attr[$i]['disabled'] ?? 0)? 'disabled': '';
 			
 			switch($this->type[$i]){
 				case 'hidden':
@@ -466,7 +469,6 @@ class Yapa{
 					}
 					
 					$td = $this->tpl->block('modal-detail.td.struct')->assign([
-						'disabled' => $disabled,
 						'value' => $pre,
 						'meta'  => $this->col_ch[$i],
 						'name'  => $this->col_en[$i],
@@ -486,7 +488,7 @@ class Yapa{
 				$tmp = $this->split($this->show[$i], 'space');
 				$arr = [];
 				foreach($tmp as $v){
-					if(in_array($v, ['hidden-create', 'hidden-modify'])){
+					if(in_array($v, ['hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
 						$arr[] = $v;
 					}
 				}

@@ -211,7 +211,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @struct -->
 						<td align="center" style="font-weight: bold; vertical-align: middle">{meta} <i class="fa fa-question-circle-o" data-content="{info}"></i></td>
 						<td>
-							<textarea class="form-control input-sm" name="{name}" id="{uid}" {disabled}>{value}</textarea>
+							<textarea class="form-control input-sm" name="{name}" id="{uid}">{value}</textarea>
 							<script>
 								$('#{uid}').{func}({url: '{url}', max: '{max}', tpl: '{tpl}'});
 							</script>

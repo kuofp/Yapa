@@ -118,7 +118,7 @@ jQuery.fn.extend({
 		var tar = this;
 		var box = $(str);
 		
-		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
+		$(box).attr('class', $(tar).attr('class'));
 		$(tar).before(box);
 		$(tar).attr('class', 'hidden');
 		
@@ -133,7 +133,7 @@ jQuery.fn.extend({
 		});
 		
 		$(tar).on('preset', function(){
-			$(box).val($(tar).val());
+			$(box).val($(tar).val()).prop('disabled', $(tar).prop('disabled'));
 		});
 	}
 });
@@ -145,7 +145,7 @@ jQuery.fn.extend({
 		var box = $('<select><option value="0"></option></select>');
 		var tpl = JSON.parse(init.tpl || '[]');
 		
-		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
+		$(box).attr('class', $(tar).attr('class'));
 		$(tar).before(box);
 		$(tar).attr('class', 'hidden');
 		
@@ -166,7 +166,7 @@ jQuery.fn.extend({
 		});
 		
 		$(tar).on('preset', function(){
-			$(box).val($(tar).val());
+			$(box).val($(tar).val()).prop('disabled', $(tar).prop('disabled'));
 		});
 	}
 });
@@ -177,19 +177,18 @@ jQuery.fn.extend({
 		var tar = this;
 		var box = $('<div></div>');
 		var tpl = JSON.parse(init.tpl || '[]');
-		var dis = $(tar).prop('disabled');
 		
 		$(tar).before(box);
 		$(tar).attr('class', 'hidden');
 		
 		for(var i in tpl){
 			var opt = $('<div class="radio"><label><input type="radio"/></label></div>');
-			opt.find('input').prop('disabled', dis).val(tpl[i][0]).after(tpl[i][1]);
-			if(!dis){
-				opt.find('input').click(function(){
+			opt.find('input').val(tpl[i][0]).after(tpl[i][1]);
+			opt.find('input').click(function(){
+				if(!$(tar).prop('disabled')){
 					$(tar).val($(this).val()).trigger('preset');
-				});
-			}
+				}
+			});
 			$(box).append(opt);
 		}
 		
@@ -203,7 +202,7 @@ jQuery.fn.extend({
 			
 			var val = $(tar).val();
 			
-			$(box).find('input').each(function(){
+			$(box).find('input').prop('disabled', $(tar).prop('disabled')).each(function(){
 				$(this).prop('checked', ($(this).val() == val)? true: false);
 			});
 		});
@@ -216,23 +215,22 @@ jQuery.fn.extend({
 		var tar = this;
 		var box = $('<div></div>');
 		var tpl = JSON.parse(init.tpl || '[]');
-		var dis = $(tar).prop('disabled');
 		
 		$(tar).before(box);
 		$(tar).attr('class', 'hidden');
 		
 		for(var i in tpl){
 			var opt = $('<div class="checkbox"><label><input type="checkbox"/></label></div>');
-			opt.find('input').prop('disabled', dis).val(tpl[i][0]).after(tpl[i][1]);
-			if(!dis){
-				opt.find('input').click(function(){
+			opt.find('input').val(tpl[i][0]).after(tpl[i][1]);
+			opt.find('input').click(function(){
+				if(!$(tar).prop('disabled')){
 					var arr = [];
 					$(box).find('input:checked').each(function(){
 						arr.push($(this).val());
 					});
 					$(tar).val(arr.join(',')).trigger('preset');
-				});
-			}
+				}
+			});
 			$(box).append(opt);
 		}
 		
@@ -254,7 +252,7 @@ jQuery.fn.extend({
 				}
 			}
 			// prop('checked', false) v.s. attr('checked', false): attr() would remove `checked` completely, and `checked` cant be added while form is reset
-			$(box).find('input').prop('checked', false).each(function(){
+			$(box).find('input').prop('disabled', $(tar).prop('disabled')).prop('checked', false).each(function(){
 				if(arr[$(this).val()] || 0)
 					$(this).prop('checked', true);
 			});
@@ -320,7 +318,7 @@ jQuery.fn.extend({
 		var pre = $('<div style="border: 1px solid #c5c5c5; margin: 5px 10px; float: left; height: 20px; width: 20px"></div>');
 		var hex = $('<p style="float: left"></p>');
 		
-		$(box).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
+		$(box).attr('class', $(tar).attr('class'));
 		$(tar).before(box);
 		$(tar).attr('class', 'hidden');
 		$('body').append(pnl);
@@ -431,7 +429,7 @@ jQuery.fn.extend({
 		});
 		
 		$(tar).on('preset', function(){
-			$(box).val($(tar).val());
+			$(box).val($(tar).val()).prop('disabled', $(tar).prop('disabled'));
 		});
 	}
 });
@@ -443,7 +441,7 @@ jQuery.fn.extend({
 		var col = $('<input type="text">');
 		var tpl = init.tpl || 'Y-m-d';
 		
-		$(col).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
+		$(col).attr('class', $(tar).attr('class'));
 		$(tar).attr('class', 'hidden');
 		$(tar).before(col);
 		
@@ -470,7 +468,11 @@ jQuery.fn.extend({
 		});
 		
 		$(tar).on('preset', function(){
+			
 			var val = $(tar).val();
+			
+			$(col).prop('disabled', $(tar).prop('disabled'));
+			
 			if(val.match(/^-?[\d]+$/)){ // unix timestamp
 				var d = new Date(val * 1000);
 				var arr = {
@@ -506,7 +508,7 @@ jQuery.fn.extend({
 		var box = $('<div></div>');
 		var timer = 0;// delay loading
 		
-		$(col).attr('class', $(tar).attr('class')).prop('disabled', $(tar).prop('disabled'));
+		$(col).attr('class', $(tar).attr('class'));
 		$(tar).before(col);
 		$(tar).attr('class', 'hidden');
 		$(tar).before(box);
@@ -590,6 +592,8 @@ jQuery.fn.extend({
 			
 			var id = $(tar).val().split(',');
 			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[=]': id}};
+			
+			$(col).prop('disabled', $(tar).prop('disabled'));
 			$(box).empty();
 			
 			if(parseInt(id[0])){ // prevent string '0' == true
@@ -698,8 +702,6 @@ jQuery.fn.extend({
 		var box = $('<div></div>');
 		var style = '<style>.icon-set{ white-space: nowrap; text-overflow: ellipsis; overflow: hidden; position: absolute; bottom: 20px; width: 100%; padding: 5px; background-color: rgba(0,0,0,0.8); color: white} .icon-set a{color: white}</style>';
 		
-		$(ctl).prop('disabled', $(tar).prop('disabled'));
-		
 		$(tar).before(bar);
 		$(tar).before(ctl);
 		$(tar).before(style);
@@ -787,6 +789,7 @@ jQuery.fn.extend({
 			var tpl = 100;
 			
 			// init
+			$(ctl).prop('disabled', $(tar).prop('disabled'));
 			$(box).empty();
 			try{
 				var arr = JSON.parse(val);
@@ -1084,6 +1087,8 @@ function bindFormViewComplete(uid, max, back, col, admin){
 				t.val( $(this).closest('.datalist').attr('data-id')).trigger('change');
 				m.find('.hidden-create').show();
 				m.find('.hidden-modify').hide();
+				m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
+				m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
 				m.modal('show');
 			}
 		});
@@ -1256,6 +1261,8 @@ function bindFormCreateTool(uid, url){
 		m.find('form')[0].reset();
 		m.find('.hidden-create').hide();
 		m.find('.hidden-modify').show();
+		m.find('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 1);
+		m.find('.disabled-modify').not('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 0);
 		m.modal('show');
 	});
 	
