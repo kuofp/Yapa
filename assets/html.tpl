@@ -35,6 +35,12 @@ if(typeof checkScript == 'undefined'){
 	background-color: #4285f4 !important;
 	color: #fff;
 }
+.w20{width: 20px}.w40{width: 40px}.w60{width: 60px}.w80{width: 80px}
+.w100{width: 100px}.w120{width: 120px}.w140{width: 140px}.w160{width: 160px}.w180{width: 180px}
+.w200{width: 200px}.w220{width: 220px}.w240{width: 240px}.w260{width: 260px}.w280{width: 280px}
+.w300{width: 300px}.w320{width: 320px}.w340{width: 340px}.w360{width: 360px}.w380{width: 380px}
+.w400{width: 400px}.w420{width: 420px}.w440{width: 440px}.w460{width: 460px}.w480{width: 480px}
+.w500{width: 500px}
 </style>
 <div id="{unique_id}" style="height: 100%">
 	<div class="hidden">
@@ -84,6 +90,7 @@ if(typeof checkScript == 'undefined'){
 						<!-- @th-->
 						<th class="{class}" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
 						<!-- @th-->
+						<th></th>
 					</thead>
 				</table>
 			</div>
@@ -97,6 +104,7 @@ if(typeof checkScript == 'undefined'){
 							<!-- @td-->
 							<td class="{class}" name="{name}">{text}</td>
 							<!-- @td-->
+							<td></td>
 						</tr>
 						<!-- @tr-->
 					</tbody>
