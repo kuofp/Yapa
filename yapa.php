@@ -107,6 +107,11 @@ class Yapa{
 		echo file_get_contents($this->path_js) . $lang->render(false);
 	}
 	
+	public function css(){
+		
+		$this->tpl->block('css')->render();
+	}
+	
 	public function authCheck($mode){
 		
 		$result = ['code' => 1, 'text' => '權限不足'];

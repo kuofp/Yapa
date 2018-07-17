@@ -7,41 +7,16 @@ if(typeof checkScript == 'undefined'){
 		data: {method: 'script'},
 		dataType: "script"
 	});
+	$.ajax({
+		url: '{url}',
+		async: false,
+		data: {method: 'css'},
+		success: function(r){
+			$('body').prepend(r);
+		}
+	});
 }
 </script>
-<style>
-.table-alter{
-	table-layout:fixed;
-}
-.table-alter td, .table-alter th{
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.table-less>tbody>tr>td{
-	border: none;
-}
-.table-less>tbody>tr>th{
-	border: none;
-	padding: 0px;
-}
-.table-less .form-control{
-	max-width: 350px;
-}
-.ui-autocomplete{
-	z-index: 1200;
-}
-.datalist.highlight{
-	background-color: #4285f4 !important;
-	color: #fff;
-}
-.w20{width: 20px}.w40{width: 40px}.w60{width: 60px}.w80{width: 80px}
-.w100{width: 100px}.w120{width: 120px}.w140{width: 140px}.w160{width: 160px}.w180{width: 180px}
-.w200{width: 200px}.w220{width: 220px}.w240{width: 240px}.w260{width: 260px}.w280{width: 280px}
-.w300{width: 300px}.w320{width: 320px}.w340{width: 340px}.w360{width: 360px}.w380{width: 380px}
-.w400{width: 400px}.w420{width: 420px}.w440{width: 440px}.w460{width: 460px}.w480{width: 480px}
-.w500{width: 500px}
-</style>
 <div id="{unique_id}" style="height: 100%">
 	<div class="hidden">
 		<input id="{unique_id}_item_cnt">
@@ -52,7 +27,7 @@ if(typeof checkScript == 'undefined'){
 		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
 		<input id="{unique_id}_search_adv" value="{query}">
 	</div>
-	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; -webkit-box-shadow: 0 3px 6px rgba(0,0,0,.175); box-shadow: 0 3px 6px rgba(0,0,0,.175);">
+	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
 			<form id="{unique_id}_search_area">
@@ -68,7 +43,7 @@ if(typeof checkScript == 'undefined'){
 			
 			<!-- search and advance search option which accept more keywords -->
 			<div class="btn-group">
-				<input class="form-control" name="search" style="width: 160px" auto/>
+				<input class="form-control w160" name="search" auto>
 			</div>
 			
 			<!-- info area -->
@@ -86,7 +61,7 @@ if(typeof checkScript == 'undefined'){
 			<div style="padding-right: 16px; overflow: hidden">
 				<table class="table table-alter" style="margin: 0px;">
 					<thead>
-						<th class="check" style="width: 30px; cursor: pointer"><i class="fa fa-square-o"></i></th>
+						<th class="check w40" style="cursor: pointer"><i class="fa fa-square-o"></i></th>
 						<!-- @th-->
 						<th class="{class}" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
 						<!-- @th-->
@@ -100,7 +75,7 @@ if(typeof checkScript == 'undefined'){
 					<tbody class="last">
 						<!-- @tr-->
 						<tr {attr}>
-							<td class="check func" style="width: 30px;"><i class="fa fa-square-o"></i></td>
+							<td class="check w40 func"><i class="fa fa-square-o"></i></td>
 							<!-- @td-->
 							<td class="{class}" name="{name}">{text}</td>
 							<!-- @td-->
@@ -109,11 +84,11 @@ if(typeof checkScript == 'undefined'){
 						<!-- @tr-->
 					</tbody>
 				</table>
-				<p class="end text-center" style="width: 100%"></p>
+				<p class="end text-center col-xs-12"></p>
 				<button class="btn btn-default btn-block review"></button>
 			</div>
 			
-			<div class="info"></div>
+			<div class="info" style="overflow: hidden"></div>
 		</div>
 	</div>
 </div>
@@ -123,7 +98,6 @@ if(typeof checkScript == 'undefined'){
 	bindFormAjaxOnRefresh('{unique_id}', '{url}', '{max}');
 </script>
 <!-- @main -->
-
 
 <!-- @create -->
 <script>
@@ -213,7 +187,7 @@ if(typeof checkScript == 'undefined'){
 					<!-- @td -->
 						<!-- @hidden -->
 						<td class="hidden" colspan="10">
-							<input name="{name}" value="{value}"/>
+							<input name="{name}" value="{value}">
 						</td>
 						<!-- @hidden -->
 						<!-- @struct -->
@@ -249,3 +223,38 @@ if(typeof checkScript == 'undefined'){
 	</div></div>
 </div>
 <!-- @modal-detail -->
+<!-- @css -->
+<style>
+.table-alter{
+	table-layout:fixed;
+}
+.table-alter td, .table-alter th{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.table-less>tbody>tr>td{
+	border: none;
+}
+.table-less>tbody>tr>th{
+	border: none;
+	padding: 0px;
+}
+.table-less .form-control{
+	max-width: 350px;
+}
+.ui-autocomplete{
+	z-index: 1200;
+}
+.datalist.highlight{
+	background-color: #4285f4 !important;
+	color: #fff;
+}
+.w20{width: 20px}.w40{width: 40px}.w60{width: 60px}.w80{width: 80px}
+.w100{width: 100px}.w120{width: 120px}.w140{width: 140px}.w160{width: 160px}.w180{width: 180px}
+.w200{width: 200px}.w220{width: 220px}.w240{width: 240px}.w260{width: 260px}.w280{width: 280px}
+.w300{width: 300px}.w320{width: 320px}.w340{width: 340px}.w360{width: 360px}.w380{width: 380px}
+.w400{width: 400px}.w420{width: 420px}.w440{width: 440px}.w460{width: 460px}.w480{width: 480px}
+.w500{width: 500px}
+</style>
+<!-- @css -->
