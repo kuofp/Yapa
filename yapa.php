@@ -191,7 +191,7 @@ class Yapa{
 	}
 	
 	//review
-	public function reviewTool($option = []){
+	public function reviewTool(){
 		
 		$result = $this->authCheck('review');
 		
@@ -218,7 +218,7 @@ class Yapa{
 				'th'        => $this->tpl->block('main.th')->nest($th),
 				'max'       => $this->config['perpage'] ?? 50,
 				'back'      => ($this->tree['col'] !== null),
-				'search'    => $option['search'] ?? $this->tpl->block('main.search')->render(false),
+				'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
 				'col'       => $this->col_en[$this->tree['col']] ?? '',
 				'admin'     => $this->config['admin'] ?? '',
 			))->render();
@@ -530,7 +530,8 @@ class Yapa{
 		
 		$this->tpl->block('modal-detail')->assign(array(
 			'unique_id' => $this->unique_id,
-			'width' => $this->config['modal-width'] ?? '760px',
+			'width' => $this->config['modal']['width'] ?? '760px',
+			'html' => $this->config['modal']['html'] ?? '',
 			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr),
 		))->render();
 		
@@ -897,7 +898,8 @@ class Yapa{
 	}
 	
 	public function render($option = []){
-		$this->reviewTool($option);
+		$this->config = array_merge($this->config, $option);
+		$this->reviewTool();
 	}
 	
 	public function raw($str){

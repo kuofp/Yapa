@@ -177,6 +177,7 @@ if(typeof checkScript == 'undefined'){
 			<div class="tab-content">
 				<div id="{unique_id}_home" class="tab-pane fade in active" style="min-height: 700px">
 			<form>
+				<div style="max-width: 500px; float: left;">
 				<table class="table table-alter table-less">
 					<tr>
 						<th class="col-xs-1 col-sm-1 col-md-1"></th>
@@ -211,7 +212,12 @@ if(typeof checkScript == 'undefined'){
 					</tr>
 				<!-- @tr -->
 				</table>
+				</div>
+				<div id="{unique_id}_sub" style="max-width: 500px; float: left; overflow: hidden; margin-bottom: 20px;">
+					{html}
+				</div>
 			</form>
+			<div style="clear: both"></div>
 			<script>
 				// popover
 				$('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
