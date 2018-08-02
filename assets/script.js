@@ -948,22 +948,22 @@ function bindFormTreeView(uid, back, col, admin){
 	
 	if(!back) return;
 	
-	var f = $('#' + uid + '_panel');
-	var m = $('#' + uid + '_Modal');
+	var p = $('#' + uid + '_panel');
+	var f = $('#' + uid + '_home').find('form');
 	var s = $('#' + uid + '_search_area');
 	var t = $('#' + uid + '_tree_view_complete');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + _gettext('Back to previous level') + '</button>');
 	var box = {};
 	
-	m.find('form').eq(0).on('reset', function(){
+	f.on('reset', function(){
 		setTimeout(function(){
 			var tmp = btn.attr('show').match(/p_([\w]+)/)[1];
-			m.find('form').eq(0).find('[name=' + col + ']').val(tmp);
+			f.find('[name=' + col + ']').val(tmp);
 		}, 0);
 	});
 	
 	// before scrollable div
-	f.find('table.review').parent('div').css('height', 'calc(100% - 124px)').before(btn);
+	p.find('table.review').parent('div').css('height', 'calc(100% - 124px)').before(btn);
 	
 	$(btn).click(function(){
 		var prev = $(btn).attr('prev');
@@ -971,17 +971,17 @@ function bindFormTreeView(uid, back, col, admin){
 			$(btn).attr('show', prev);
 			tag = prev.match(/p_([\w]+)/)[1];
 			if(tag != '0'){
-				tmp = f.find('.s_' + tag).attr('class');
+				tmp = p.find('.s_' + tag).attr('class');
 				prev = '.' + tmp.match(/p_[\w]+/)[0];
 			}else{
 				prev = '';
 			}
 			$(btn).attr('prev', prev);
 		}
-		f.find('.last').trigger('tree');
+		p.find('.last').trigger('tree');
 	});
 	
-	f.find('.last').on('tree', function(){
+	p.find('.last').on('tree', function(){
 		// detach and gather td's
 		$(this).children().not('.hidden').each(function(){
 			box[$(this).attr('data-id')] = $(this).children().detach();
@@ -992,7 +992,7 @@ function bindFormTreeView(uid, back, col, admin){
 		}else{
 			$(this).children().addClass('hidden');
 			$(this).find($(btn).attr('show')).removeClass('hidden');
-			$(btn).prop('disabled', !f.find('.prev').attr('prev'));
+			$(btn).prop('disabled', !p.find('.prev').attr('prev'));
 		}
 		
 		// detach or append
@@ -1005,7 +1005,7 @@ function bindFormTreeView(uid, back, col, admin){
 		});
 		
 		if(!admin){
-			f.find('div.toollist').find('button.create').prop('disabled', $(btn).prop('disabled'));
+			p.find('div.toollist').find('button.create').prop('disabled', $(btn).prop('disabled'));
 		}
 		
 		setTimeout(function(){
@@ -1227,13 +1227,14 @@ function bindFormAjaxOnRefresh(uid, url, max){
 }
 
 function bindFormAjaxByMethod(uid, url, method){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
+	var f = $('#' + uid + '_home').find('form');
 	
 	m.find('button.' + method).click(function(){
 		var btn = $(this).addClass('buttonLoading').button('loading');
 		var pdata={data:{},where:{AND:{}}};
-		pdata['data'] = m.find('form:first').serialize();
+		pdata['data'] = f.serialize();
 		
 		$.ajax({
 			url: url,
@@ -1244,7 +1245,7 @@ function bindFormAjaxByMethod(uid, url, method){
 				if(jdata['code']){
 					// fail
 				}else{
-					f.find('table.review').trigger('refresh',{type: method, id: jdata['data']});
+					p.find('table.review').trigger('refresh',{type: method, id: jdata['data']});
 					m.modal('hide');
 				}
 				customAlert(jdata);
@@ -1384,7 +1385,7 @@ function bindInputAjaxOnChange(uid, url, type, col){
 	
 	var t = $('#' + uid + '_target_id');
 	var c = $('#' + uid + '_change_complete');
-	var f = $('#' + uid + '_Modal').find('form').eq(0);
+	var f = $('#' + uid + '_home').find('form');
 	var m = $('#' + uid + '_Modal');
 	
 	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
@@ -1441,7 +1442,7 @@ jQuery.fn.extend({
 		// var in search_adv
 		var uid = tar.closest('.modal').attr('id').split('_')[0];
 		var m = $('#' + uid + '_Modal');
-		var f = $('#' + uid + '_Modal').find('form').eq(0);
+		var f = $('#' + uid + '_home').find('form');
 		var s = $('#' + uid + '_search_area');
 		
 		for(var i in tpl){
