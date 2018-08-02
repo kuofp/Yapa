@@ -357,7 +357,7 @@ jQuery.fn.extend({
 		
 		$(document).click(function(e){
 			// keep colorpicker
-			var keep = $(e.target).is(pnl) || $(e.target).parent().is(pnl) || $(e.target).is(box);
+			var keep = $(e.target).is(box) || $(e.target).is(pnl) || pnl.has(e.target).length;
 			if(!keep){
 				$(pnl).fadeOut(200);
 			}
