@@ -17,7 +17,7 @@ if(typeof checkScript == 'undefined'){
 	});
 }
 </script>
-<div id="{unique_id}" style="height: 100%">
+<div id="{unique_id}" style="height: 100%; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
 	<div class="hidden">
 		<input id="{unique_id}_item_cnt">
 		<input id="{unique_id}_target_id">
@@ -27,7 +27,7 @@ if(typeof checkScript == 'undefined'){
 		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
 		<input id="{unique_id}_search_adv" value="{query}">
 	</div>
-	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
+	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px;">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
 			<form id="{unique_id}_search_area">
@@ -165,18 +165,18 @@ if(typeof checkScript == 'undefined'){
 <!-- @crop-img -->
 
 <!-- @modal-detail -->
-<div class="modal fade" id="{unique_id}_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-width="{width}">
-	<div class="modal-dialog"><div class="modal-content">
-		<div class="modal-header" style="border: none">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+<div class="panel panel-default" id="{unique_id}_Modal" style="height: 100%; margin: 0; display: none;">
+	<div class="panel-body" style="height: 100%; padding: 0;">
+		<div style="padding: 10px 10px 10px 0px">
+			<button type="button" class="close pull-left" style="padding: 0px 10px" onclick="modalHide('{unique_id}')"><i class="fa fa-reply" aria-hidden="true"></i></button>
 			<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#{unique_id}_home"></a></li>
+				<li class="active"><a data-toggle="tab" href="#{unique_id}_home" style="padding: 0 15px 0 6px"></a></li>
 			</ul>
 		</div>
-		<div class="modal-body">
-			<div class="tab-content">
-				<div id="{unique_id}_home" class="tab-pane fade in active" style="min-height: 700px">
-			<form>
+		<div class="tab-content" style="height: calc(100% - 42px); position: relative">
+			<div id="{unique_id}_home" class="tab-pane fade in active" style="height: 100%">
+				<div class="modal-footer" style="background-color: white; position: absolute; right: 0px; top: -40px; border: none; padding: 3px"></div>
+			<form style="height: 100%; overflow-y: auto">
 				<div style="max-width: 500px; float: left;">
 				<table class="table table-alter table-less">
 					<tr>
@@ -222,11 +222,9 @@ if(typeof checkScript == 'undefined'){
 				// popover
 				$('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
 			</script>
-			<div class="modal-footer"></div>
-				</div>
 			</div>
 		</div>
-	</div></div>
+	</div>
 </div>
 <!-- @modal-detail -->
 <!-- @css -->
@@ -262,5 +260,6 @@ if(typeof checkScript == 'undefined'){
 .w300{width: 300px}.w320{width: 320px}.w340{width: 340px}.w360{width: 360px}.w380{width: 380px}
 .w400{width: 400px}.w420{width: 420px}.w440{width: 440px}.w460{width: 460px}.w480{width: 480px}
 .w500{width: 500px}
+.modal-footer > .btn{ padding: 0px 5px;}
 </style>
 <!-- @css -->

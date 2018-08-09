@@ -55,54 +55,6 @@ function serializeJSON(obj){
 	return arr;
 }
 
-$.fn.modal.first = '';
-$.fn.modal.media = window.matchMedia('(min-width: 768px)');
-
-$(document).on('show.bs.modal', '.modal', function(e){
-	// settle modal
-	$('body').append($(e.target));
-	
-	if(!$(e.target).is($.fn.modal.first)){
-		// prevent chained events in stacked modal
-		$.fn.modal.first = $(e.target);
-		// data-width
-		var width = ($.fn.modal.media.matches)? $(e.target).attr('data-width'): '';
-		$(e.target).children('.modal-dialog').css('width', width);
-		// modal z-index
-		$(e.target).css('z-index', 1042);
-		$('.modal').each(function(){
-			$(this).css('z-index', parseInt($(this).css('z-index')) - 1);
-		});
-	}
-});
-
-$(document).on('hide.bs.modal', '.modal', function(e){
-	// prevent chained events in stacked modal
-	$.fn.modal.first = '';
-	// modal z-index
-	$('.modal.in').each(function(){
-		$(this).css('z-index', parseInt($(this).css('z-index')) + 1);
-	});
-});
-
-// back drop consistence
-$(document).on('hidden.bs.modal', '.modal', function(e){
-	if($('.modal.in').length){
-		$('body').addClass('modal-open');
-	}
-});
-
-// media query for data-width
-$.fn.modal.media.addListener(function(e){
-	$('.modal').each(function(){
-		var width = (e.matches)? $(this).attr('data-width'): '';
-		$(this).children('.modal-dialog').css('width', width);
-	});
-});
-
-// prevent padding with scroll bar width
-$.fn.modal.Constructor.prototype.adjustDialog = function(){};
-
 jQuery.fn.extend({
 	_text: function(init){
 		$(this)._input('<input type="text"/>');
@@ -1096,7 +1048,7 @@ function bindFormViewComplete(uid, max, back, col, admin){
 				m.find('.hidden-modify').hide();
 				m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
 				m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
-				m.modal('show');
+				modalShow(uid);
 			}
 		});
 		
@@ -1246,7 +1198,7 @@ function bindFormAjaxByMethod(uid, url, method){
 					// fail
 				}else{
 					p.find('table.review').trigger('refresh',{type: method, id: jdata['data']});
-					m.modal('hide');
+					modalHide(uid);
 				}
 				customAlert(jdata);
 				$('.buttonLoading').button('reset');
@@ -1271,7 +1223,7 @@ function bindFormCreateTool(uid, url){
 		m.find('.hidden-modify').show();
 		m.find('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 1);
 		m.find('.disabled-modify').not('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 0);
-		m.modal('show');
+		modalShow(uid);
 	});
 	
 	bindFormAjaxByMethod(uid, url, 'create');
@@ -1285,6 +1237,20 @@ function bindFormModifyTool(uid, url){
 	bindFormAjaxByMethod(uid, url, 'modify');
 }
 
+function modalShow(uid){
+	var f = $('#' + uid + '_panel');
+	var m = $('#' + uid + '_Modal');
+	f.after(m);
+	m.show();
+	f.hide();
+}
+
+function modalHide(uid){
+	var f = $('#' + uid + '_panel');
+	var m = $('#' + uid + '_Modal');
+	m.hide();
+	f.show();
+}
 
 function bindFormDeleteTool(uid, url){
 	var f = $('#' + uid + '_panel');
@@ -1308,7 +1274,7 @@ function bindFormDeleteTool(uid, url){
 						// fail
 					}else{
 						f.find('table.review').trigger('refresh',{type:'delete', id: jdata['data']});
-						m.modal('hide');
+						modalHide(uid);
 					}
 					customAlert(jdata);
 					$('.buttonLoading').button('reset');
@@ -1440,14 +1406,14 @@ jQuery.fn.extend({
 		var tpl = init.tpl || [];
 		
 		// var in search_adv
-		var uid = tar.closest('.modal').attr('id').split('_')[0];
+		var uid = tar.closest('.panel').attr('id').split('_')[0];
 		var m = $('#' + uid + '_Modal');
 		var f = $('#' + uid + '_home').find('form');
 		var s = $('#' + uid + '_search_area');
 		
 		for(var i in tpl){
 			var t = uid + '_menu_' + i;
-			m.find('.nav-tabs').append('<li><a data-toggle="tab" href="#' + t + '">' + tpl[i]['tag'] + '</a></li>');
+			m.find('.nav-tabs').append('<li><a data-toggle="tab" href="#' + t + '" style="padding: 0 15px 0 6px">' + tpl[i]['tag'] + '</a></li>');
 			m.find('#' + uid + '_home').after('<div id="' + t + '" class="tab-pane fade"></div>');
 		}
 		
@@ -1466,7 +1432,7 @@ jQuery.fn.extend({
 				var arr = {};
 				var sql = tpl[i]['sql'];
 				var url = tpl[i]['url'];
-				var css = tpl[i]['css'] || 'height: 700px';
+				var css = tpl[i]['css'] || 'height: 100%';
 				var str = $('#' + uid + '_search_adv').val();
 				var adv = JSON.parse(str)['AND'] || [];
 				
