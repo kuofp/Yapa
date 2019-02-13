@@ -781,6 +781,20 @@ jQuery.fn.extend({
 		var tar = this;
 		var img = $(tar).find('img');
 		
+		$(tar).click(function(){
+			var max = [];
+			$(this).toggleClass('active');
+			if($(this).hasClass('active')){
+				$(this).attr('style', 'position: fixed; left: 0; right: 0; top: 0; bottom: 0; z-index: 1051; margin: 0');
+				max = ['calc(100vw - 10px)', 'calc(100vh - 10px)'];
+			}else{
+				$(this).attr('style', '');
+				max = ['100px', '100px'];
+			}
+			$(this).find('table').css('width', max[0]).css('height', max[1]);
+			$(this).find('img').css('max-width', max[0]).css('max-height', max[1]);
+		});
+		
 		$(tar).siblings('.icon-set').find('.delete').click(function(){
 			var url = $(img).attr('src');
 			
