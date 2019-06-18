@@ -250,6 +250,9 @@ if(typeof checkScript == 'undefined'){
 .ui-autocomplete{
 	z-index: 1200;
 }
+.note-group-select-from-files{
+	display: none;
+}
 .datalist.highlight{
 	background-color: #4285f4 !important;
 	color: #fff;

@@ -216,11 +216,19 @@ jQuery.fn.extend({
 	_editor: function(init){
 		
 		var tar = this;
-		var col = $('<textarea></textarea>');
-		
-		$(tar).before(col);
+		$(tar).wrap('<div style="white-space: normal; max-width: 350px">');
 		$(tar).attr('class', 'hidden');
-		$(col).ckeditor();
+		$(tar).summernote({
+			height: 250,
+			fontSizes: ['12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '72'],
+			toolbar: [
+				['full', ['fullscreen', 'codeview']],
+				['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['insert', ['table', 'picture', 'link', 'video']],
+				['fontsize', ['color', 'fontsize', 'height']],
+			]
+		});
 		
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
@@ -229,32 +237,7 @@ jQuery.fn.extend({
 		});
 		
 		$(tar).on('preset', function(){
-			
-			if($(col).ckeditor().editor){
-				$(col).ckeditor().editor.destroy();
-				$(col).val($(tar).val());
-			}
-			$(col).ckeditor({
-				// Define the toolbar groups as it is a more accessible solution.
-				toolbarGroups: [
-					{'name':'tools'},
-					{'name':'document', 'groups':['mode']},
-					{'name':'basicstyles', 'groups':['basicstyles']},
-					{'name':'links', 'groups':['links']},
-					{'name':'paragraph', 'groups':['list', 'indent', 'align']},
-					{'name':'colors'},
-					{'name':'insert', 'groups':['insert']},
-					{'name':'styles', 'groups':['styles']},
-				],
-				// Remove the redundant buttons from toolbar groups defined above.
-				removeButtons: 'Flash,HorizontalRule,PageBreak,Iframe,Anchor,NewPage,Preview,Save,Print',
-				readOnly: $(tar).prop('disabled'),
-			}, function(){
-				$(col).ckeditor().editor.on('change', function(event){
-					// Sync textarea
-					$(tar).val($(col).val());
-				});
-			});
+			$(tar).summernote('code', $(tar).val());
 		});
 	}
 });
@@ -1229,7 +1212,7 @@ function bindFormCreateTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
 	f.find('div.toollist').find('button.main').text(_gettext('Add')).addClass('create');
-	m.find('.modal-footer').append('<button class="btn btn-primary create hidden-modify">' + _gettext('Save') + '</button>');
+	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary create hidden-modify">' + _gettext('Save') + '</button>');
 	f.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
 		m.find('form')[0].reset();
@@ -1247,7 +1230,7 @@ function bindFormCreateTool(uid, url){
 function bindFormModifyTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	
-	m.find('.modal-footer').append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
+	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
 	bindFormAjaxByMethod(uid, url, 'modify');
 }
 
@@ -1271,7 +1254,7 @@ function bindFormDeleteTool(uid, url){
 	var m = $('#' + uid + '_Modal');
 	var t = $('#' + uid + '_target_id');
 	
-	m.find('.modal-footer').append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
+	m.find('.modal-footer').eq(0).append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
 	m.find('button.delete').click(function(){
 		if(confirm(_gettext('Are you sure to DELETE this?'))){
 			var btn = $(this).addClass('buttonLoading').button('loading');
