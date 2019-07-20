@@ -1024,9 +1024,9 @@ class Yapa{
 			foreach($data['data'] as $k=>$v){
 				foreach($this->config['sum'] ?? [] as $key){
 					$sum = 0;
-					$sum += ($this->data[$key][$v['id']] ?? 0);
+					$sum += (float)($this->data[$key][$v['id']] ?? 0);
 					foreach($sub[$v['id']] as $c){
-						$sum += $this->data[$key][$c] ?? 0;
+						$sum += (float)($this->data[$key][$c] ?? 0);
 					}
 					$data['data'][$k][$key] = $sum;
 				}
