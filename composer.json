@@ -9,8 +9,8 @@
 	],
 	"require": {
 		"php": ">=7",
-		"catfan/Medoo": "1.5.*",
-		"kuofp/Yatp": "~1.1"
+		"catfan/medoo": "1.5.*",
+		"kuofp/yatp": "~1.1"
 	},
 	"autoload": {
 		"files": ["yapa.php"]
