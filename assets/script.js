@@ -25,21 +25,14 @@ function customAlert(arr){
 }
 
 function open(verb, url, data, target){
-	var form = document.createElement('form');
-	form.action = url;
-	form.method = verb;
-	form.target = target || '_self';
-	if(data){
-		for(var key in data){
-			var input = document.createElement('textarea');
-			input.name = key;
-			input.value = typeof data[key] === 'object'? JSON.stringify(data[key]): data[key];
-			form.appendChild(input);
-		}
+	var f = $('<form>').attr('action', url).attr('method', verb).attr('target', target || '_self');
+	for(var i in data){
+		var t = $('<textarea>').attr('name', i).val(data[i]);
+		$(f).append(t);
 	}
-	document.body.appendChild(form);
-	form.submit();
-	form.remove();
+	$('body').append(f);
+	$(f).submit();
+	$(f).remove();
 }
 
 function serializeJSON(obj){
