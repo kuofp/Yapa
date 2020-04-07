@@ -203,14 +203,14 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				// order settings
 				if($this->hide[$i]) continue;
-				$th[] = array(
+				$th[] = [
 					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' order': ''),
 					'name'  => $this->col_en[$i],
 					'text'  => $this->col_ch[$i],
-				);
+				];
 			}
 			
-			$this->tpl->block('main')->assign(array(
+			$this->tpl->block('main')->assign([
 				'unique_id' => $this->unique_id,
 				'query'     => $this->e($_REQUEST['query'] ?? '{}'),
 				'url'       => $this->url,
@@ -221,7 +221,7 @@ class Yapa{
 				'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
 				'col'       => $this->col_en[$this->tree['col']] ?? '',
 				'admin'     => $this->config['admin'] ?? '',
-			))->render();
+			])->render();
 		
 			$this->genFormModal();
 			$this->ajaxOnChange();
@@ -232,10 +232,10 @@ class Yapa{
 				if($result['code']){
 					// fail
 				}else{
-					$this->tpl->block($v)->assign(array(
+					$this->tpl->block($v)->assign([
 						'unique_id' => $this->unique_id,
 						'url' => $this->url,
-					))->render();
+					])->render();
 				}
 			}
 		}
@@ -243,7 +243,7 @@ class Yapa{
 		return $result;
 	}
 	
-	public function review($pdata, $callback=''){
+	public function review($pdata, $callback = ''){
 		
 		$datas = $this->getData($pdata);
 		
@@ -271,7 +271,7 @@ class Yapa{
 		$style = $_REQUEST['style'] ?? '';
 		
 		$th = array_map(function($v){
-			return array('text' => $v);
+			return ['text' => $v];
 		}, $this->col_ch);
 		
 		// produce tr
@@ -284,28 +284,28 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				if($style == '' && $this->hide[$i]) continue;
 				$tree = (($this->tree['col'] === $i)? ' tree func': '');
-				$td[] = array(
+				$td[] = [
 					'class' => $this->show[$i] . $tree,
 					'name'  => $this->col_en[$i],
 					'text'  => $this->e($v[$this->col_en[$i]] ?? ''),
-				);
+				];
 			}
 			
 			$tree = $this->tree['col']? ($this->tree['sub'][2][$v['id']] ?? ''): '';
-			$tr[] = array(
+			$tr[] = [
 				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
 				'attr' => 'data-id="' . $v['id'] . '" class="newdatalist ' . $tree . '"',
-			);
+			];
 		}
 		
 		// produce th
 		switch($style){
 			case 'print':
 			case 'excel':
-				$html = $this->tpl->block($block)->assign(array(
+				$html = $this->tpl->block($block)->assign([
 					'th' => $this->tpl->block($block . '.th')->nest($th),
 					'tr' => $this->tpl->block($block . '.tr')->nest($tr),
-				));
+				]);
 				break;
 				
 			default:
@@ -499,10 +499,10 @@ class Yapa{
 					}
 				}
 				$class = implode(' ', $arr);
-				$tr[] = array(
+				$tr[] = [
 					'class' => $class,
-					'td' => array($td)
-				);	
+					'td' => array($td),
+				];
 			}
 		}
 		
@@ -519,22 +519,22 @@ class Yapa{
 				$pre[$k]['css'] = $v['css'] ?? '';
 			}
 			
-			$td = $this->tpl->block('modal-detail.td.module')->assign(array(
+			$td = $this->tpl->block('modal-detail.td.module')->assign([
 				'value' => json_encode($pre),
 				'uid'   => $uid,
-			));
-			$tr[] = array(
+			]);
+			$tr[] = [
 				'class' => $class,
-				'td' => array($td)
-			);
+				'td' => array($td),
+			];
 		}
 		
-		$this->tpl->block('modal-detail')->assign(array(
+		$this->tpl->block('modal-detail')->assign([
 			'unique_id' => $this->unique_id,
 			'width' => $this->config['modal']['width'] ?? '760px',
 			'html' => $this->config['modal']['html'] ?? '',
 			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr),
-		))->render();
+		])->render();
 		
 		return $result;
 	}
@@ -551,10 +551,10 @@ class Yapa{
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
 					$arr_tmp = $this->join[$i];
 					$table = $arr_tmp[0];
-					$arr_col = array(
+					$arr_col = [
 						$arr_tmp[1] . '(label)',
 						$arr_tmp[2] . '(val)', // 'value' will be inserted into the input automatically, 'val' won't
-					);
+					];
 					
 					$where = ['LIMIT' => 10];
 					if($pdata['where']['[~]'] ?? 0){
@@ -626,7 +626,7 @@ class Yapa{
 					if(!in_array($this->type[$i], ['checkbox', 'autocomplete'])){
 						$arr_tmp = $this->join[$i];
 						$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
-						$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = array($this->col_en[$i] => $arr_tmp[2]);
+						$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = [$this->col_en[$i] => $arr_tmp[2]];
 					}
 				}
 				// keep original id
@@ -636,7 +636,7 @@ class Yapa{
 			if($this->tree['col'] !== null){
 				$col = $this->col_en[$this->tree['col']];
 				$arr_tmp = $this->join[$this->tree['col']];
-				$datas = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2], $col));
+				$datas = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2], $col]);
 				
 				$tmp = [];
 				$alias = [];
@@ -748,23 +748,23 @@ class Yapa{
 				unset($pdata['where']['ORDER'][$k]);
 			}
 			
-			//dd($pdata['where']);
-			
 			$where = $pdata['where'] ?? '';
-			if(empty($arr_chain)){ $datas = $this->database->select($this->table, '*', $where);}
-			else{ $datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);}
+			if($arr_chain){
+				$datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);
+			}else{
+				$datas = $this->database->select($this->table, '*', $where);
+			}
 			
-			if($datas != ''){
+			if($datas){
 				$arr_mark = [];
 				$cnt_datas = count($datas);
 				
 				for($j = 0; $j < $this->col_num; $j++){
-					
 					switch($this->type[$j]){
 						case 'checkbox':
 							$arr_mark[$j] = [];
 							$arr_tmp = $this->join[$j];
-							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]));
+							$datas_checkbox = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]]);
 							
 							foreach($datas_checkbox as $arr){
 								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
@@ -782,7 +782,7 @@ class Yapa{
 							
 							$arr_mark[$j] = [];
 							$arr_tmp = $this->join[$j];
-							$datas_checkbox = $this->database->select($arr_tmp[0], array($arr_tmp[1], $arr_tmp[2]), array($arr_tmp[2] => $ids));
+							$datas_checkbox = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]], [$arr_tmp[2] => $ids]);
 							
 							foreach($datas_checkbox as $arr){
 								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
@@ -806,7 +806,6 @@ class Yapa{
 				}
 				
 				for($i = 0; $i < $cnt_datas; $i++){
-					
 					//translate
 					foreach($arr_mark as $key=>$arr){
 						
@@ -887,12 +886,12 @@ class Yapa{
 		if($result['code']){
 			// fail
 		}else{
-			$this->tpl->block('change')->assign(array(
+			$this->tpl->block('change')->assign([
 				'unique_id' => $this->unique_id,
 				'url'       => $this->url,
 				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
 				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
-			))->render();
+			])->render();
 		}
 		
 		return $result;
@@ -971,9 +970,9 @@ class Yapa{
 		return $tree;
 	}
 	
-	protected function flatten($arr, $l = 0) {
+	protected function flatten($arr, $l = 0){
 		$result = [];
-		foreach($arr as $key=>$val) {
+		foreach($arr as $key=>$val){
 			$result[$key . ',' . $l] = $key;
 			if(is_array($val) && count($val)){
 				$result = array_merge($result, $this->flatten($val, $l+1));
