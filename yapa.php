@@ -257,7 +257,7 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->attr[$i]['i18n'] ?? 0){
 					$text = $v[$this->col_en[$i]] ?? '';
-					$text = _($text);
+					$text = $text? _($text): '';
 					$datas['data'][$k][$this->col_en[$i]] = $text;
 				}
 			}
@@ -457,7 +457,7 @@ class Yapa{
 						foreach($datas as $arr){
 							$text = $arr[$arr_tmp[1]];
 							if($this->attr[$i]['i18n'] ?? 0){
-								$text = _($text);
+								$text = $text? _($text): '';
 							}
 							$tpl[] = [$arr[$arr_tmp[2]], $text]; // JS won't ensure the order of numeric keys
 						}
