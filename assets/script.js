@@ -367,7 +367,17 @@ jQuery.fn.extend({
 		
 		var tar = this;
 		var col = $('<input type="text">');
-		var tpl = init.tpl || 'Y-m-d';
+		var tpl = '';
+		var func = '';
+		// date/time/datetime
+		if(init.tpl.match(/[Ymd]/)){
+			tpl += 'Y-m-d';
+			func += 'date';
+		}
+		if(init.tpl.match(/[His]/)){
+			tpl += (func? ' ': '') + 'H:i:s';
+			func += 'time';
+		}
 		
 		$(col).attr('class', $(tar).attr('class'));
 		$(tar).attr('class', 'hidden');
@@ -379,17 +389,15 @@ jQuery.fn.extend({
 			}, 300);
 		});
 		
-		$(col).datepicker({
+		$(col)[func + 'picker']({
 			dateFormat: 'yy-mm-dd',
-			closeText: 'Close',
+			timeFormat: 'HH:mm:ss',
 			changeYear: true,
 			changeMonth: true,
-			beforeShow: function(){
-				setTimeout(function(){
-					$('.ui-datepicker').css('z-index', 9527);
-				}, 100);
-			},
-			onSelect: function(date) {
+			onSelect: function(date){
+				if(func == 'time'){
+					date = '2000-01-01 ' + date;
+				}
 				var unixtime = Date.parse(date)/1000;
 				$(tar).val(unixtime);
 			}
