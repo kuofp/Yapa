@@ -247,9 +247,6 @@ if(typeof checkScript == 'undefined'){
 .table-less .form-control{
 	max-width: 350px;
 }
-.ui-autocomplete{
-	z-index: 1200;
-}
 .note-group-select-from-files{
 	display: none;
 }
