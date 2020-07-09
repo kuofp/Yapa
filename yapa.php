@@ -73,7 +73,7 @@ class Yapa{
 				$attr[1][$k][$w] = 1;
 			}
 		}
-		//dd($attr);
+		
 		$this->col_en = $col_en;
 		$this->col_ch = $label[0];
 		$this->info = $label[1];
@@ -93,10 +93,7 @@ class Yapa{
 		$this->col_num = count($col_en);
 		$this->uid = 0;
 		
-		$this->path_html = $this->config['path_html'] ?? (__DIR__ . '/assets/html.tpl');
-		$this->path_js   = $this->config['path_js']   ?? (__DIR__ . '/assets/script.js');
-		
-		$this->tpl = new Yatp($this->path_html);
+		$this->tpl = new Yatp(__DIR__ . '/assets/html.tpl');
 		
 		$this->decodeJson();
 	}
@@ -104,7 +101,7 @@ class Yapa{
 	public function script(){
 		
 		$lang = new Yatp(__DIR__ . '/assets/lang.php');
-		echo file_get_contents($this->path_js) . $lang->render(false);
+		echo file_get_contents(__DIR__ . '/assets/script.js') . $lang->render(false);
 	}
 	
 	public function css(){
@@ -190,7 +187,6 @@ class Yapa{
 		return $result;
 	}
 	
-	//review
 	public function reviewTool(){
 		
 		$result = $this->authCheck('review');
@@ -274,7 +270,6 @@ class Yapa{
 			return ['text' => $v];
 		}, $this->col_ch);
 		
-		// produce tr
 		$block = $style? 'table.print': 'main';
 		
 		$tr = [];
@@ -298,7 +293,6 @@ class Yapa{
 			];
 		}
 		
-		// produce th
 		switch($style){
 			case 'print':
 			case 'excel':
@@ -539,7 +533,7 @@ class Yapa{
 		return $result;
 	}
 	
-	public function getJson($pdata){//get raw data
+	public function getJson($pdata){
 		
 		$result = $this->authCheck('review');
 		
@@ -603,7 +597,7 @@ class Yapa{
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
-	public function getData($pdata){//translate all data
+	public function getData($pdata){
 		
 		$result = $this->authCheck('review');
 		
