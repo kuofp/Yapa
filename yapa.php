@@ -90,7 +90,7 @@ class Yapa{
 		
 		$this->config['root'] = $this->split($this->config['root'] ?? '');
 		
-		$this->col_num = count($col_en);
+		$this->col_num = $this->count($col_en);
 		$this->uid = 0;
 		
 		$this->tpl = new Yatp(__DIR__ . '/assets/html.tpl');
@@ -314,7 +314,7 @@ class Yapa{
 			header('Content-Disposition:filename=' . 'Export_' . date('YmdHis') . '.xls');
 			$result = $html;
 		}else{
-			$result = ['code' => 0, 'data' => $html, 'cnt' => count($datas['data'])];
+			$result = ['code' => 0, 'data' => $html, 'cnt' => $this->count($datas['data'])];
 			$result = json_encode($result, JSON_UNESCAPED_UNICODE);
 		}
 		
@@ -666,7 +666,7 @@ class Yapa{
 					if(!is_array($id)){
 						$id = [$id];
 					}
-					if(count(array_diff($id, $ids)) != 0){
+					if($this->count(array_diff($id, $ids)) != 0){
 						// invalid user
 						exit;
 					}
@@ -751,7 +751,7 @@ class Yapa{
 			
 			if($datas){
 				$arr_mark = [];
-				$cnt_datas = count($datas);
+				$cnt_datas = $this->count($datas);
 				
 				for($j = 0; $j < $this->col_num; $j++){
 					switch($this->type[$j]){
@@ -863,7 +863,7 @@ class Yapa{
 				}
 			}
 		
-			$result = ['data' => $datas, 'cnt' => count($datas)];
+			$result = ['data' => $datas, 'cnt' => $this->count($datas)];
 		}
 		
 		return $result;
@@ -968,7 +968,7 @@ class Yapa{
 		$result = [];
 		foreach($arr as $key=>$val){
 			$result[$key . ',' . $l] = $key;
-			if(is_array($val) && count($val)){
+			if(is_array($val) && $this->count($val)){
 				$result = array_merge($result, $this->flatten($val, $l+1));
 			}
 		}
@@ -1026,9 +1026,9 @@ class Yapa{
 				}
 				
 				if($this->config['level'] ?? 0){
-					$data['data'][$k][$col] = ($offset[$v['id']] < ($this->config['level'] ?? 0) -1)? '(' . count($dsub[$v['id']]) . ')': '';
+					$data['data'][$k][$col] = ($offset[$v['id']] < ($this->config['level'] ?? 0) -1)? '(' . $this->count($dsub[$v['id']]) . ')': '';
 				}else{
-					$data['data'][$k][$col] = count($dsub[$v['id']])? '(' . count($dsub[$v['id']]) . ')': '';
+					$data['data'][$k][$col] = $this->count($dsub[$v['id']])? '(' . $this->count($dsub[$v['id']]) . ')': '';
 				}
 			}
 		}
@@ -1059,5 +1059,10 @@ class Yapa{
 		}
 		
 		return $result;
+	}
+	
+	protected function count($tmp){
+		// php 7.2 issue
+		return count((array)$tmp);
 	}
 }
