@@ -5,7 +5,7 @@ if(typeof checkScript == 'undefined'){
 		url: '{url}',
 		async: false,
 		data: {method: 'script'},
-		dataType: "script"
+		dataType: 'script'
 	});
 	$.ajax({
 		url: '{url}',
@@ -62,9 +62,9 @@ if(typeof checkScript == 'undefined'){
 				<table class="table table-alter" style="margin: 0px;">
 					<thead>
 						<th class="check w40" style="cursor: pointer"><i class="fa fa-square-o"></i></th>
-						<!-- @th-->
+						<!-- @th -->
 						<th class="{class}" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
-						<!-- @th-->
+						<!-- @th -->
 						<th></th>
 					</thead>
 				</table>
@@ -73,15 +73,15 @@ if(typeof checkScript == 'undefined'){
 			<div style="overflow-y: scroll; height: calc(100% - 90px);">
 				<table class="table table-hover table-alter review" style="cursor: pointer;">
 					<tbody class="last">
-						<!-- @tr-->
+						<!-- @tr -->
 						<tr {attr}>
 							<td class="check w40 func"><i class="fa fa-square-o"></i></td>
-							<!-- @td-->
+							<!-- @td -->
 							<td class="{class}" name="{name}">{text}</td>
-							<!-- @td-->
+							<!-- @td -->
 							<td></td>
 						</tr>
-						<!-- @tr-->
+						<!-- @tr -->
 					</tbody>
 				</table>
 				<p class="end text-center col-xs-12"></p>
