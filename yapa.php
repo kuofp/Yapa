@@ -213,14 +213,14 @@ class Yapa{
 				'tr'        => '',
 				'th'        => $this->tpl->block('main.th')->nest($th),
 				'max'       => $this->config['perpage'] ?? 50,
-				'back'      => ($this->tree['col'] !== null),
 				'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
-				'col'       => $this->col_en[$this->tree['col']] ?? '',
+				'tree'      => $this->col_en[$this->tree['col']] ?? '',
 				'admin'     => $this->config['admin'] ?? '',
+				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
+				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
 			])->render();
-		
+			
 			$this->genFormModal();
-			$this->ajaxOnChange();
 			
 			foreach(['create', 'modify', 'delete', 'export'] as $v){
 				$auth = ($v == 'export')? 'review': $v;
@@ -230,7 +230,6 @@ class Yapa{
 				}else{
 					$this->tpl->block($v)->assign([
 						'unique_id' => $this->unique_id,
-						'url' => $this->url,
 					])->render();
 				}
 			}
@@ -871,24 +870,6 @@ class Yapa{
 	
 	public function getUid(){//get unique id for html tags for this file
 		return $this->unique_id . '_uid_' . $this->uid++;
-	}
-	
-	public function ajaxOnChange(){
-		
-		$result = $this->authCheck('review');
-		
-		if($result['code']){
-			// fail
-		}else{
-			$this->tpl->block('change')->assign([
-				'unique_id' => $this->unique_id,
-				'url'       => $this->url,
-				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
-				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
-			])->render();
-		}
-		
-		return $result;
 	}
 	
 	public function render($option = []){

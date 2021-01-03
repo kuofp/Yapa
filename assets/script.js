@@ -894,9 +894,9 @@ function bindFormCheck2(uid){
 	});
 }
 
-function bindFormTreeView(uid, back, col, admin){
+function bindFormTreeView(uid, tree, admin){
 	
-	if(!back) return;
+	if(!tree) return;
 	
 	var p = $('#' + uid + '_panel');
 	var f = $('#' + uid + '_home').find('form');
@@ -908,7 +908,7 @@ function bindFormTreeView(uid, back, col, admin){
 	f.on('reset', function(){
 		setTimeout(function(){
 			var tmp = btn.attr('show').match(/p_([\w]+)/)[1];
-			f.find('[name=' + col + ']').val(tmp);
+			f.find('[name=' + tree + ']').val(tmp);
 		}, 0);
 	});
 	
@@ -964,9 +964,9 @@ function bindFormTreeView(uid, back, col, admin){
 	});
 }
 
-function bindFormTreeView2(uid, back){
+function bindFormTreeView2(uid, tree){
 	
-	if(!back) return;
+	if(!tree) return;
 	
 	var f = $('#' + uid + '_panel');
 	
@@ -987,7 +987,7 @@ function bindFormTreeView2(uid, back){
 	f.find('.last').trigger('tree');
 }
 
-function bindFormViewComplete(uid, max, back, col, admin){
+function bindFormViewComplete(uid, max, tree, admin){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
@@ -1026,7 +1026,7 @@ function bindFormViewComplete(uid, max, back, col, admin){
 	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormCheck( uid );
-	bindFormTreeView(uid, back, col, admin);
+	bindFormTreeView(uid, tree, admin);
 	
 	f.find('button.review').click(function(e){
 		// prevent sending post
@@ -1051,7 +1051,7 @@ function bindFormViewComplete(uid, max, back, col, admin){
 		});
 		
 		bindFormCheck2( uid );
-		bindFormTreeView2(uid, back);
+		bindFormTreeView2(uid, tree);
 		
 		f.find('.buttonLoading').button('reset');
 		f.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
@@ -1066,12 +1066,13 @@ function bindFormViewComplete(uid, max, back, col, admin){
 }
 
 
-function bindFormAjaxOnRefresh(uid, url, max){
+function bindFormAjaxOnRefresh(uid, max){
 	var f = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
 	var s = $('#' + uid + '_search_area');
 	var a = $('#' + uid + '_search_adv');
+	var url = $('#' + uid + '_url').val();
 	
 	f.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
 	f.find('button.review').text(_gettext('Show more items +') + max);
@@ -1176,10 +1177,11 @@ function bindFormAjaxOnRefresh(uid, url, max){
 	}).trigger('refresh',{type: 'review'});
 }
 
-function bindFormAjaxByMethod(uid, url, method){
+function bindFormAjaxByMethod(uid, method){
 	var p = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	var f = $('#' + uid + '_home').find('form');
+	var url = $('#' + uid + '_url').val();
 	
 	m.find('button.' + method).click(function(){
 		var btn = $(this).addClass('buttonLoading').button('loading');
@@ -1208,7 +1210,26 @@ function bindFormAjaxByMethod(uid, url, method){
 	});
 }
 
-function bindFormCreateTool(uid, url){
+function init(uid, url, query, max, tree, admin, type, col){
+	
+	var tmp = '<div class="hidden">'
+		+ '<input id="' + uid + '_url" value="' + url + '">'
+		+ '<input id="' + uid + '_item_cnt">'
+		+ '<input id="' + uid + '_target_id">'
+		+ '<input id="' + uid + '_checked_list">'
+		+ '<input id="' + uid + '_review_complete" value="trigger change when review table complete">'
+		+ '<input id="' + uid + '_tree_view_complete" value="trigger change when tree review table complete">'
+		+ '<input id="' + uid + '_change_complete" value="trigger change when modal fetch data complete">'
+		+ '<input id="' + uid + '_search_adv" value="' + query + '">'
+		+ '</div>';
+	$('#' + uid).prepend(tmp);
+	
+	bindFormViewComplete(uid, max, tree, admin);
+	bindFormAjaxOnRefresh(uid, max);
+	bindInputAjaxOnChange(uid, type, col);
+}
+
+function bindFormCreateTool(uid){
 	var f = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	
@@ -1224,15 +1245,15 @@ function bindFormCreateTool(uid, url){
 		modalShow(uid);
 	});
 	
-	bindFormAjaxByMethod(uid, url, 'create');
+	bindFormAjaxByMethod(uid, 'create');
 }
 
 
-function bindFormModifyTool(uid, url){
+function bindFormModifyTool(uid){
 	var m = $('#' + uid + '_Modal');
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
-	bindFormAjaxByMethod(uid, url, 'modify');
+	bindFormAjaxByMethod(uid, 'modify');
 }
 
 function modalShow(uid){
@@ -1250,10 +1271,11 @@ function modalHide(uid){
 	f.show();
 }
 
-function bindFormDeleteTool(uid, url){
+function bindFormDeleteTool(uid){
 	var f = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	var t = $('#' + uid + '_target_id');
+	var url = $('#' + uid + '_url').val();
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
 	m.find('button.delete').click(function(){
@@ -1282,7 +1304,8 @@ function bindFormDeleteTool(uid, url){
 	});
 }
 
-function bindFormExportTool(uid, url){
+function bindFormExportTool(uid){
+	var url = $('#' + uid + '_url').val();
 	var f = $('#' + uid + '_panel');
 	var t = $('title').text();
 	
@@ -1345,12 +1368,13 @@ function genParam(uid){
 	return pdata;
 }
 
-function bindInputAjaxOnChange(uid, url, type, col){
+function bindInputAjaxOnChange(uid, type, col){
 	
 	var t = $('#' + uid + '_target_id');
 	var c = $('#' + uid + '_change_complete');
 	var f = $('#' + uid + '_home').find('form');
 	var m = $('#' + uid + '_Modal');
+	var url = $('#' + uid + '_url').val();
 	
 	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
 	

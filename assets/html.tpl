@@ -18,15 +18,6 @@ if(typeof checkScript == 'undefined'){
 }
 </script>
 <div id="{unique_id}" style="height: 100%; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
-	<div class="hidden">
-		<input id="{unique_id}_item_cnt">
-		<input id="{unique_id}_target_id">
-		<input id="{unique_id}_checked_list">
-		<input id="{unique_id}_review_complete" value="trigger change when review table complete">
-		<input id="{unique_id}_tree_view_complete" value="trigger change when tree review table complete">
-		<input id="{unique_id}_change_complete" value="trigger change when modal fetch data complete">
-		<input id="{unique_id}_search_adv" value="{query}">
-	</div>
 	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px;">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
@@ -94,40 +85,33 @@ if(typeof checkScript == 'undefined'){
 </div>
 
 <script>
-	bindFormViewComplete('{unique_id}', '{max}', '{back}', '{col}', '{admin}');
-	bindFormAjaxOnRefresh('{unique_id}', '{url}', '{max}');
+	init('{unique_id}', '{url}', '{query}', '{max}', '{tree}', '{admin}', {type}, {col});
 </script>
 <!-- @main -->
 
 <!-- @create -->
 <script>
-	bindFormCreateTool('{unique_id}', '{url}');
+	bindFormCreateTool('{unique_id}');
 </script>
 <!-- @create -->
 
 <!-- @modify -->
 <script>
-	bindFormModifyTool('{unique_id}', '{url}');
+	bindFormModifyTool('{unique_id}');
 </script>
 <!-- @modify -->
 
 <!-- @delete -->
 <script>
-	bindFormDeleteTool('{unique_id}', '{url}');
+	bindFormDeleteTool('{unique_id}');
 </script>
 <!-- @delete -->
 
 <!-- @export -->
 <script>
-	bindFormExportTool('{unique_id}', '{url}');
+	bindFormExportTool('{unique_id}');
 </script>
 <!-- @export -->
-
-<!-- @change -->
-<script>
-	bindInputAjaxOnChange('{unique_id}', '{url}', {type}, {col});
-</script>
-<!-- @change -->
 
 <!-- @table -->
 	<!-- @print -->
