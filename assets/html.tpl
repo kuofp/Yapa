@@ -19,68 +19,68 @@ if(typeof checkScript == 'undefined'){
 </script>
 
 <div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
-		<div class="panel-body" style="height: 100%">
-			<!-- toolist area -->
-			<form id="{unique_id}_search_area">
-			<!-- @search -->
-			<div class="btn-group toollist">
-				<button type="button" class="btn btn-default main"><i class="fa fa-cog" aria-hidden="true"></i></button>
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<span class="caret"></span>
-					<span class="sr-only">Toggle Dropdown</span>
-				</button>
-				<ul class="dropdown-menu toollist"></ul>
-			</div>
-			
-			<!-- search and advance search option which accept more keywords -->
-			<div class="btn-group">
-				<input class="form-control w160" name="search" auto>
-			</div>
-			
-			<!-- info area -->
-			<div class="btn-group">
-				<div class="badge item-cnt"></div>
-			</div>
-			
-			<!-- refresh -->
-			<div class="btn btn-default pull-right" refresh>
-				<i class="fa fa-repeat"></i>
-			</div>
-			<!-- @search -->
-			</form>
-			<!-- main content area -->
-			<div style="padding-right: 16px; overflow: hidden">
-				<table class="table table-alter" style="margin: 0px;">
-					<thead>
-						<th class="check w40" style="cursor: pointer"><i class="fa fa-square-o"></i></th>
-						<!-- @th -->
-						<th class="{class}" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
-						<!-- @th -->
-						<th></th>
-					</thead>
-				</table>
-			</div>
-			
-			<div style="overflow-y: scroll; height: calc(100% - 90px);">
-				<table class="table table-hover table-alter review" style="cursor: pointer;">
-					<tbody class="last">
-						<!-- @tr -->
-						<tr {attr}>
-							<td class="check w40 func"><i class="fa fa-square-o"></i></td>
-							<!-- @td -->
-							<td class="{class}" name="{name}">{text}</td>
-							<!-- @td -->
-							<td></td>
-						</tr>
-						<!-- @tr -->
-					</tbody>
-				</table>
-				<p class="end text-center col-xs-12"></p>
-				<button class="btn btn-default btn-block review"></button>
-			</div>
-			
-			<div class="info" style="overflow: hidden"></div>
+	<div class="panel-body" style="height: 100%">
+		<!-- toolist area -->
+		<form id="{unique_id}_search_area">
+		<!-- @search -->
+		<div class="btn-group toollist">
+			<button type="button" class="btn btn-default main"><i class="fa fa-cog" aria-hidden="true"></i></button>
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+			<ul class="dropdown-menu toollist"></ul>
 		</div>
+		
+		<!-- search and advance search option which accept more keywords -->
+		<div class="btn-group">
+			<input class="form-control w160" name="search" auto>
+		</div>
+		
+		<!-- info area -->
+		<div class="btn-group">
+			<div class="badge item-cnt"></div>
+		</div>
+		
+		<!-- refresh -->
+		<div class="btn btn-default pull-right" refresh>
+			<i class="fa fa-repeat"></i>
+		</div>
+		<!-- @search -->
+		</form>
+		<!-- main content area -->
+		<div style="padding-right: 16px; overflow: hidden">
+			<table class="table table-alter" style="margin: 0px;">
+				<thead>
+					<th class="check w40" style="cursor: pointer"><i class="fa fa-square-o"></i></th>
+					<!-- @th -->
+					<th class="{class}" name="{name}" style="cursor: pointer">{text}<i class="fa"></i></th>
+					<!-- @th -->
+					<th></th>
+				</thead>
+			</table>
+		</div>
+		
+		<div style="overflow-y: scroll; height: calc(100% - 90px);">
+			<table class="table table-hover table-alter review" style="cursor: pointer;">
+				<tbody class="last">
+					<!-- @tr -->
+					<tr {attr}>
+						<td class="check w40 func"><i class="fa fa-square-o"></i></td>
+						<!-- @td -->
+						<td class="{class}" name="{name}">{text}</td>
+						<!-- @td -->
+						<td></td>
+					</tr>
+					<!-- @tr -->
+				</tbody>
+			</table>
+			<p class="end text-center col-xs-12"></p>
+			<button class="btn btn-default btn-block review"></button>
+		</div>
+		
+		<div class="info" style="overflow: hidden"></div>
+	</div>
 </div>
 
 <script>
