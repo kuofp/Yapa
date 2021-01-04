@@ -93,7 +93,7 @@ class Yapa{
 		$this->col_num = $this->count($col_en);
 		$this->uid = 0;
 		
-		$this->tpl = new Yatp(__DIR__ . '/assets/html.tpl');
+		$this->tpl = new Yatp(__DIR__ . '/assets/view.html');
 		
 		$this->decodeJson();
 	}
