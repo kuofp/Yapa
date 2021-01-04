@@ -1222,7 +1222,7 @@ function init(uid, url, query, max, tree, admin, type, col){
 		+ '<input id="' + uid + '_change_complete" value="trigger change when modal fetch data complete">'
 		+ '<input id="' + uid + '_search_adv" value="' + query + '">'
 		+ '</div>';
-	$('#' + uid).prepend(tmp);
+	$('#' + uid + '_panel').prepend(tmp);
 	
 	bindFormViewComplete(uid, max, tree, admin);
 	bindFormAjaxOnRefresh(uid, max);
@@ -1377,6 +1377,7 @@ function bindInputAjaxOnChange(uid, type, col){
 	var url = $('#' + uid + '_url').val();
 	
 	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
+	m.find('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
 	
 	t.change(function(){
 		var pdata={

@@ -17,8 +17,8 @@ if(typeof checkScript == 'undefined'){
 	});
 }
 </script>
-<div id="{unique_id}" style="height: 100%; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
-	<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px;">
+
+<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
 		<div class="panel-body" style="height: 100%">
 			<!-- toolist area -->
 			<form id="{unique_id}_search_area">
@@ -81,7 +81,6 @@ if(typeof checkScript == 'undefined'){
 			
 			<div class="info" style="overflow: hidden"></div>
 		</div>
-	</div>
 </div>
 
 <script>
@@ -202,10 +201,6 @@ if(typeof checkScript == 'undefined'){
 				</div>
 			</form>
 			<div style="clear: both"></div>
-			<script>
-				// popover
-				$('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
-			</script>
 			</div>
 		</div>
 	</div>
