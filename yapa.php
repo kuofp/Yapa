@@ -127,12 +127,8 @@ class Yapa{
 		
 		$pdata = $_REQUEST;
 		
-		$result = ['pdata' => []];
-		
 		if(isset($pdata['jdata'])){
 			$jdata = json_decode($pdata['jdata'], true);
-			
-			$result['method'] = $jdata['method'] ?? '';
 			
 			//must keep keys 'data' and 'where', but remove empty array in where key
 			//array( 'data' => array())                   got error
@@ -141,50 +137,39 @@ class Yapa{
 			//do not remove empty array in data key
 			//array( 'data' => array(name=>''))           will be removed
 			
-			if(isset($jdata['pdata']['data'])){
-				if(is_array($jdata['pdata']['data'])){
-					$data = $jdata['pdata']['data'];
-				}else{
-					$str = $jdata['pdata']['data'] ?? '';
-					$arr_tmp = explode('&', $str);
-					$arr_tmp2 = [];
-					$data = [];
-					foreach($arr_tmp as $arr){
-						$s = explode('=', $arr);
-						$arr_tmp2[$s[0]][] = urldecode($s[1]);
-					}
-					foreach($arr_tmp2 as $key=>$arr){
-						$data[$key] = implode(',', $arr);
-					}
+			$method = $jdata['method'] ?? '';
+			$pdata = [
+				'data' => $jdata['pdata']['data'] ?? [],
+				'where' => array_filter($jdata['pdata']['where'] ?? []),
+			];
+			
+			if(in_array($method, ['create', 'modify'])){
+				// decode serialize() from js
+				$arr_tmp = explode('&', $pdata['data']);
+				$arr_tmp2 = [];
+				foreach($arr_tmp as $v){
+					$s = explode('=', $v);
+					$arr_tmp2[$s[0]][] = urldecode($s[1]);
 				}
-			}else{
 				$data = [];
-			}
-			
-			$result['pdata']['data'] = $data;
-			$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): [];
-			
-			// unset disabled cols when create and modify
-			if(in_array($result['method'], ['create', 'modify'])){
+				foreach($arr_tmp2 as $k=>$v){
+					$data[$k] = implode(',', $v);
+				}
+				$pdata['data'] = $data;
+				// unset disabled cols when create and modify
 				for($i = 0; $i < $this->col_num; $i++){
-					if(($this->attr[$i]['disabled'] ?? 0) || ($this->attr[$i]['disabled-' . $result['method']] ?? 0)){
-						unset($result['pdata']['data'][$this->col_en[$i]]);
+					if(($this->attr[$i]['disabled'] ?? 0) || ($this->attr[$i]['disabled-' . $method] ?? 0)){
+						unset($pdata['data'][$this->col_en[$i]]);
 					}
 				}
 			}
 			
-			//$result['pdata']['data'] = isset($jdata['pdata']['data'])? $jdata['pdata']['data']: array();
-			//$result['pdata']['where'] = isset($jdata['pdata']['where'])? array_filter($jdata['pdata']['where']): array();
-			
-			
-			$this->act = $result['method'];
-			$this->arg = $result['pdata'];
+			$this->act = $method;
+			$this->arg = $pdata;
 		}else{
 			$this->act = $_REQUEST['method'] ?? '';
 			$this->arg = '';
 		}
-		
-		return $result;
 	}
 	
 	public function reviewTool(){
