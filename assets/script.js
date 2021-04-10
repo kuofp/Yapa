@@ -1016,7 +1016,8 @@ function bindFormViewComplete(uid, max, tree, admin){
 	});
 	
 	f.find('table.review').parent().scroll(function(){
-		var left = $(this).scrollLeft();
+		// safari issue
+		var left = Math.min($(this).scrollLeft(), $(this).get(0).scrollWidth - $(this).get(0).clientWidth);
 		f.find('.table-alter').eq(0).css('margin-left', -left);
 		f.find('.end').css('margin-left', left);
 		f.find('button.review').css('margin-left', left);
