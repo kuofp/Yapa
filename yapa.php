@@ -494,7 +494,6 @@ class Yapa{
 				$pre[$k]['sql'] = $v['sql'];
 				$pre[$k]['url'] = $v['url'];
 				$pre[$k]['tag'] = $v['tag'];
-				$pre[$k]['css'] = $v['css'] ?? '';
 			}
 			
 			$td = $this->tpl->block('modal-detail.td.module')->assign([
@@ -509,7 +508,6 @@ class Yapa{
 		
 		$this->tpl->block('modal-detail')->assign([
 			'unique_id' => $this->unique_id,
-			'width' => $this->config['modal']['width'] ?? '760px',
 			'html' => $this->config['modal']['html'] ?? '',
 			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr),
 		])->render();
@@ -617,10 +615,8 @@ class Yapa{
 				$datas = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2], $col]);
 				
 				$tmp = [];
-				$alias = [];
 				foreach($datas as $v){
 					$tmp[$v['id']] = $v[$col];
-					$alias[$v['id']] = $v[$arr_tmp[1]];
 				}
 				
 				$sub = $this->treeSub($tmp);
@@ -633,7 +629,6 @@ class Yapa{
 				
 				$this->tree['offset'] = $offset;
 				$this->tree['sub'] = $sub;
-				$this->tree['alias'] = $alias;
 			}
 			
 			// select only descendant
@@ -941,11 +936,6 @@ class Yapa{
 		return $result;
 	}
 	
-	// array(
-		// array('id' => 1, '#tag' => 7),
-		// array('id' => 2, '#tag' => 8),
-		// ...
-	// )
 	public function bind($data){
 		
 		foreach($data as $arr){
@@ -972,7 +962,6 @@ class Yapa{
 			$offset = $this->tree['offset'];
 			$sub = $this->tree['sub'][1];
 			$dsub = $this->tree['sub'][0];
-			$alias = $this->tree['alias'];
 			$col = $this->col_en[$this->tree['col']];
 			
 			foreach($data['data'] as $k=>$v){

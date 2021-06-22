@@ -1438,7 +1438,7 @@ jQuery.fn.extend({
 		for(var i in tpl){
 			var t = uid + '_menu_' + i;
 			m.find('.nav-tabs').append('<li><a data-toggle="tab" href="#' + t + '" style="padding: 0 15px 0 6px">' + tpl[i]['tag'] + '</a></li>');
-			m.find('#' + uid + '_home').after('<div id="' + t + '" class="tab-pane fade"></div>');
+			m.find('#' + uid + '_home').after('<div id="' + t + '" class="tab-pane fade" style="height: 100%"></div>');
 		}
 		
 		f.on('reset', function(){
@@ -1456,7 +1456,6 @@ jQuery.fn.extend({
 				var arr = {};
 				var sql = tpl[i]['sql'];
 				var url = tpl[i]['url'];
-				var css = tpl[i]['css'] || 'height: 100%';
 				var str = $('#' + uid + '_search_adv').val();
 				var adv = JSON.parse(str)['AND'] || [];
 				
@@ -1465,7 +1464,7 @@ jQuery.fn.extend({
 				}
 				
 				var col = $('#' + uid + '_menu_' + i);
-				$(col).attr('style', css).empty();
+				$(col).empty();
 				$(col).load(url, {
 					preset: arr,
 					query: JSON.stringify({
