@@ -203,9 +203,8 @@ class Yapa{
 				'admin'     => $this->config['admin'] ?? '',
 				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
 				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
+				'modal'     => $this->genFormModal(),
 			])->render();
-			
-			$this->genFormModal();
 			
 			foreach(['create', 'modify', 'delete', 'export'] as $v){
 				$auth = ($v == 'export')? 'review': $v;
@@ -506,13 +505,13 @@ class Yapa{
 			];
 		}
 		
-		$this->tpl->block('modal-detail')->assign([
+		$tpl = $this->tpl->block('modal-detail')->assign([
 			'unique_id' => $this->unique_id,
 			'html' => $this->config['modal']['html'] ?? '',
 			'tr' => $this->tpl->block('modal-detail.tr')->nest($tr),
-		])->render();
+		]);
 		
-		return $result;
+		return $tpl;
 	}
 	
 	public function getJson($pdata){

@@ -1047,7 +1047,7 @@ function bindFormViewComplete(uid, max, tree, admin){
 				m.find('.hidden-modify').hide();
 				m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
 				m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
-				modalShow(uid);
+				toggleModal(uid);
 			}
 		});
 		
@@ -1199,7 +1199,7 @@ function bindFormAjaxByMethod(uid, method){
 					// fail
 				}else{
 					p.find('table.review').trigger('refresh',{type: method, id: jdata['data']});
-					modalHide(uid);
+					toggleModal(uid);
 				}
 				customAlert(jdata);
 				$('.buttonLoading').button('reset');
@@ -1243,7 +1243,7 @@ function bindFormCreateTool(uid){
 		m.find('.hidden-modify').show();
 		m.find('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 1);
 		m.find('.disabled-modify').not('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 0);
-		modalShow(uid);
+		toggleModal(uid);
 	});
 	
 	bindFormAjaxByMethod(uid, 'create');
@@ -1257,19 +1257,11 @@ function bindFormModifyTool(uid){
 	bindFormAjaxByMethod(uid, 'modify');
 }
 
-function modalShow(uid){
+function toggleModal(uid){
 	var f = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
-	f.after(m);
-	m.show();
-	f.hide();
-}
-
-function modalHide(uid){
-	var f = $('#' + uid + '_panel');
-	var m = $('#' + uid + '_Modal');
-	m.hide();
-	f.show();
+	m.toggle();
+	f.toggle();
 }
 
 function bindFormDeleteTool(uid){
@@ -1295,7 +1287,7 @@ function bindFormDeleteTool(uid){
 						// fail
 					}else{
 						f.find('table.review').trigger('refresh',{type:'delete', id: jdata['data']});
-						modalHide(uid);
+						toggleModal(uid);
 					}
 					customAlert(jdata);
 					$('.buttonLoading').button('reset');
