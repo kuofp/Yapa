@@ -203,6 +203,7 @@ class Yapa{
 				'admin'     => $this->config['admin'] ?? '',
 				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
 				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
+				'module'    => json_encode($this->config['module'] ?? [], JSON_UNESCAPED_UNICODE),
 				'modal'     => $this->genFormModal(),
 			])->render();
 			
@@ -481,28 +482,6 @@ class Yapa{
 					'td' => array($td),
 				];
 			}
-		}
-		
-		// module
-		if($this->config['module'] ?? []){
-			$uid = $this->unique_id . '_module';
-			
-			$pre = [];
-			foreach($this->config['module'] ?? [] as $k=>$v){
-				$pre[$k] = [];
-				$pre[$k]['sql'] = $v['sql'];
-				$pre[$k]['url'] = $v['url'];
-				$pre[$k]['tag'] = $v['tag'];
-			}
-			
-			$td = $this->tpl->block('modal-detail.td.module')->assign([
-				'value' => json_encode($pre),
-				'uid'   => $uid,
-			]);
-			$tr[] = [
-				'class' => $class,
-				'td' => array($td),
-			];
 		}
 		
 		$tpl = $this->tpl->block('modal-detail')->assign([

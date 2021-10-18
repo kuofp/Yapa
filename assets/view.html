@@ -85,7 +85,7 @@ if(typeof checkScript == 'undefined'){
 {modal}
 
 <script>
-	init('{unique_id}', '{url}', '{query}', '{max}', '{tree}', '{admin}', {type}, {col});
+	init('{unique_id}', '{url}', '{query}', '{max}', '{tree}', '{admin}', {type}, {col}, {module});
 </script>
 <!-- @main -->
 
@@ -184,14 +184,6 @@ if(typeof checkScript == 'undefined'){
 							</script>
 						</td>
 						<!-- @struct -->
-						<!-- @module -->
-						<td class="hidden" colspan="10">
-							<input class="hidden" id="{uid}">
-							<script>
-								$('#{uid}').module({tpl: {value}});
-							</script>
-						</td>
-						<!-- @module -->
 					<!-- @td -->
 					</tr>
 				<!-- @tr -->

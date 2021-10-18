@@ -1211,7 +1211,7 @@ function bindFormAjaxByMethod(uid, method){
 	});
 }
 
-function init(uid, url, query, max, tree, admin, type, col){
+function init(uid, url, query, max, tree, admin, type, col, module){
 	
 	var tmp = '<div class="hidden">'
 		+ '<input id="' + uid + '_url" value="' + url + '">'
@@ -1228,6 +1228,7 @@ function init(uid, url, query, max, tree, admin, type, col){
 	bindFormViewComplete(uid, max, tree, admin);
 	bindFormAjaxOnRefresh(uid, max);
 	bindInputAjaxOnChange(uid, type, col);
+	bindModuleOnChange(uid, module);
 }
 
 function bindFormCreateTool(uid){
@@ -1402,8 +1403,6 @@ function bindInputAjaxOnChange(uid, type, col){
 								break;
 						}
 					}
-					// module
-					f.find('#' + uid + '_module').trigger('preset');
 					c.trigger('change');
 				}
 				customAlert(jdata);
@@ -1415,17 +1414,12 @@ function bindInputAjaxOnChange(uid, type, col){
 	});
 }
 
-jQuery.fn.extend({
-	module: function(init){
+function bindModuleOnChange(uid, tpl){
 		
-		var tar = this;
-		var tpl = init.tpl || [];
-		
-		// var in search_adv
-		var uid = tar.closest('.panel').attr('id').split('_')[0];
 		var m = $('#' + uid + '_Modal');
 		var f = $('#' + uid + '_home').find('form');
 		var s = $('#' + uid + '_search_area');
+		var c = $('#' + uid + '_change_complete');
 		
 		for(var i in tpl){
 			var t = uid + '_menu_' + i;
@@ -1439,7 +1433,7 @@ jQuery.fn.extend({
 			m.find('.nav-tabs a').not(':first').addClass('hidden');
 		});
 		
-		$(tar).on('preset', function(){
+		c.on('change', function(){
 			// hide tabs
 			m.find('.nav-tabs a:first').tab('show');
 			m.find('.nav-tabs a').not(':first').removeClass('hidden');
@@ -1465,5 +1459,4 @@ jQuery.fn.extend({
 				});
 			}
 		});
-	}
-});
+}
