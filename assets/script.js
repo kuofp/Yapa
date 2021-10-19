@@ -798,33 +798,32 @@ jQuery.fn.extend({
 });
 
 function bindFormCheck(uid){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
-	f.find('th.check').click(function(){
+	p.find('th.check').click(function(){
 		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			f.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			f.find('.datalist').removeClass('highlight');
+			p.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
+			p.find('.datalist').removeClass('highlight');
 			l.val('');
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
 			var check = [];
-			f.find('.datalist').not('.hidden').each(function(i){ check[i] = $(this).attr('data-id');});
-			f.find('.datalist').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
+			p.find('.datalist').not('.hidden').each(function(i){ check[i] = $(this).attr('data-id');});
+			p.find('.datalist').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
 			l.val(check.join());
 		}
 	});
 }
 function bindFormSort(uid){
-	var f = $('#' + uid + '_panel');
-	f.find('th.order').click(function(){
-		
-		var s = $('#' + uid + '_search_adv');
+	var p = $('#' + uid + '_panel');
+	var a = $('#' + uid + '_search_adv');
+	p.find('th.order').click(function(){
 		
 		var plus = '';
 		var t = $(this).children();
 		var n = $(this).attr('name');
-		var tmp = JSON.parse(s.val()); //json in input
+		var tmp = JSON.parse(a.val()); //json in input
 		var obj = {};
 		
 		for(var i in tmp){
@@ -847,16 +846,16 @@ function bindFormSort(uid){
 		}
 		
 		var q = JSON.stringify(obj);  //json in input
-		s.val(q).trigger('change');
+		a.val(q).trigger('change');
 		t.attr('class', plus);
 	});
 }
 
 function bindFormCheck2(uid){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var l = $('#' + uid + '_checked_list');
 	
-	f.find('.newdatalist').find('td.check').click(function(){
+	p.find('.newdatalist').find('td.check').click(function(){
 		var id = $(this).closest('.datalist').attr('data-id');
 		var str = l.val();
 		
@@ -887,7 +886,7 @@ function bindFormCheck2(uid){
 	var arr = str.split(',');
 	
 	//clear select and select again
-	f.find('table.review').find('.newdatalist').each(function(){
+	p.find('table.review').find('.newdatalist').each(function(){
 		if($.inArray( $(this).attr('data-id'), arr ) != -1){
 			$(this).closest('.newdatalist').addClass('highlight').find('td.check').find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
 		}
@@ -899,7 +898,7 @@ function bindFormTreeView(uid, tree, admin){
 	if(!tree) return;
 	
 	var p = $('#' + uid + '_panel');
-	var f = $('#' + uid + '_home').find('form');
+	var f = $('#' + uid + '_menu').find('form');
 	var s = $('#' + uid + '_search_area');
 	var t = $('#' + uid + '_tree_view_complete');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + _gettext('Back to previous level') + '</button>');
@@ -968,27 +967,27 @@ function bindFormTreeView2(uid, tree){
 	
 	if(!tree) return;
 	
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	
-	f.find('.newdatalist').find('td.tree').each(function(){
+	p.find('.newdatalist').find('td.tree').each(function(){
 		$(this).html('<a href="#">' + $(this).text() + '</a>');
 	});
 	
-	f.find('.newdatalist').find('td.tree').click(function(){
+	p.find('.newdatalist').find('td.tree').click(function(){
 		var tag = $(this).closest('.datalist').attr('class');
 		tag = tag.match(/s_([\w]+)/)[1];
 		if($(this).text() != ''){
-			f.find('.prev').attr('prev', f.find('.prev').attr('show'));
-			f.find('.prev').attr('show', '.p_' + tag);
-			f.find('.last').trigger('tree');
+			p.find('.prev').attr('prev', p.find('.prev').attr('show'));
+			p.find('.prev').attr('show', '.p_' + tag);
+			p.find('.last').trigger('tree');
 		}
 	});
 	
-	f.find('.last').trigger('tree');
+	p.find('.last').trigger('tree');
 }
 
 function bindFormViewComplete(uid, max, tree, admin){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
 	var t = $('#' + uid + '_target_id');
@@ -1002,7 +1001,7 @@ function bindFormViewComplete(uid, max, tree, admin){
 	s.find('[name=search][auto]').on('input', function(){
 		if(timer){ clearTimeout(timer);}
 		timer = setTimeout(function(){
-			f.find('table.review').trigger('refresh', {type: 'review'});
+			p.find('table.review').trigger('refresh', {type: 'review'});
 		}, 1000);
 	});
 	
@@ -1012,34 +1011,34 @@ function bindFormViewComplete(uid, max, tree, admin){
 	});
 	
 	s.find('[refresh]').click(function(){
-		f.find('table.review').trigger('refresh', {type: 'review'});
+		p.find('table.review').trigger('refresh', {type: 'review'});
 	});
 	
-	f.find('table.review').parent().scroll(function(){
+	p.find('table.review').parent().scroll(function(){
 		// safari issue
 		var left = Math.min($(this).scrollLeft(), $(this).get(0).scrollWidth - $(this).get(0).clientWidth);
-		f.find('.table-alter').eq(0).css('margin-left', -left);
-		f.find('.end').css('margin-left', left);
-		f.find('button.review').css('margin-left', left);
+		p.find('.table-alter').eq(0).css('margin-left', -left);
+		p.find('.end').css('margin-left', left);
+		p.find('button.review').css('margin-left', left);
 	});
 	
-	a.on('change', function(){ f.find('table.review').trigger('refresh', {type: 'review'}); });
-	c.change(function(){ f.find('.item-cnt').text($(this).val()); });
+	a.on('change', function(){ p.find('table.review').trigger('refresh', {type: 'review'}); });
+	c.change(function(){ p.find('.item-cnt').text($(this).val()); });
 	bindFormSort( uid );
 	bindFormCheck( uid );
 	bindFormTreeView(uid, tree, admin);
 	
-	f.find('button.review').click(function(e){
+	p.find('button.review').click(function(e){
 		// prevent sending post
 		e.preventDefault();
 		$(this).addClass('buttonLoading').button('loading');
-		f.find('table.review').trigger('refresh',{type: 'append', max: max});
+		p.find('table.review').trigger('refresh',{type: 'append', max: max});
 	});
 	
 	r.change(function(){
 		// var t0 = performance.now();
 		//set newdatalist js events
-		f.find('table.review').find('.newdatalist').children().not('.func').click(function(){
+		p.find('table.review').find('.newdatalist').children().not('.func').click(function(){
 			// select text
 			if(!getSelection().toString()){
 				t.val( $(this).closest('.datalist').attr('data-id')).trigger('change');
@@ -1054,12 +1053,12 @@ function bindFormViewComplete(uid, max, tree, admin){
 		bindFormCheck2( uid );
 		bindFormTreeView2(uid, tree);
 		
-		f.find('.buttonLoading').button('reset');
-		f.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
-		//f.find('table.review').find('.last').sortable();
+		p.find('.buttonLoading').button('reset');
+		p.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
+		//p.find('table.review').find('.last').sortable();
 		
 		//item count
-		c.val( f.find('table.review').find('.datalist').length ).trigger('change');
+		c.val( p.find('table.review').find('.datalist').length ).trigger('change');
 		console.log('Info: total ' + c.val() + ' items');
 		// var t1 = performance.now();
 		// console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
@@ -1068,18 +1067,18 @@ function bindFormViewComplete(uid, max, tree, admin){
 
 
 function bindFormAjaxOnRefresh(uid, max){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var c = $('#' + uid + '_item_cnt');
 	var r = $('#' + uid + '_review_complete');
 	var s = $('#' + uid + '_search_area');
 	var a = $('#' + uid + '_search_adv');
 	var url = $('#' + uid + '_url').val();
 	
-	f.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
-	f.find('button.review').text(_gettext('Show more items +') + max);
-	f.find('p.end').text(_gettext('Reach the bottom of list'));
+	p.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
+	p.find('button.review').text(_gettext('Show more items +') + max);
+	p.find('p.end').text(_gettext('Reach the bottom of list'));
 	
-	f.find('table.review').on('refresh', function (e,obj){
+	p.find('table.review').on('refresh', function (e,obj){
 		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
 		var pdata = {data:{},where:{ AND: {}}};
@@ -1087,7 +1086,7 @@ function bindFormAjaxOnRefresh(uid, max){
 		var keyword = s.find('[name=search]').val();
 		var keyword_adv = a.val();
 		var keyword_cus = serializeJSON(s.serializeArray());
-
+		
 		switch(obj.type){
 			case 'review':
 				c.val(0);
@@ -1114,10 +1113,10 @@ function bindFormAjaxOnRefresh(uid, max){
 		// loading
 		switch(obj.type){
 			case 'review':
-				f.find('table.review').find('.last').empty();
+				p.find('table.review').find('.last').empty();
 			case 'append':
-				f.find('button.review').show().addClass('buttonLoading').button('loading');
-				f.find('p.end').hide();
+				p.find('button.review').show().addClass('buttonLoading').button('loading');
+				p.find('p.end').hide();
 				break;
 		}
 		
@@ -1135,31 +1134,31 @@ function bindFormAjaxOnRefresh(uid, max){
 						case 'review':
 							// prevent multi ajax result
 							c.val(0);
-							f.find('table.review').find('.last').empty();
+							p.find('table.review').find('.last').empty();
 						case 'append':
 							if(jdata['cnt'] > 0){
-								f.find('table.review').find('.last').append(jdata['data']);
+								p.find('table.review').find('.last').append(jdata['data']);
 							}
 							if(max_ > 0 && jdata['cnt'] == max_){
-								f.find('button.review').show();
-								f.find('p.end').hide();
+								p.find('button.review').show();
+								p.find('p.end').hide();
 							}else{
-								f.find('button.review').hide();
-								f.find('p.end').show();
+								p.find('button.review').hide();
+								p.find('p.end').show();
 							}
 							break;
 						case 'create':
-							f.find('table.review').find('.last').prepend(jdata['data']);
+							p.find('table.review').find('.last').prepend(jdata['data']);
 							break;
 						case 'modify':
 							var tmp = $(jdata['data']);
 							for(var i in arr_id){
-								f.find('table.review').find('[data-id=' + arr_id[i] + ']').replaceWith(tmp.filter('[data-id=' + arr_id[i] + ']'));
+								p.find('table.review').find('[data-id=' + arr_id[i] + ']').replaceWith(tmp.filter('[data-id=' + arr_id[i] + ']'));
 							}
 							break;
 						case 'delete':
 							for(var i in arr_id){
-								f.find('table.review').find('[data-id=' + arr_id[i] + ']').remove();
+								p.find('table.review').find('[data-id=' + arr_id[i] + ']').remove();
 							}
 							break;
 						default:
@@ -1168,7 +1167,7 @@ function bindFormAjaxOnRefresh(uid, max){
 				}
 				customAlert(jdata);
 				
-				f.find('button.review').find('.buttonLoading').button('reset');
+				p.find('button.review').find('.buttonLoading').button('reset');
 				r.trigger('change');
 			},
 			error: function(){
@@ -1181,7 +1180,7 @@ function bindFormAjaxOnRefresh(uid, max){
 function bindFormAjaxByMethod(uid, method){
 	var p = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
-	var f = $('#' + uid + '_home').find('form');
+	var f = $('#' + uid + '_menu').find('form');
 	var url = $('#' + uid + '_url').val();
 	
 	m.find('button.' + method).click(function(){
@@ -1232,12 +1231,12 @@ function init(uid, url, query, max, tree, admin, type, col, module){
 }
 
 function bindFormCreateTool(uid){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	
-	f.find('div.toollist').find('button.main').text(_gettext('Add')).addClass('create');
+	p.find('div.toollist').find('button.main').text(_gettext('Add')).addClass('create');
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary create hidden-modify">' + _gettext('Save') + '</button>');
-	f.find('div.toollist').find('button.create').click(function(){
+	p.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
 		m.find('form')[0].reset();
 		m.find('.hidden-create').hide();
@@ -1259,14 +1258,14 @@ function bindFormModifyTool(uid){
 }
 
 function toggleModal(uid){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	m.toggle();
-	f.toggle();
+	p.toggle();
 }
 
 function bindFormDeleteTool(uid){
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var m = $('#' + uid + '_Modal');
 	var t = $('#' + uid + '_target_id');
 	var url = $('#' + uid + '_url').val();
@@ -1287,7 +1286,7 @@ function bindFormDeleteTool(uid){
 					if(jdata['code']){
 						// fail
 					}else{
-						f.find('table.review').trigger('refresh',{type:'delete', id: jdata['data']});
+						p.find('table.review').trigger('refresh',{type:'delete', id: jdata['data']});
 						toggleModal(uid);
 					}
 					customAlert(jdata);
@@ -1300,15 +1299,15 @@ function bindFormDeleteTool(uid){
 
 function bindFormExportTool(uid){
 	var url = $('#' + uid + '_url').val();
-	var f = $('#' + uid + '_panel');
+	var p = $('#' + uid + '_panel');
 	var t = $('title').text();
 	
-	var p = $('<li><a href="#">' + _gettext('Print') + '</a></li>');
-	var e = $('<li><a href="#">' + _gettext('Export to xls') + '</a></li>');
+	var b1 = $('<li><a href="#">' + _gettext('Print') + '</a></li>');
+	var b2 = $('<li><a href="#">' + _gettext('Export to xls') + '</a></li>');
 	
-	f.find('ul.toollist').append(p).append(e);
+	p.find('ul.toollist').append(b1).append(b2);
 	
-	$(p).click(function(){
+	$(b1).click(function(){
 		var pdata = genParam(uid);
 		$.ajax({
 			url: url,
@@ -1328,7 +1327,7 @@ function bindFormExportTool(uid){
 		});
 	});
 	
-	$(e).click(function(){
+	$(b2).click(function(){
 		var pdata = genParam(uid);
 		open('POST', url, {jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'excel'}, '_blank');
 	});
@@ -1366,7 +1365,7 @@ function bindInputAjaxOnChange(uid, type, col){
 	
 	var t = $('#' + uid + '_target_id');
 	var c = $('#' + uid + '_change_complete');
-	var f = $('#' + uid + '_home').find('form');
+	var f = $('#' + uid + '_menu').find('form');
 	var m = $('#' + uid + '_Modal');
 	var url = $('#' + uid + '_url').val();
 	
@@ -1417,14 +1416,15 @@ function bindInputAjaxOnChange(uid, type, col){
 function bindModuleOnChange(uid, tpl){
 	
 	var m = $('#' + uid + '_Modal');
-	var f = $('#' + uid + '_home').find('form');
+	var f = $('#' + uid + '_menu').find('form');
 	var s = $('#' + uid + '_search_area');
 	var c = $('#' + uid + '_change_complete');
+	var a = $('#' + uid + '_search_adv');
 	
 	for(var i in tpl){
 		var t = uid + '_menu_' + i;
 		m.find('.nav-tabs').append('<li><a data-toggle="tab" href="#' + t + '" style="padding: 0 15px 0 6px">' + tpl[i]['tag'] + '</a></li>');
-		m.find('#' + uid + '_home').after('<div id="' + t + '" class="tab-pane fade" style="height: 100%"></div>');
+		m.find('#' + uid + '_menu').after('<div id="' + t + '" class="tab-pane fade" style="height: 100%"></div>');
 	}
 	
 	f.on('reset', function(){
@@ -1442,7 +1442,7 @@ function bindModuleOnChange(uid, tpl){
 			var arr = {};
 			var sql = tpl[i]['sql'];
 			var url = tpl[i]['url'];
-			var str = $('#' + uid + '_search_adv').val();
+			var str = a.val();
 			var adv = JSON.parse(str)['AND'] || [];
 			
 			for(var j in sql){
