@@ -17,11 +17,14 @@ if(typeof checkScript == 'undefined'){
 	});
 }
 </script>
+<script>
+	init('{unique_id}', '{url}', '{query}', '{max}', '{tree}', '{admin}', {type}, {col}, {module});
+</script>
 
-<div class="panel panel-default" id="{unique_id}_panel" style="height: 100%; margin: 0px; box-shadow: 0 3px 6px rgba(0,0,0,.175);">
+<div class="panel panel-default" id="{unique_id}" style="height: 100%; margin: 0px;">
 	<div class="panel-body" style="height: 100%">
 		<!-- toolist area -->
-		<form id="{unique_id}_search_area">
+		<form>
 		<!-- @search -->
 		<div class="btn-group toollist">
 			<button type="button" class="btn btn-default main"><i class="fa fa-cog" aria-hidden="true"></i></button>
@@ -81,12 +84,8 @@ if(typeof checkScript == 'undefined'){
 		
 		<div class="info" style="overflow: hidden"></div>
 	</div>
+	{modal}
 </div>
-{modal}
-
-<script>
-	init('{unique_id}', '{url}', '{query}', '{max}', '{tree}', '{admin}', {type}, {col}, {module});
-</script>
 <!-- @main -->
 
 <!-- @create -->
@@ -149,8 +148,7 @@ if(typeof checkScript == 'undefined'){
 <!-- @crop-img -->
 
 <!-- @modal-detail -->
-<div class="panel panel-default" id="{unique_id}_Modal" style="height: 100%; margin: 0; display: none;">
-	<div class="panel-body" style="height: 100%; padding: 0;">
+	<div class="panel-body" style="height: 100%; padding: 0; display: none;">
 		<div style="padding: 10px 10px 10px 0px">
 			<button type="button" class="close pull-left" style="padding: 0px 10px" onclick="toggleModal('{unique_id}')"><i class="fa fa-reply" aria-hidden="true"></i></button>
 			<ul class="nav nav-tabs">
@@ -189,7 +187,7 @@ if(typeof checkScript == 'undefined'){
 				<!-- @tr -->
 				</table>
 				</div>
-				<div id="{unique_id}_sub" style="max-width: 500px; float: left; overflow: hidden; margin-bottom: 20px;">
+				<div style="max-width: 500px; float: left; overflow: hidden; margin-bottom: 20px;">
 					{html}
 				</div>
 			</form>
@@ -197,7 +195,6 @@ if(typeof checkScript == 'undefined'){
 			</div>
 		</div>
 	</div>
-</div>
 <!-- @modal-detail -->
 <!-- @css -->
 <style>

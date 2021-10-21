@@ -798,8 +798,9 @@ jQuery.fn.extend({
 });
 
 function bindFormCheck(uid){
-	var p = $('#' + uid + '_panel');
-	var l = $('#' + uid + '_checked_list');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var l = aio.data('checked_list');
 	p.find('th.check').click(function(){
 		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
@@ -816,8 +817,9 @@ function bindFormCheck(uid){
 	});
 }
 function bindFormSort(uid){
-	var p = $('#' + uid + '_panel');
-	var a = $('#' + uid + '_search_adv');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var a = aio.data('search_adv');
 	p.find('th.order').click(function(){
 		
 		var plus = '';
@@ -852,8 +854,9 @@ function bindFormSort(uid){
 }
 
 function bindFormCheck2(uid){
-	var p = $('#' + uid + '_panel');
-	var l = $('#' + uid + '_checked_list');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var l = aio.data('checked_list');
 	
 	p.find('.newdatalist').find('td.check').click(function(){
 		var id = $(this).closest('.datalist').attr('data-id');
@@ -897,10 +900,11 @@ function bindFormTreeView(uid, tree, admin){
 	
 	if(!tree) return;
 	
-	var p = $('#' + uid + '_panel');
-	var f = $('#' + uid + '_menu').find('form');
-	var s = $('#' + uid + '_search_area');
-	var t = $('#' + uid + '_tree_view_complete');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var f = aio.data('form');
+	var s = aio.data('search_area');
+	var t = aio.data('tree_view_complete');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + _gettext('Back to previous level') + '</button>');
 	var box = {};
 	
@@ -967,7 +971,8 @@ function bindFormTreeView2(uid, tree){
 	
 	if(!tree) return;
 	
-	var p = $('#' + uid + '_panel');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
 	
 	p.find('.newdatalist').find('td.tree').each(function(){
 		$(this).html('<a href="#">' + $(this).text() + '</a>');
@@ -987,13 +992,14 @@ function bindFormTreeView2(uid, tree){
 }
 
 function bindFormViewComplete(uid, max, tree, admin){
-	var p = $('#' + uid + '_panel');
-	var c = $('#' + uid + '_item_cnt');
-	var r = $('#' + uid + '_review_complete');
-	var t = $('#' + uid + '_target_id');
-	var m = $('#' + uid + '_Modal');
-	var a = $('#' + uid + '_search_adv');
-	var s = $('#' + uid + '_search_area');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var c = aio.data('item_cnt');
+	var r = aio.data('review_complete');
+	var t = aio.data('target_id');
+	var m = aio.data('modal');
+	var a = aio.data('search_adv');
+	var s = aio.data('search_area');
 	var timer = 0;// delay loading
 	
 	s.find('[name=search][auto]').attr('placeholder', _gettext('Search'));
@@ -1067,12 +1073,13 @@ function bindFormViewComplete(uid, max, tree, admin){
 
 
 function bindFormAjaxOnRefresh(uid, max){
-	var p = $('#' + uid + '_panel');
-	var c = $('#' + uid + '_item_cnt');
-	var r = $('#' + uid + '_review_complete');
-	var s = $('#' + uid + '_search_area');
-	var a = $('#' + uid + '_search_adv');
-	var url = $('#' + uid + '_url').val();
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var c = aio.data('item_cnt');
+	var r = aio.data('review_complete');
+	var s = aio.data('search_area');
+	var a = aio.data('search_adv');
+	var url = aio.data('url');
 	
 	p.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
 	p.find('button.review').text(_gettext('Show more items +') + max);
@@ -1178,10 +1185,11 @@ function bindFormAjaxOnRefresh(uid, max){
 }
 
 function bindFormAjaxByMethod(uid, method){
-	var p = $('#' + uid + '_panel');
-	var m = $('#' + uid + '_Modal');
-	var f = $('#' + uid + '_menu').find('form');
-	var url = $('#' + uid + '_url').val();
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var m = aio.data('modal');
+	var f = aio.data('form');
+	var url = aio.data('url');
 	
 	m.find('button.' + method).click(function(){
 		var btn = $(this).addClass('buttonLoading').button('loading');
@@ -1212,17 +1220,21 @@ function bindFormAjaxByMethod(uid, method){
 
 function init(uid, url, query, max, tree, admin, type, col, module){
 	
-	var tmp = '<div class="hidden">'
-		+ '<input id="' + uid + '_url" value="' + url + '">'
-		+ '<input id="' + uid + '_item_cnt">'
-		+ '<input id="' + uid + '_target_id">'
-		+ '<input id="' + uid + '_checked_list">'
-		+ '<input id="' + uid + '_review_complete" value="trigger change when review table complete">'
-		+ '<input id="' + uid + '_tree_view_complete" value="trigger change when tree review table complete">'
-		+ '<input id="' + uid + '_change_complete" value="trigger change when modal fetch data complete">'
-		+ '<input id="' + uid + '_search_adv" value="' + query + '">'
-		+ '</div>';
-	$('#' + uid + '_panel').prepend(tmp);
+	aio = $('#' + uid);
+	aio.data('url', url);
+	aio.data('item_cnt', $('<input>'));
+	aio.data('target_id', $('<input>'));
+	aio.data('checked_list', $('<input>'));
+	aio.data('review_complete', $('<input>'));
+	aio.data('tree_view_complete', $('<input>'));
+	aio.data('change_complete', $('<input>'));
+	aio.data('search_adv', $('<input value="' + query + '">'));
+	
+	aio.data('panel', aio.find('.panel-body').eq(0));
+	aio.data('modal', aio.find('.panel-body').eq(1));
+	aio.data('search_area', aio.data('panel').find('form'));
+	aio.data('form', aio.data('modal').find('.tab-pane').eq(0).find('form'));
+	aio.data('sub', aio.data('form').find('div').eq(1));
 	
 	bindFormViewComplete(uid, max, tree, admin);
 	bindFormAjaxOnRefresh(uid, max);
@@ -1231,14 +1243,16 @@ function init(uid, url, query, max, tree, admin, type, col, module){
 }
 
 function bindFormCreateTool(uid){
-	var p = $('#' + uid + '_panel');
-	var m = $('#' + uid + '_Modal');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var m = aio.data('modal');
+	var f = aio.data('form');
 	
 	p.find('div.toollist').find('button.main').text(_gettext('Add')).addClass('create');
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary create hidden-modify">' + _gettext('Save') + '</button>');
 	p.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
-		m.find('form')[0].reset();
+		f.get(0).reset();
 		m.find('.hidden-create').hide();
 		m.find('.hidden-modify').show();
 		m.find('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 1);
@@ -1251,24 +1265,27 @@ function bindFormCreateTool(uid){
 
 
 function bindFormModifyTool(uid){
-	var m = $('#' + uid + '_Modal');
+	var aio = $('#' + uid);
+	var m = aio.data('modal');
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
 	bindFormAjaxByMethod(uid, 'modify');
 }
 
 function toggleModal(uid){
-	var p = $('#' + uid + '_panel');
-	var m = $('#' + uid + '_Modal');
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var m = aio.data('modal');
 	m.toggle();
 	p.toggle();
 }
 
 function bindFormDeleteTool(uid){
-	var p = $('#' + uid + '_panel');
-	var m = $('#' + uid + '_Modal');
-	var t = $('#' + uid + '_target_id');
-	var url = $('#' + uid + '_url').val();
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var m = aio.data('modal');
+	var t = aio.data('target_id');
+	var url = aio.data('url');
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
 	m.find('button.delete').click(function(){
@@ -1298,9 +1315,9 @@ function bindFormDeleteTool(uid){
 }
 
 function bindFormExportTool(uid){
-	var url = $('#' + uid + '_url').val();
-	var p = $('#' + uid + '_panel');
-	var t = $('title').text();
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var url = aio.data('url');
 	
 	var b1 = $('<li><a href="#">' + _gettext('Print') + '</a></li>');
 	var b2 = $('<li><a href="#">' + _gettext('Export to xls') + '</a></li>');
@@ -1319,7 +1336,7 @@ function bindFormExportTool(uid){
 					// fail
 				}else{
 					$('.genPrint').remove();
-					$('body').after('<div class="genPrint">' + t + '<br>' + jdata.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
+					$('body').after('<div class="genPrint">' + ($('title').text()) + '<br>' + jdata.data + '<style>@media print { body > *:not(.genPrint){ display: none; /*IE workaround, which solves genPrint in <body>*/} } @media screen{ .genPrint{ display: none; }}</style></div>');
 					window.print();
 				}
 				customAlert(jdata);
@@ -1335,9 +1352,10 @@ function bindFormExportTool(uid){
 
 function genParam(uid){
 	
-	var l = $('#' + uid + '_checked_list');
-	var a = $('#' + uid + '_search_adv');
-	var s = $('#' + uid + '_search_area');
+	var aio = $('#' + uid);
+	var l = aio.data('checked_list');
+	var a = aio.data('search_adv');
+	var s = aio.data('search_area');
 	
 	var str_id = l.val();
 	var arr_id = str_id.split(',');
@@ -1363,11 +1381,12 @@ function genParam(uid){
 
 function bindInputAjaxOnChange(uid, type, col){
 	
-	var t = $('#' + uid + '_target_id');
-	var c = $('#' + uid + '_change_complete');
-	var f = $('#' + uid + '_menu').find('form');
-	var m = $('#' + uid + '_Modal');
-	var url = $('#' + uid + '_url').val();
+	var aio = $('#' + uid);
+	var t = aio.data('target_id');
+	var c = aio.data('change_complete');
+	var f = aio.data('form');
+	var m = aio.data('modal');
+	var url = aio.data('url');
 	
 	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
 	m.find('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
@@ -1415,11 +1434,12 @@ function bindInputAjaxOnChange(uid, type, col){
 
 function bindModuleOnChange(uid, tpl){
 	
-	var m = $('#' + uid + '_Modal');
-	var f = $('#' + uid + '_menu').find('form');
-	var s = $('#' + uid + '_search_area');
-	var c = $('#' + uid + '_change_complete');
-	var a = $('#' + uid + '_search_adv');
+	var aio = $('#' + uid);
+	var m = aio.data('modal');
+	var f = aio.data('form');
+	var s = aio.data('search_area');
+	var c = aio.data('change_complete');
+	var a = aio.data('search_adv');
 	
 	for(var i in tpl){
 		var t = uid + '_menu_' + i;
