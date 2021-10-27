@@ -148,53 +148,53 @@ if(typeof checkScript == 'undefined'){
 <!-- @crop-img -->
 
 <!-- @modal-detail -->
-	<div class="panel-body" style="height: 100%; padding: 0; display: none;">
-		<div style="padding: 10px 10px 10px 0px">
-			<button type="button" class="close pull-left" style="padding: 0px 10px" onclick="toggleModal('{unique_id}')"><i class="fa fa-reply" aria-hidden="true"></i></button>
-			<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#{unique_id}_menu" style="padding: 0 15px 0 6px"></a></li>
-			</ul>
-		</div>
-		<div class="tab-content" style="height: calc(100% - 42px); position: relative">
-			<div id="{unique_id}_menu" class="tab-pane fade in active" style="height: 100%">
-				<div class="modal-footer" style="background-color: white; position: absolute; right: 0px; top: -40px; border: none; padding: 3px"></div>
-			<form style="height: 100%; overflow-y: auto">
-				<div style="max-width: 500px; float: left;">
-				<table class="table table-alter table-less">
-					<tr>
-						<th class="col-xs-1 col-sm-1 col-md-1"></th>
-						<th class="col-xs-2 col-sm-3 col-md-3"></th>
-					</tr>
-				<!-- @tr -->
-					<tr class="{class}">
-					<!-- @td -->
-						<!-- @hidden -->
-						<td class="hidden" colspan="10">
-							<input name="{name}" value="{value}">
-						</td>
-						<!-- @hidden -->
-						<!-- @struct -->
-						<td align="center" style="font-weight: bold; vertical-align: middle">{meta} <i class="fa fa-question-circle-o" data-content="{info}"></i></td>
-						<td>
-							<textarea class="form-control input-sm" name="{name}" id="{uid}">{value}</textarea>
-							<script>
-								$('#{uid}').{func}({url: '{url}', max: '{max}', tpl: '{tpl}'});
-							</script>
-						</td>
-						<!-- @struct -->
-					<!-- @td -->
-					</tr>
-				<!-- @tr -->
-				</table>
-				</div>
-				<div style="max-width: 500px; float: left; overflow: hidden; margin-bottom: 20px;">
-					{html}
-				</div>
-			</form>
-			<div style="clear: both"></div>
+<div class="panel-body" style="height: 100%; padding: 0; display: none;">
+	<div style="padding: 10px 10px 10px 0px">
+		<button type="button" class="close pull-left" style="padding: 0px 10px" onclick="toggleModal('{unique_id}')"><i class="fa fa-reply" aria-hidden="true"></i></button>
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#{unique_id}_menu" style="padding: 0 15px 0 6px"></a></li>
+		</ul>
+	</div>
+	<div class="tab-content" style="height: calc(100% - 42px); position: relative">
+		<div id="{unique_id}_menu" class="tab-pane fade in active" style="height: 100%">
+			<div class="modal-footer" style="background-color: white; position: absolute; right: 0px; top: -40px; border: none; padding: 3px"></div>
+		<form style="height: 100%; overflow-y: auto">
+			<div style="max-width: 500px; float: left;">
+			<table class="table table-alter table-less">
+				<tr>
+					<th class="col-xs-1 col-sm-1 col-md-1"></th>
+					<th class="col-xs-2 col-sm-3 col-md-3"></th>
+				</tr>
+			<!-- @tr -->
+				<tr class="{class}">
+				<!-- @td -->
+					<!-- @hidden -->
+					<td class="hidden" colspan="10">
+						<input name="{name}" value="{value}">
+					</td>
+					<!-- @hidden -->
+					<!-- @struct -->
+					<td align="center" style="font-weight: bold; vertical-align: middle">{meta} <i class="fa fa-question-circle-o" data-content="{info}"></i></td>
+					<td>
+						<textarea class="form-control input-sm" name="{name}" id="{uid}">{value}</textarea>
+						<script>
+							$('#{uid}').{func}({url: '{url}', max: '{max}', tpl: '{tpl}'});
+						</script>
+					</td>
+					<!-- @struct -->
+				<!-- @td -->
+				</tr>
+			<!-- @tr -->
+			</table>
 			</div>
+			<div style="max-width: 500px; float: left; overflow: hidden; margin-bottom: 20px;">
+				{html}
+			</div>
+		</form>
+		<div style="clear: both"></div>
 		</div>
 	</div>
+</div>
 <!-- @modal-detail -->
 <!-- @css -->
 <style>
