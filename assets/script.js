@@ -936,20 +936,20 @@ function bindFormTreeView(uid, tree, admin){
 	
 	p.find('table.review').on('tree', function(){
 		// detach and gather td's
-		$(this).find('tbody').children().not('.hidden').each(function(){
+		$(this).children('tbody').children().not('.hidden').each(function(){
 			box[$(this).attr('data-id')] = $(this).children().detach();
 		});
 		
 		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
 		}else{
-			$(this).find('tbody').children().addClass('hidden');
-			$(this).find('tbody').find($(btn).attr('show')).removeClass('hidden');
+			$(this).children('tbody').children().addClass('hidden');
+			$(this).children('tbody').find($(btn).attr('show')).removeClass('hidden');
 			$(btn).prop('disabled', !p.find('.prev').attr('prev'));
 		}
 		
 		// detach or append
-		$(this).find('tbody').children().each(function(){
+		$(this).children('tbody').children().each(function(){
 			if($(this).hasClass('hidden')){
 				$(this).children().detach();
 			}else{
@@ -1119,7 +1119,7 @@ function bindFormAjaxOnRefresh(uid, max){
 		// loading
 		switch(obj.type){
 			case 'review':
-				p.find('table.review').find('tbody').empty();
+				p.find('table.review').children('tbody').empty();
 			case 'append':
 				p.find('button.review').show().addClass('buttonLoading').button('loading');
 				p.find('p.end').hide();
@@ -1140,10 +1140,10 @@ function bindFormAjaxOnRefresh(uid, max){
 						case 'review':
 							// prevent multi ajax result
 							c.val(0);
-							p.find('table.review').find('tbody').empty();
+							p.find('table.review').children('tbody').empty();
 						case 'append':
 							if(jdata['cnt'] > 0){
-								p.find('table.review').find('tbody').append(jdata['data']);
+								p.find('table.review').children('tbody').append(jdata['data']);
 							}
 							if(max_ > 0 && jdata['cnt'] == max_){
 								p.find('button.review').show();
@@ -1154,7 +1154,7 @@ function bindFormAjaxOnRefresh(uid, max){
 							}
 							break;
 						case 'create':
-							p.find('table.review').find('tbody').prepend(jdata['data']);
+							p.find('table.review').children('tbody').prepend(jdata['data']);
 							break;
 						case 'modify':
 							var tmp = $(jdata['data']);
