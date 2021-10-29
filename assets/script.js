@@ -931,25 +931,25 @@ function bindFormTreeView(uid, tree, admin){
 			}
 			$(btn).attr('prev', prev);
 		}
-		p.find('.last').trigger('tree');
+		p.find('table.review').trigger('tree');
 	});
 	
-	p.find('.last').on('tree', function(){
+	p.find('table.review').on('tree', function(){
 		// detach and gather td's
-		$(this).children().not('.hidden').each(function(){
+		$(this).find('tbody').children().not('.hidden').each(function(){
 			box[$(this).attr('data-id')] = $(this).children().detach();
 		});
 		
 		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
 		}else{
-			$(this).children().addClass('hidden');
-			$(this).find($(btn).attr('show')).removeClass('hidden');
+			$(this).find('tbody').children().addClass('hidden');
+			$(this).find('tbody').find($(btn).attr('show')).removeClass('hidden');
 			$(btn).prop('disabled', !p.find('.prev').attr('prev'));
 		}
 		
 		// detach or append
-		$(this).children().each(function(){
+		$(this).find('tbody').children().each(function(){
 			if($(this).hasClass('hidden')){
 				$(this).children().detach();
 			}else{
@@ -984,11 +984,11 @@ function bindFormTreeView2(uid, tree){
 		if($(this).text() != ''){
 			p.find('.prev').attr('prev', p.find('.prev').attr('show'));
 			p.find('.prev').attr('show', '.p_' + tag);
-			p.find('.last').trigger('tree');
+			p.find('table.review').trigger('tree');
 		}
 	});
 	
-	p.find('.last').trigger('tree');
+	p.find('table.review').trigger('tree');
 }
 
 function bindFormViewComplete(uid, max, tree, admin){
@@ -1061,7 +1061,6 @@ function bindFormViewComplete(uid, max, tree, admin){
 		
 		p.find('.buttonLoading').button('reset');
 		p.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
-		//p.find('table.review').find('.last').sortable();
 		
 		//item count
 		c.val( p.find('table.review').find('.datalist').length ).trigger('change');
@@ -1120,7 +1119,7 @@ function bindFormAjaxOnRefresh(uid, max){
 		// loading
 		switch(obj.type){
 			case 'review':
-				p.find('table.review').find('.last').empty();
+				p.find('table.review').find('tbody').empty();
 			case 'append':
 				p.find('button.review').show().addClass('buttonLoading').button('loading');
 				p.find('p.end').hide();
@@ -1141,10 +1140,10 @@ function bindFormAjaxOnRefresh(uid, max){
 						case 'review':
 							// prevent multi ajax result
 							c.val(0);
-							p.find('table.review').find('.last').empty();
+							p.find('table.review').find('tbody').empty();
 						case 'append':
 							if(jdata['cnt'] > 0){
-								p.find('table.review').find('.last').append(jdata['data']);
+								p.find('table.review').find('tbody').append(jdata['data']);
 							}
 							if(max_ > 0 && jdata['cnt'] == max_){
 								p.find('button.review').show();
@@ -1155,7 +1154,7 @@ function bindFormAjaxOnRefresh(uid, max){
 							}
 							break;
 						case 'create':
-							p.find('table.review').find('.last').prepend(jdata['data']);
+							p.find('table.review').find('tbody').prepend(jdata['data']);
 							break;
 						case 'modify':
 							var tmp = $(jdata['data']);
