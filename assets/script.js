@@ -804,15 +804,25 @@ function bindFormCheck(uid){
 	p.find('th.check').click(function(){
 		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			p.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			p.find('.datalist').removeClass('highlight');
 			l.val('');
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
 			var check = [];
 			p.find('.datalist').not('.hidden').each(function(i){ check[i] = $(this).attr('data-id');});
-			p.find('.datalist').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');// #slow
 			l.val(check.join());
+		}
+		l.trigger('change');
+	});
+	
+	l.change(function(){
+		var str = l.val();
+		var arr = str.split(',').filter(Boolean);
+		
+		p.find('.datalist').removeClass('highlight');
+		p.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
+		
+		for(var i in arr){
+			p.find('.datalist[data-id=' + arr[i] + ']').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
 		}
 	});
 }
@@ -860,39 +870,15 @@ function bindFormCheck2(uid){
 	
 	p.find('.newdatalist').find('td.check').click(function(){
 		var id = $(this).closest('.datalist').attr('data-id');
-		var str = l.val();
+		var arr = l.val().split(',').filter(Boolean);
+		var idx = $.inArray(id, arr);
 		
-		if($(this).find('.fa-check-square-o').length){
-			
-			$(this).find('.fa').removeClass('fa-check-square-o').addClass('fa-square-o');
-			$(this).closest('.datalist').removeClass('highlight');
-			
-			var arr = str.split(',');
-			var idx = $.inArray( id, arr );
-			
-			//if found in array
-			if(idx != -1){
-				arr.splice(idx, 1);
-				l.val(arr.join());
-			}
-			
+		if(idx != -1){
+			arr.splice(idx, 1);
 		}else{
-			$(this).find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
-			$(this).closest('.datalist').addClass('highlight');
-			
-			l.val( (str? str + ',': '') + id );
+			arr.push(id);
 		}
-		//console.log('Info: checked list ' + l.val());
-	});
-	
-	var str = l.val();
-	var arr = str.split(',');
-	
-	//clear select and select again
-	p.find('table.review').find('.newdatalist').each(function(){
-		if($.inArray( $(this).attr('data-id'), arr ) != -1){
-			$(this).closest('.newdatalist').addClass('highlight').find('td.check').find('.fa').removeClass('fa-square-o').addClass('fa-check-square-o');
-		}
+		l.val(arr.join()).trigger('change');
 	});
 }
 
@@ -1000,6 +986,7 @@ function bindFormViewComplete(uid, max, tree, admin){
 	var m = aio.data('modal');
 	var a = aio.data('search_adv');
 	var s = aio.data('search_area');
+	var l = aio.data('checked_list');
 	var timer = 0;// delay loading
 	
 	s.find('[name=search][auto]').attr('placeholder', _gettext('Search'));
@@ -1061,6 +1048,8 @@ function bindFormViewComplete(uid, max, tree, admin){
 		
 		p.find('.buttonLoading').button('reset');
 		p.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
+		
+		l.trigger('change');
 		
 		//item count
 		c.val( p.find('table.review').find('.datalist').length ).trigger('change');
