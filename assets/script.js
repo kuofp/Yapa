@@ -1219,7 +1219,7 @@ function bindFormAjaxByMethod(uid, method){
 
 function init(uid, url, query, max, tree, admin, type, col, module){
 	
-	aio = $('#' + uid);
+	var aio = $('#' + uid);
 	aio.data('url', url);
 	aio.data('item_cnt', $('<input>'));
 	aio.data('target_id', $('<input>'));
