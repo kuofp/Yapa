@@ -185,7 +185,7 @@ class Yapa{
 				// order settings
 				if($this->hide[$i]) continue;
 				$th[] = [
-					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' order': ''),
+					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' yb-order': ''),
 					'name'  => $this->col_en[$i],
 					'text'  => $this->col_ch[$i],
 				];
@@ -262,18 +262,18 @@ class Yapa{
 			$td = [];
 			for($i = 0; $i < $this->col_num; $i++){
 				if($style == '' && $this->hide[$i]) continue;
-				$tree = (($this->tree['col'] === $i)? ' tree func': '');
+				$tree = (($this->tree['col'] === $i)? ' yb-tree func': '');
 				$td[] = [
 					'class' => $this->show[$i] . $tree,
 					'name'  => $this->col_en[$i],
-					'text'  => $this->e($v[$this->col_en[$i]] ?? ''),
+					'text'  => ($tree? '<a href="#">': '') . $this->e($v[$this->col_en[$i]] ?? '') . ($tree? '</a>': ''),
 				];
 			}
 			
 			$tree = $this->tree['col']? ($this->tree['sub'][2][$v['id']] ?? ''): '';
 			$tr[] = [
 				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
-				'attr' => 'data-id="' . $v['id'] . '" class="newdatalist ' . $tree . '"',
+				'attr' => 'data-id="' . $v['id'] . '" class="yb-row ' . $tree . '"',
 			];
 		}
 		

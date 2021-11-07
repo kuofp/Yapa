@@ -801,14 +801,16 @@ function bindFormCheck(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var l = aio.data('checked_list');
-	p.find('th.check').click(function(){
+	p.find('th.yb-check').click(function(){
 		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
 			l.val('');
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
 			var check = [];
-			p.find('.datalist').not('.hidden').each(function(i){ check[i] = $(this).attr('data-id');});
+			p.find('.yb-row').not('.hidden').each(function(i){
+				check[i] = $(this).attr('data-id');
+			});
 			l.val(check.join());
 		}
 		l.trigger('change');
@@ -818,67 +820,12 @@ function bindFormCheck(uid){
 		var str = l.val();
 		var arr = str.split(',').filter(Boolean);
 		
-		p.find('.datalist').removeClass('highlight');
-		p.find('td.check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
+		p.find('.yb-row').removeClass('highlight');
+		p.find('td.yb-check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
 		
 		for(var i in arr){
-			p.find('.datalist[data-id=' + arr[i] + ']').addClass('highlight').find('td.check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
+			p.find('.yb-row[data-id=' + arr[i] + ']').addClass('highlight').find('td.yb-check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
 		}
-	});
-}
-function bindFormSort(uid){
-	var aio = $('#' + uid);
-	var p = aio.data('panel');
-	var a = aio.data('search_adv');
-	p.find('th.order').click(function(){
-		
-		var plus = '';
-		var t = $(this).children();
-		var n = $(this).attr('name');
-		var tmp = JSON.parse(a.val()); //json in input
-		var obj = {};
-		
-		for(var i in tmp){
-			obj[i] = tmp[i];
-		}
-		
-		if(!('ORDER' in obj)){
-			obj['ORDER'] = {};
-		}
-		
-		if(t.hasClass('fa-sort-alpha-asc')){
-			obj['ORDER'][n] = 'DESC';
-			plus = 'fa fa-sort-alpha-desc';
-		}else if(t.hasClass('fa-sort-alpha-desc')){
-			delete  obj['ORDER'][n];
-			plus = '';
-		}else{
-			obj['ORDER'][n] = 'ASC';
-			plus = 'fa fa-sort-alpha-asc';
-		}
-		
-		var q = JSON.stringify(obj);  //json in input
-		a.val(q).trigger('change');
-		t.attr('class', plus);
-	});
-}
-
-function bindFormCheck2(uid){
-	var aio = $('#' + uid);
-	var p = aio.data('panel');
-	var l = aio.data('checked_list');
-	
-	p.find('.newdatalist').find('td.check').click(function(){
-		var id = $(this).closest('.datalist').attr('data-id');
-		var arr = l.val().split(',').filter(Boolean);
-		var idx = $.inArray(id, arr);
-		
-		if(idx != -1){
-			arr.splice(idx, 1);
-		}else{
-			arr.push(id);
-		}
-		l.val(arr.join()).trigger('change');
 	});
 }
 
@@ -902,7 +849,7 @@ function bindFormTreeView(uid, tree, admin){
 	});
 	
 	// before scrollable div
-	p.find('table.review').parent('div').css('height', 'calc(100% - 124px)').before(btn);
+	p.find('.yb-list').parent('div').css('height', 'calc(100% - 124px)').before(btn);
 	
 	$(btn).click(function(){
 		var prev = $(btn).attr('prev');
@@ -917,10 +864,10 @@ function bindFormTreeView(uid, tree, admin){
 			}
 			$(btn).attr('prev', prev);
 		}
-		p.find('table.review').trigger('tree');
+		p.find('.yb-list').trigger('tree');
 	});
 	
-	p.find('table.review').on('tree', function(){
+	p.find('.yb-list').on('tree', function(){
 		// detach and gather td's
 		$(this).children('tbody').children().not('.hidden').each(function(){
 			box[$(this).attr('data-id')] = $(this).children().detach();
@@ -953,30 +900,6 @@ function bindFormTreeView(uid, tree, admin){
 	});
 }
 
-function bindFormTreeView2(uid, tree){
-	
-	if(!tree) return;
-	
-	var aio = $('#' + uid);
-	var p = aio.data('panel');
-	
-	p.find('.newdatalist').find('td.tree').each(function(){
-		$(this).html('<a href="#">' + $(this).text() + '</a>');
-	});
-	
-	p.find('.newdatalist').find('td.tree').click(function(){
-		var tag = $(this).closest('.datalist').attr('class');
-		tag = tag.match(/s_([\w]+)/)[1];
-		if($(this).text() != ''){
-			p.find('.prev').attr('prev', p.find('.prev').attr('show'));
-			p.find('.prev').attr('show', '.p_' + tag);
-			p.find('table.review').trigger('tree');
-		}
-	});
-	
-	p.find('table.review').trigger('tree');
-}
-
 function bindFormViewComplete(uid, max, tree, admin){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
@@ -994,7 +917,7 @@ function bindFormViewComplete(uid, max, tree, admin){
 	s.find('[name=search][auto]').on('input', function(){
 		if(timer){ clearTimeout(timer);}
 		timer = setTimeout(function(){
-			p.find('table.review').trigger('refresh', {type: 'review'});
+			p.find('.yb-list').trigger('refresh', {type: 'review'});
 		}, 1000);
 	});
 	
@@ -1004,10 +927,10 @@ function bindFormViewComplete(uid, max, tree, admin){
 	});
 	
 	s.find('[refresh]').click(function(){
-		p.find('table.review').trigger('refresh', {type: 'review'});
+		p.find('.yb-list').trigger('refresh', {type: 'review'});
 	});
 	
-	p.find('table.review').parent().scroll(function(){
+	p.find('.yb-list').parent().scroll(function(){
 		// safari issue
 		var left = Math.min($(this).scrollLeft(), $(this).get(0).scrollWidth - $(this).get(0).clientWidth);
 		p.find('.table-alter').eq(0).css('margin-left', -left);
@@ -1015,9 +938,8 @@ function bindFormViewComplete(uid, max, tree, admin){
 		p.find('button.review').css('margin-left', left);
 	});
 	
-	a.on('change', function(){ p.find('table.review').trigger('refresh', {type: 'review'}); });
+	a.on('change', function(){ p.find('.yb-list').trigger('refresh', {type: 'review'}); });
 	c.change(function(){ p.find('.item-cnt').text($(this).val()); });
-	bindFormSort( uid );
 	bindFormCheck( uid );
 	bindFormTreeView(uid, tree, admin);
 	
@@ -1025,34 +947,21 @@ function bindFormViewComplete(uid, max, tree, admin){
 		// prevent sending post
 		e.preventDefault();
 		$(this).addClass('buttonLoading').button('loading');
-		p.find('table.review').trigger('refresh',{type: 'append', max: max});
+		p.find('.yb-list').trigger('refresh',{type: 'append', max: max});
 	});
 	
 	r.change(function(){
-		// var t0 = performance.now();
-		//set newdatalist js events
-		p.find('table.review').find('.newdatalist').children().not('.func').click(function(){
-			// select text
-			if(!getSelection().toString()){
-				t.val( $(this).closest('.datalist').attr('data-id')).trigger('change');
-				m.find('.hidden-create').show();
-				m.find('.hidden-modify').hide();
-				m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
-				m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
-				toggleModal(uid);
-			}
-		});
 		
-		bindFormCheck2( uid );
-		bindFormTreeView2(uid, tree);
+		if(tree){
+			p.find('.yb-list').trigger('tree');
+		}
 		
 		p.find('.buttonLoading').button('reset');
-		p.find('table.review').find('.newdatalist').addClass('datalist').removeClass('newdatalist');
 		
 		l.trigger('change');
 		
 		//item count
-		c.val( p.find('table.review').find('.datalist').length ).trigger('change');
+		c.val( p.find('.yb-list').find('.yb-row').length ).trigger('change');
 		console.log('Info: total ' + c.val() + ' items');
 		// var t1 = performance.now();
 		// console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
@@ -1073,7 +982,7 @@ function bindFormAjaxOnRefresh(uid, max){
 	p.find('button.review').text(_gettext('Show more items +') + max);
 	p.find('p.end').text(_gettext('Reach the bottom of list'));
 	
-	p.find('table.review').on('refresh', function (e,obj){
+	p.find('.yb-list').on('refresh', function (e,obj){
 		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
 		var pdata = {data:{},where:{ AND: {}}};
@@ -1108,7 +1017,7 @@ function bindFormAjaxOnRefresh(uid, max){
 		// loading
 		switch(obj.type){
 			case 'review':
-				p.find('table.review').children('tbody').empty();
+				p.find('.yb-list').children('tbody').empty();
 			case 'append':
 				p.find('button.review').show().addClass('buttonLoading').button('loading');
 				p.find('p.end').hide();
@@ -1129,10 +1038,10 @@ function bindFormAjaxOnRefresh(uid, max){
 						case 'review':
 							// prevent multi ajax result
 							c.val(0);
-							p.find('table.review').children('tbody').empty();
+							p.find('.yb-list').children('tbody').empty();
 						case 'append':
 							if(jdata['cnt'] > 0){
-								p.find('table.review').children('tbody').append(jdata['data']);
+								p.find('.yb-list').children('tbody').append(jdata['data']);
 							}
 							if(max_ > 0 && jdata['cnt'] == max_){
 								p.find('button.review').show();
@@ -1143,17 +1052,17 @@ function bindFormAjaxOnRefresh(uid, max){
 							}
 							break;
 						case 'create':
-							p.find('table.review').children('tbody').prepend(jdata['data']);
+							p.find('.yb-list').children('tbody').prepend(jdata['data']);
 							break;
 						case 'modify':
 							var tmp = $(jdata['data']);
 							for(var i in arr_id){
-								p.find('table.review').find('[data-id=' + arr_id[i] + ']').replaceWith(tmp.filter('[data-id=' + arr_id[i] + ']'));
+								p.find('.yb-list').find('[data-id=' + arr_id[i] + ']').replaceWith(tmp.filter('[data-id=' + arr_id[i] + ']'));
 							}
 							break;
 						case 'delete':
 							for(var i in arr_id){
-								p.find('table.review').find('[data-id=' + arr_id[i] + ']').remove();
+								p.find('.yb-list').find('[data-id=' + arr_id[i] + ']').remove();
 							}
 							break;
 						default:
@@ -1193,7 +1102,7 @@ function bindFormAjaxByMethod(uid, method){
 				if(jdata['code']){
 					// fail
 				}else{
-					p.find('table.review').trigger('refresh',{type: method, id: jdata['data']});
+					p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
 					toggleModal(uid);
 				}
 				customAlert(jdata);
@@ -1291,7 +1200,7 @@ function bindFormDeleteTool(uid){
 					if(jdata['code']){
 						// fail
 					}else{
-						p.find('table.review').trigger('refresh',{type:'delete', id: jdata['data']});
+						p.find('.yb-list').trigger('refresh',{type:'delete', id: jdata['data']});
 						toggleModal(uid);
 					}
 					customAlert(jdata);
@@ -1468,3 +1377,85 @@ function bindModuleOnChange(uid, tpl){
 		}
 	});
 }
+
+$(document).on('click', '.yb-row > td:not(.func)', function(){
+	var aio = $(this).closest('.yb-root');
+	var uid = aio.attr('id');
+	var p = aio.data('panel');
+	var r = aio.data('review_complete');
+	var t = aio.data('target_id');
+	var m = aio.data('modal');
+	
+	if(!getSelection().toString()){
+		t.val($(this).closest('tr').data('id')).trigger('change');
+		m.find('.hidden-create').show();
+		m.find('.hidden-modify').hide();
+		m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
+		m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
+		toggleModal(uid);
+	}
+});
+
+$(document).on('click', 'td.yb-check', function(){
+	var aio = $(this).closest('.yb-root');
+	var l = aio.data('checked_list');
+	var id = $(this).closest('.yb-row').attr('data-id');
+	var arr = l.val().split(',').filter(Boolean);
+	var idx = $.inArray(id, arr);
+	
+	if(idx != -1){
+		arr.splice(idx, 1);
+	}else{
+		arr.push(id);
+	}
+	l.val(arr.join()).trigger('change');
+});
+
+$(document).on('click', '.yb-tree', function(){
+	var aio = $(this).closest('.yb-root');
+	var p = aio.data('panel');
+	var l = aio.data('checked_list');
+	
+	var tag = $(this).closest('.yb-row').attr('class');
+	tag = tag.match(/s_([\w]+)/)[1];
+	if($(this).text() != ''){
+		p.find('.prev').attr('prev', p.find('.prev').attr('show'));
+		p.find('.prev').attr('show', '.p_' + tag);
+		p.find('.yb-list').trigger('tree');
+	}
+});
+
+$(document).on('click', '.yb-order', function(){
+	var aio = $(this).closest('.yb-root');
+	var p = aio.data('panel');
+	var a = aio.data('search_adv');
+	var plus = '';
+	var t = $(this).children();
+	var n = $(this).attr('name');
+	var tmp = JSON.parse(a.val()); //json in input
+	var obj = {};
+	
+	for(var i in tmp){
+		obj[i] = tmp[i];
+	}
+	
+	if(!('ORDER' in obj)){
+		obj['ORDER'] = {};
+	}
+	
+	if(t.hasClass('fa-sort-alpha-asc')){
+		obj['ORDER'][n] = 'DESC';
+		plus = 'fa fa-sort-alpha-desc';
+	}else if(t.hasClass('fa-sort-alpha-desc')){
+		delete obj['ORDER'][n];
+		plus = '';
+	}else{
+		obj['ORDER'][n] = 'ASC';
+		plus = 'fa fa-sort-alpha-asc';
+	}
+	
+	var q = JSON.stringify(obj);  //json in input
+	a.val(q).trigger('change');
+	t.attr('class', plus);
+});
+
