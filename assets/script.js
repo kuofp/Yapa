@@ -1103,7 +1103,7 @@ function bindFormAjaxByMethod(uid, method){
 					// fail
 				}else{
 					p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
-					toggleModal(uid);
+					m.trigger('change');
 				}
 				customAlert(jdata);
 				$('.buttonLoading').button('reset');
@@ -1154,7 +1154,7 @@ function bindFormCreateTool(uid){
 		m.find('.hidden-modify').show();
 		m.find('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 1);
 		m.find('.disabled-modify').not('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 0);
-		toggleModal(uid);
+		m.trigger('change');
 	});
 	
 	bindFormAjaxByMethod(uid, 'create');
@@ -1167,14 +1167,6 @@ function bindFormModifyTool(uid){
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
 	bindFormAjaxByMethod(uid, 'modify');
-}
-
-function toggleModal(uid){
-	var aio = $('#' + uid);
-	var p = aio.data('panel');
-	var m = aio.data('modal');
-	m.toggle();
-	p.toggle();
 }
 
 function bindFormDeleteTool(uid){
@@ -1201,7 +1193,7 @@ function bindFormDeleteTool(uid){
 						// fail
 					}else{
 						p.find('.yb-list').trigger('refresh',{type:'delete', id: jdata['data']});
-						toggleModal(uid);
+						m.trigger('change');
 					}
 					customAlert(jdata);
 					$('.buttonLoading').button('reset');
@@ -1344,6 +1336,10 @@ function bindModuleOnChange(uid, tpl){
 		m.find('#' + uid + '_menu').after('<div id="' + t + '" class="tab-pane fade" style="height: 100%"></div>');
 	}
 	
+	m.children('div').eq(0).children('button.close').click(function(){
+		m.trigger('change');
+	});
+	
 	f.on('reset', function(){
 		// hide tabs
 		m.find('.nav-tabs a:first').tab('show');
@@ -1392,7 +1388,7 @@ $(document).on('click', '.yb-row > td:not(.func)', function(){
 		m.find('.hidden-modify').hide();
 		m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
 		m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
-		toggleModal(uid);
+		m.trigger('change');
 	}
 });
 
@@ -1459,3 +1455,11 @@ $(document).on('click', '.yb-order', function(){
 	t.attr('class', plus);
 });
 
+$(document).on('change', '.yb-modal', function(e){
+	var aio = $(this).closest('.yb-root');
+	var p = aio.data('panel');
+	var m = aio.data('modal');
+	m.toggle();
+	p.toggle();
+	e.stopPropagation();
+});
