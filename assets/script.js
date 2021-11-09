@@ -1103,7 +1103,7 @@ function bindFormAjaxByMethod(uid, method){
 					// fail
 				}else{
 					p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
-					m.trigger('change');
+					m.trigger('toggle');
 				}
 				customAlert(jdata);
 				$('.buttonLoading').button('reset');
@@ -1154,7 +1154,7 @@ function bindFormCreateTool(uid){
 		m.find('.hidden-modify').show();
 		m.find('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 1);
 		m.find('.disabled-modify').not('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 0);
-		m.trigger('change');
+		m.trigger('toggle');
 	});
 	
 	bindFormAjaxByMethod(uid, 'create');
@@ -1193,7 +1193,7 @@ function bindFormDeleteTool(uid){
 						// fail
 					}else{
 						p.find('.yb-list').trigger('refresh',{type:'delete', id: jdata['data']});
-						m.trigger('change');
+						m.trigger('toggle');
 					}
 					customAlert(jdata);
 					$('.buttonLoading').button('reset');
@@ -1337,7 +1337,7 @@ function bindModuleOnChange(uid, tpl){
 	}
 	
 	m.children('div').eq(0).children('button.close').click(function(){
-		m.trigger('change');
+		m.trigger('toggle');
 	});
 	
 	f.on('reset', function(){
@@ -1388,7 +1388,7 @@ $(document).on('click', '.yb-row > td:not(.func)', function(){
 		m.find('.hidden-modify').hide();
 		m.find('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 1);
 		m.find('.disabled-create').not('.disabled, .disabled-modify').find('textarea[name]').prop('disabled', 0);
-		m.trigger('change');
+		m.trigger('toggle');
 	}
 });
 
@@ -1455,7 +1455,7 @@ $(document).on('click', '.yb-order', function(){
 	t.attr('class', plus);
 });
 
-$(document).on('change', '.yb-modal', function(e){
+$(document).on('toggle', '.yb-modal', function(e){
 	var aio = $(this).closest('.yb-root');
 	var p = aio.data('panel');
 	var m = aio.data('modal');
