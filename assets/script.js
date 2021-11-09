@@ -1076,7 +1076,6 @@ function bindFormAjaxOnRefresh(uid){
 				}
 				customAlert(jdata);
 				
-				p.find('button.review').find('.buttonLoading').button('reset');
 				r.trigger('change');
 			},
 			error: function(){
@@ -1093,28 +1092,28 @@ function bindFormAjaxByMethod(uid, method){
 	var f = aio.data('form');
 	var url = aio.data('url');
 	
-		var btn = m.find('button.' + method).button('loading');
-		var pdata = {data: f.serialize(), where: {}};
-		
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: method }) },
-			success: function(re){
-				var jdata = JSON.parse(re);
-				if(jdata['code']){
-					// fail
-				}else{
-					p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
-					m.trigger('toggle');
-				}
-				customAlert(jdata);
-				btn.button('reset');
-			},
-			error: function(){
-				alert(_gettext('Reload the page and try again'));
+	var btn = m.find('button.' + method).button('loading');
+	var pdata = {data: f.serialize(), where: {}};
+	
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: { jdata: JSON.stringify({ pdata: pdata, method: method }) },
+		success: function(re){
+			var jdata = JSON.parse(re);
+			if(jdata['code']){
+				// fail
+			}else{
+				p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
+				m.trigger('toggle');
 			}
-		});
+			customAlert(jdata);
+			btn.button('reset');
+		},
+		error: function(){
+			alert(_gettext('Reload the page and try again'));
+		}
+	});
 }
 
 function init(uid, url, config){
