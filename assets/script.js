@@ -1093,10 +1093,8 @@ function bindFormAjaxByMethod(uid, method){
 	var f = aio.data('form');
 	var url = aio.data('url');
 	
-	m.find('button.' + method).click(function(){
-		var btn = $(this).addClass('buttonLoading').button('loading');
-		var pdata={data:{},where:{AND:{}}};
-		pdata['data'] = f.serialize();
+		var btn = m.find('button.' + method).button('loading');
+		var pdata = {data: f.serialize(), where: {}};
 		
 		$.ajax({
 			url: url,
@@ -1111,13 +1109,12 @@ function bindFormAjaxByMethod(uid, method){
 					m.trigger('toggle');
 				}
 				customAlert(jdata);
-				$('.buttonLoading').button('reset');
+				btn.button('reset');
 			},
 			error: function(){
 				alert(_gettext('Reload the page and try again'));
 			}
 		});
-	});
 }
 
 function init(uid, url, config){
@@ -1167,7 +1164,9 @@ function bindFormCreateTool(uid){
 		m.trigger('toggle');
 	});
 	
-	bindFormAjaxByMethod(uid, 'create');
+	m.find('button.create').click(function(){
+		bindFormAjaxByMethod(uid, 'create');
+	});
 }
 
 
@@ -1176,39 +1175,22 @@ function bindFormModifyTool(uid){
 	var m = aio.data('modal');
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
-	bindFormAjaxByMethod(uid, 'modify');
+	m.find('button.modify').click(function(){
+		bindFormAjaxByMethod(uid, 'modify');
+	});
 }
 
 function bindFormDeleteTool(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var m = aio.data('modal');
-	var t = aio.data('target_id');
+	var f = aio.data('form');
 	var url = aio.data('url');
 	
 	m.find('.modal-footer').eq(0).append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
 	m.find('button.delete').click(function(){
 		if(confirm(_gettext('Are you sure to DELETE this?'))){
-			var btn = $(this).addClass('buttonLoading').button('loading');
-			var pdata={data:{},where:{ AND:{}}};
-			
-			pdata['where']['AND']['id'] = t.val();
-			$.ajax({
-				url: url,
-				type: 'POST',
-				data: { jdata: JSON.stringify({ pdata: pdata, method: 'delete' }) },
-				success: function(re) {
-					var jdata = JSON.parse(re);
-					if(jdata['code']){
-						// fail
-					}else{
-						p.find('.yb-list').trigger('refresh',{type:'delete', id: jdata['data']});
-						m.trigger('toggle');
-					}
-					customAlert(jdata);
-					$('.buttonLoading').button('reset');
-				}
-			});
+			bindFormAjaxByMethod(uid, 'delete');
 		}
 	});
 }

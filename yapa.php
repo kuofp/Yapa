@@ -143,7 +143,7 @@ class Yapa{
 				'where' => array_filter($jdata['pdata']['where'] ?? []),
 			];
 			
-			if(in_array($method, ['create', 'modify'])){
+			if(in_array($method, ['create', 'modify', 'delete'])){
 				// decode serialize() from js
 				$arr_tmp = explode('&', $pdata['data']);
 				$arr_tmp2 = [];
@@ -318,7 +318,7 @@ class Yapa{
 			$data = $this->database->insert($this->table, $pdata['data']);
 			
 			if($data->rowCount()){
-				$result = ['code' => 0, 'text' => '新增成功', 'data' => $this->database->id()];
+				$result = ['code' => 0, 'data' => $this->database->id(), 'text' => '新增成功'];
 			}else{
 				$result = ['code' => 1, 'text' => '操作失敗'];
 			}
@@ -336,12 +336,11 @@ class Yapa{
 		}else{
 			$pdata['where']['AND']['id'] = $pdata['data']['id'];
 			$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
-			$result['data'] = $pdata['data']['id'];
 			
 			if($data->rowCount()){
-				
+				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存'];
 			}else{
-				$result['text'] = '無任何變更';
+				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存, 無任何變更'];
 			}
 		}
 		
@@ -355,10 +354,11 @@ class Yapa{
 		if($result['code']){
 			// fail
 		}else{
+			$pdata['where']['AND']['id'] = $pdata['data']['id'];
 			$data = $this->database->delete($this->table, $pdata['where']);
 			
 			if($data->rowCount()){
-				$result['data'] = $pdata['where']['AND']['id'];
+				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已刪除'];
 			}else{
 				$result = ['code' => 1, 'text' => '操作失敗'];
 			}
