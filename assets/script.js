@@ -829,15 +829,15 @@ function bindFormCheck(uid){
 	});
 }
 
-function bindFormTreeView(uid, tree, admin){
-	
-	if(!tree) return;
+function bindFormTreeView(uid){
 	
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var f = aio.data('form');
 	var s = aio.data('search_area');
 	var t = aio.data('tree_view_complete');
+	var tree = aio.data('_tree');
+	var admin = aio.data('_admin');
 	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + _gettext('Back to previous level') + '</button>');
 	var box = {};
 	
@@ -900,7 +900,7 @@ function bindFormTreeView(uid, tree, admin){
 	});
 }
 
-function bindFormViewComplete(uid, max, tree, admin){
+function bindFormViewComplete(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var c = aio.data('item_cnt');
@@ -910,6 +910,8 @@ function bindFormViewComplete(uid, max, tree, admin){
 	var a = aio.data('search_adv');
 	var s = aio.data('search_area');
 	var l = aio.data('checked_list');
+	var max = aio.data('_max');
+	var tree = aio.data('_tree');
 	var timer = 0;// delay loading
 	
 	s.find('[name=search][auto]').attr('placeholder', _gettext('Search'));
@@ -941,7 +943,9 @@ function bindFormViewComplete(uid, max, tree, admin){
 	a.on('change', function(){ p.find('.yb-list').trigger('refresh', {type: 'review'}); });
 	c.change(function(){ p.find('.item-cnt').text($(this).val()); });
 	bindFormCheck( uid );
-	bindFormTreeView(uid, tree, admin);
+	if(tree){
+		bindFormTreeView(uid);
+	}
 	
 	p.find('button.review').click(function(e){
 		// prevent sending post
@@ -969,7 +973,7 @@ function bindFormViewComplete(uid, max, tree, admin){
 }
 
 
-function bindFormAjaxOnRefresh(uid, max){
+function bindFormAjaxOnRefresh(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var c = aio.data('item_cnt');
@@ -977,6 +981,7 @@ function bindFormAjaxOnRefresh(uid, max){
 	var s = aio.data('search_area');
 	var a = aio.data('search_adv');
 	var url = aio.data('url');
+	var max = aio.data('_max');
 	
 	p.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
 	p.find('button.review').text(_gettext('Show more items +') + max);
@@ -1115,9 +1120,14 @@ function bindFormAjaxByMethod(uid, method){
 	});
 }
 
-function init(uid, url, query, max, tree, admin, type, col, module){
+function init(uid, url, config){
 	
 	var aio = $('#' + uid);
+	
+	for(var i in config){
+		aio.data('_' + i, config[i]);
+	}
+	
 	aio.data('url', url);
 	aio.data('item_cnt', $('<input>'));
 	aio.data('target_id', $('<input>'));
@@ -1125,7 +1135,7 @@ function init(uid, url, query, max, tree, admin, type, col, module){
 	aio.data('review_complete', $('<input>'));
 	aio.data('tree_view_complete', $('<input>'));
 	aio.data('change_complete', $('<input>'));
-	aio.data('search_adv', $('<input value="' + query + '">'));
+	aio.data('search_adv', $('<input value="' + aio.data('_query') + '">'));
 	
 	aio.data('panel', aio.find('.panel-body').eq(0));
 	aio.data('modal', aio.find('.panel-body').eq(1));
@@ -1133,10 +1143,10 @@ function init(uid, url, query, max, tree, admin, type, col, module){
 	aio.data('form', aio.data('modal').find('.tab-pane').eq(0).find('form'));
 	aio.data('sub', aio.data('form').find('div').eq(1));
 	
-	bindFormViewComplete(uid, max, tree, admin);
-	bindFormAjaxOnRefresh(uid, max);
-	bindInputAjaxOnChange(uid, type, col);
-	bindModuleOnChange(uid, module);
+	bindFormViewComplete(uid);
+	bindFormAjaxOnRefresh(uid);
+	bindInputAjaxOnChange(uid);
+	bindModuleOnChange(uid);
 }
 
 function bindFormCreateTool(uid){
@@ -1268,7 +1278,7 @@ function genParam(uid){
 	return pdata;
 }
 
-function bindInputAjaxOnChange(uid, type, col){
+function bindInputAjaxOnChange(uid){
 	
 	var aio = $('#' + uid);
 	var t = aio.data('target_id');
@@ -1276,6 +1286,8 @@ function bindInputAjaxOnChange(uid, type, col){
 	var f = aio.data('form');
 	var m = aio.data('modal');
 	var url = aio.data('url');
+	var type = aio.data('_type');
+	var col = aio.data('_col');
 	
 	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
 	m.find('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
@@ -1321,7 +1333,7 @@ function bindInputAjaxOnChange(uid, type, col){
 	});
 }
 
-function bindModuleOnChange(uid, tpl){
+function bindModuleOnChange(uid){
 	
 	var aio = $('#' + uid);
 	var m = aio.data('modal');
@@ -1329,6 +1341,7 @@ function bindModuleOnChange(uid, tpl){
 	var s = aio.data('search_area');
 	var c = aio.data('change_complete');
 	var a = aio.data('search_adv');
+	var tpl = aio.data('_module');
 	
 	for(var i in tpl){
 		var t = uid + '_menu_' + i;

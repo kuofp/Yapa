@@ -193,18 +193,20 @@ class Yapa{
 			
 			$this->tpl->block('main')->assign([
 				'unique_id' => $this->unique_id,
-				'query'     => $this->e($_REQUEST['query'] ?? '{}'),
 				'url'       => $this->url,
 				'tr'        => '',
 				'th'        => $this->tpl->block('main.th')->nest($th),
-				'max'       => $this->config['perpage'] ?? 50,
 				'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
-				'tree'      => $this->col_en[$this->tree['col']] ?? '',
-				'admin'     => $this->config['admin'] ?? '',
-				'type'      => json_encode($this->type, JSON_UNESCAPED_UNICODE),
-				'col'       => json_encode($this->col_en, JSON_UNESCAPED_UNICODE),
-				'module'    => json_encode($this->config['module'] ?? [], JSON_UNESCAPED_UNICODE),
 				'modal'     => $this->genFormModal(),
+				'config'    => json_encode([
+					'module' => $this->config['module'] ?? [],
+					'query' => $this->e($_REQUEST['query'] ?? '{}'),
+					'admin' => $this->config['admin'] ?? '',
+					'tree' => $this->col_en[$this->tree['col']] ?? '',
+					'type' => $this->type,
+					'max' => $this->config['perpage'] ?? 50,
+					'col' => $this->col_en,
+				], JSON_UNESCAPED_UNICODE),
 			])->render();
 			
 			foreach(['create', 'modify', 'delete', 'export'] as $v){
@@ -316,7 +318,7 @@ class Yapa{
 			$data = $this->database->insert($this->table, $pdata['data']);
 			
 			if($data->rowCount()){
-				$result['data'] = $this->database->id();
+				$result = ['code' => 0, 'text' => '新增成功', 'data' => $this->database->id()];
 			}else{
 				$result = ['code' => 1, 'text' => '操作失敗'];
 			}
