@@ -199,6 +199,7 @@ class Yapa{
 				'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
 				'modal'     => $this->genFormModal(),
 				'config'    => json_encode([
+					'create_more' => $this->config['create_more'] ?? false,
 					'module' => $this->config['module'] ?? [],
 					'query' => $this->e($_REQUEST['query'] ?? '{}'),
 					'admin' => $this->config['admin'] ?? '',

@@ -1085,14 +1085,15 @@ function bindFormAjaxOnRefresh(uid){
 	}).trigger('refresh',{type: 'review'});
 }
 
-function bindFormAjaxByMethod(uid, method){
+function bindFormAjaxByMethod(uid, tar, method, toggle){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var m = aio.data('modal');
 	var f = aio.data('form');
 	var url = aio.data('url');
+	var btn = aio.data(tar);
 	
-	var btn = m.find('button.' + method).button('loading');
+	btn.button('loading');
 	var pdata = {data: f.serialize(), where: {}};
 	
 	$.ajax({
@@ -1105,7 +1106,9 @@ function bindFormAjaxByMethod(uid, method){
 				// fail
 			}else{
 				p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
-				m.trigger('toggle');
+				if(toggle){
+					m.trigger('toggle');
+				}
 			}
 			customAlert(jdata);
 			btn.button('reset');
@@ -1151,8 +1154,25 @@ function bindFormCreateTool(uid){
 	var m = aio.data('modal');
 	var f = aio.data('form');
 	
+	var b1 = $('<button class="btn btn-primary hidden-modify">' + _gettext('Save') + '</button>')
+	var b2 = $('<button class="btn btn-primary hidden-modify">' + _gettext('Save and continue') + '</button>');
+	
+	aio.data('btn_create', b1);
+	aio.data('btn_create_more', b2);
+	
 	p.find('div.toollist').find('button.main').text(_gettext('Add')).addClass('create');
-	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary create hidden-modify">' + _gettext('Save') + '</button>');
+	if(aio.data('_create_more')){
+		m.find('.modal-footer').eq(0).append(b2);
+		b2.click(function(){
+			bindFormAjaxByMethod(uid, 'btn_create_more', 'create', false);
+		});
+	}
+	
+	m.find('.modal-footer').eq(0).append(b1);
+	b1.click(function(){
+		bindFormAjaxByMethod(uid, 'btn_create', 'create', true);
+	});
+	
 	p.find('div.toollist').find('button.create').click(function(){
 		// http://stackoverflow.com/questions/2559616/javascript-true-form-reset-for-hidden-fields
 		f.get(0).reset();
@@ -1162,10 +1182,6 @@ function bindFormCreateTool(uid){
 		m.find('.disabled-modify').not('.disabled, .disabled-create').find('textarea[name]').prop('disabled', 0);
 		m.trigger('toggle');
 	});
-	
-	m.find('button.create').click(function(){
-		bindFormAjaxByMethod(uid, 'create');
-	});
 }
 
 
@@ -1173,23 +1189,26 @@ function bindFormModifyTool(uid){
 	var aio = $('#' + uid);
 	var m = aio.data('modal');
 	
-	m.find('.modal-footer').eq(0).append('<button class="btn btn-primary modify hidden-create">' + _gettext('Save') + '</button>');
-	m.find('button.modify').click(function(){
-		bindFormAjaxByMethod(uid, 'modify');
+	var b = $('<button class="btn btn-primary hidden-create">' + _gettext('Save') + '</button>');
+	aio.data('btn_modify', b);
+	m.find('.modal-footer').eq(0).append(b);
+	
+	b.click(function(){
+		bindFormAjaxByMethod(uid, 'btn_modify', 'modify', true);
 	});
 }
 
 function bindFormDeleteTool(uid){
 	var aio = $('#' + uid);
-	var p = aio.data('panel');
 	var m = aio.data('modal');
-	var f = aio.data('form');
-	var url = aio.data('url');
 	
-	m.find('.modal-footer').eq(0).append('<button class="btn btn-danger delete hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
-	m.find('button.delete').click(function(){
+	var b = $('<button class="btn btn-danger hidden-create"><i class="fa fa-trash-o fa-lg"></i> ' + _gettext('Delete') + '</button>');
+	aio.data('btn_delete', b);
+	m.find('.modal-footer').eq(0).append(b);
+	
+	b.click(function(){
 		if(confirm(_gettext('Are you sure to DELETE this?'))){
-			bindFormAjaxByMethod(uid, 'delete');
+			bindFormAjaxByMethod(uid, 'btn_delete', 'delete', true);
 		}
 	});
 }

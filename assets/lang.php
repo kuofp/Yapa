@@ -6,6 +6,7 @@ function _gettext(str){
 		'Search': '<?=_('Search')?>',
 		'Add': '<?=_('Add')?>',
 		'Save': '<?=_('Save')?>',
+		'Save and continue': '<?=_('Save and continue')?>',
 		'Delete': '<?=_('Delete')?>',
 		'Print': '<?=_('Print')?>',
 		'Export to xls': '<?=_('Export to xls')?>',
