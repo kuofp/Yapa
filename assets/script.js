@@ -1142,6 +1142,12 @@ function init(uid, url, config){
 	aio.data('form', aio.data('modal').find('.tab-pane').eq(0).find('form'));
 	aio.data('sub', aio.data('form').find('div').eq(1));
 	
+	var auth = aio.data('_auth');
+	if(!auth['review']){ bindFormExportTool(uid);}
+	if(!auth['create']){ bindFormCreateTool(uid);}
+	if(!auth['modify']){ bindFormModifyTool(uid);}
+	if(!auth['delete']){ bindFormDeleteTool(uid);}
+	
 	bindFormViewComplete(uid);
 	bindFormAjaxOnRefresh(uid);
 	bindInputAjaxOnChange(uid);

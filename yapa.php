@@ -191,6 +191,12 @@ class Yapa{
 				];
 			}
 			
+			$auth = [];
+			foreach(['create', 'modify', 'delete', 'export'] as $v){
+				$tmp = $this->authCheck(($v == 'export')? 'review': $v);
+				$auth[$v] = $tmp['code'];
+			}
+			
 			$this->tpl->block('main')->assign([
 				'unique_id' => $this->unique_id,
 				'url'       => $this->url,
@@ -207,20 +213,9 @@ class Yapa{
 					'type' => $this->type,
 					'max' => $this->config['perpage'] ?? 50,
 					'col' => $this->col_en,
+					'auth' => $auth,
 				], JSON_UNESCAPED_UNICODE),
 			])->render();
-			
-			foreach(['create', 'modify', 'delete', 'export'] as $v){
-				$auth = ($v == 'export')? 'review': $v;
-				$result = $this->authCheck($auth);
-				if($result['code']){
-					// fail
-				}else{
-					$this->tpl->block($v)->assign([
-						'unique_id' => $this->unique_id,
-					])->render();
-				}
-			}
 		}
 		
 		return $result;
