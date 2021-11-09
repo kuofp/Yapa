@@ -74,7 +74,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -107,7 +107,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -140,7 +140,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -182,7 +182,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -226,7 +226,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -353,7 +353,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -386,7 +386,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(col)[func + 'picker']({
@@ -452,7 +452,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		// generate checkbox list
@@ -570,7 +570,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -716,7 +716,7 @@ jQuery.fn.extend({
 		$(tar).closest('form').on('reset', function(){
 			setTimeout(function(){
 				$(tar).trigger('preset');
-			}, 300);
+			}, 1);
 		});
 		
 		$(tar).on('preset', function(){
@@ -845,7 +845,7 @@ function bindFormTreeView(uid){
 		setTimeout(function(){
 			var tmp = btn.attr('show').match(/p_([\w]+)/)[1];
 			f.find('[name=' + tree + ']').val(tmp);
-		}, 0);
+		}, 1);
 	});
 	
 	// before scrollable div
@@ -896,7 +896,7 @@ function bindFormTreeView(uid){
 		
 		setTimeout(function(){
 			t.trigger('change');
-		}, 300);
+		}, 1);
 	});
 }
 
