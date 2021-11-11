@@ -797,6 +797,24 @@ jQuery.fn.extend({
 	}
 });
 
+function bindOrder(uid){
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var icon = {
+		DESC: 'fa fa-sort-alpha-desc',
+		ASC: 'fa fa-sort-alpha-asc',
+	};
+	
+	p.find('th.yb-order').find('i').removeClass('fa-sort-alpha-desc fa-sort-alpha-asc');
+	
+	var obj = aio.data('_search_adv');
+	if('ORDER' in obj){
+		for(var i in obj['ORDER']){
+			p.find('.yb-order[name=' + i + ']').find('i').addClass(icon[obj['ORDER'][i]]);
+		}
+	}
+}
+
 function bindFormCheck(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
@@ -960,6 +978,7 @@ function bindFormViewComplete(uid){
 		
 		p.find('.buttonLoading').button('reset');
 		
+		bindOrder(uid);
 		l.trigger('change');
 		
 		//item count
@@ -1437,8 +1456,6 @@ $(document).on('click', '.yb-tree', function(){
 $(document).on('click', '.yb-order', function(){
 	var aio = $(this).closest('.yb-root');
 	var p = aio.data('panel');
-	var plus = '';
-	var t = $(this).children();
 	var n = $(this).attr('name');
 	
 	var obj = aio.data('_search_adv');
@@ -1447,20 +1464,16 @@ $(document).on('click', '.yb-order', function(){
 		obj['ORDER'] = {};
 	}
 	
-	if(t.hasClass('fa-sort-alpha-asc')){
+	if(obj['ORDER'][n] == 'ASC'){
 		obj['ORDER'][n] = 'DESC';
-		plus = 'fa fa-sort-alpha-desc';
-	}else if(t.hasClass('fa-sort-alpha-desc')){
+	}else if(obj['ORDER'][n] == 'DESC'){
 		delete obj['ORDER'][n];
-		plus = '';
 	}else{
 		obj['ORDER'][n] = 'ASC';
-		plus = 'fa fa-sort-alpha-asc';
 	}
 	
 	aio.data('_search_adv', obj);
 	p.find('.yb-list').trigger('refresh', {type: 'review'});
-	t.attr('class', plus);
 });
 
 $(document).on('toggle', '.yb-modal', function(e){
