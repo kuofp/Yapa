@@ -144,17 +144,12 @@ if(typeof checkScript == 'undefined'){
 			<!-- @tr -->
 				<tr class="{class}">
 				<!-- @td -->
-					<!-- @hidden -->
-					<td class="hidden" colspan="10">
-						<input name="{name}" value="{value}">
-					</td>
-					<!-- @hidden -->
 					<!-- @struct -->
 					<td align="center" style="font-weight: bold; vertical-align: middle">{meta} <i class="fa fa-question-circle-o" data-content="{info}"></i></td>
 					<td>
 						<textarea class="form-control input-sm" name="{name}" id="{uid}">{value}</textarea>
 						<script>
-							$('#{uid}').{func}({url: '{url}', max: '{max}', tpl: '{tpl}'});
+							$('#{uid}').{func}({arg});
 						</script>
 					</td>
 					<!-- @struct -->

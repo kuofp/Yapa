@@ -49,6 +49,9 @@ function serializeJSON(obj){
 }
 
 jQuery.fn.extend({
+	_hidden: function(init){
+		//
+	},
 	_text: function(init){
 		$(this)._input('<input type="text"/>');
 	},

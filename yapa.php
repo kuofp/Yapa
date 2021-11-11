@@ -400,30 +400,12 @@ class Yapa{
 			
 			$info = $this->info[$i];
 			
-			$td = '';
 			$tpl = '';
 			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
-			$uid = $this->getUid();
 			
-			switch($this->type[$i]){
-				case 'hidden':
-					$td = $this->tpl->block('modal-detail.td.hidden')->assign([
-						'value' => $pre,
-						'name'  => $this->col_en[$i],
-					]);
-					break;
-				case 'text':
-				case 'json':
-				case 'editor':
-				case 'select':
-				case 'password':
-				case 'textarea':
-				case 'radiobox':
-				case 'checkbox':
-				case 'uploadfile':
-				case 'datepicker':
-				case 'colorpicker':
-				case 'autocomplete':
+			if(in_array($this->type[$i], ['value'])){
+				continue;
+			}
 					
 					if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
 						$arr_tmp = $this->join[$i];
@@ -456,30 +438,26 @@ class Yapa{
 						'name'  => $this->col_en[$i],
 						'func'  => '_' . $this->type[$i],
 						'info'  => $info,
-						'uid'   => $uid,
-						'tpl'   => $tpl,
-						'max'   => $this->attr[$i]['max'] ?? 1,
-						'url'   => $this->url,
+						'uid'   => $this->getUid(),
+						'arg' => json_encode([
+							'tpl' => $tpl,
+							'max' => $this->attr[$i]['max'] ?? 1,
+							'url' => $this->url,
+						], JSON_UNESCAPED_UNICODE),
 					]);
-					break;
-				default:
-					break;
-			}
-			
-			if($td){
+				
 				$tmp = $this->split($this->show[$i], 'space');
 				$arr = [];
 				foreach($tmp as $v){
-					if(in_array($v, ['hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
+					if(in_array($v, [$this->type[$i], 'hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
 						$arr[] = $v;
 					}
 				}
-				$class = implode(' ', $arr);
+				
 				$tr[] = [
-					'class' => $class,
+					'class' => implode(' ', $arr),
 					'td' => array($td),
 				];
-			}
 		}
 		
 		$tpl = $this->tpl->block('modal-detail')->assign([
