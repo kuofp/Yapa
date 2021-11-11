@@ -406,58 +406,58 @@ class Yapa{
 			if(in_array($this->type[$i], ['value'])){
 				continue;
 			}
-					
-					if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
-						$arr_tmp = $this->join[$i];
-						$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
-						
-						$tpl = [];
-						foreach($datas as $arr){
-							$text = $arr[$arr_tmp[1]];
-							if($this->attr[$i]['i18n'] ?? 0){
-								$text = $text? _($text): '';
-							}
-							if(!$text){ continue;}
-							$tpl[] = [$arr[$arr_tmp[2]], $text]; // JS won't ensure the order of numeric keys
-						}
-						$tpl = json_encode($tpl);
-					}
-					
-					if(in_array($this->type[$i], ['datepicker'])){
-						$tpl = $this->attr[$i]['format'] ?? 'Y-m-d';
-					}
-					
-					if(in_array($this->type[$i], ['json'])){
-						$tpl = json_encode($pre);
-						$pre = $this->e(json_encode($pre));
-					}
-					
-					$td = $this->tpl->block('modal-detail.td.struct')->assign([
-						'value' => $pre,
-						'meta'  => $this->col_ch[$i],
-						'name'  => $this->col_en[$i],
-						'func'  => '_' . $this->type[$i],
-						'info'  => $info,
-						'uid'   => $this->getUid(),
-						'arg' => json_encode([
-							'tpl' => $tpl,
-							'max' => $this->attr[$i]['max'] ?? 1,
-							'url' => $this->url,
-						], JSON_UNESCAPED_UNICODE),
-					]);
+			
+			if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
+				$arr_tmp = $this->join[$i];
+				$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
 				
-				$tmp = $this->split($this->show[$i], 'space');
-				$arr = [];
-				foreach($tmp as $v){
-					if(in_array($v, [$this->type[$i], 'hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
-						$arr[] = $v;
+				$tpl = [];
+				foreach($datas as $arr){
+					$text = $arr[$arr_tmp[1]];
+					if($this->attr[$i]['i18n'] ?? 0){
+						$text = $text? _($text): '';
 					}
+					if(!$text){ continue;}
+					$tpl[] = [$arr[$arr_tmp[2]], $text]; // JS won't ensure the order of numeric keys
 				}
-				
-				$tr[] = [
-					'class' => implode(' ', $arr),
-					'td' => array($td),
-				];
+				$tpl = json_encode($tpl);
+			}
+			
+			if(in_array($this->type[$i], ['datepicker'])){
+				$tpl = $this->attr[$i]['format'] ?? 'Y-m-d';
+			}
+			
+			if(in_array($this->type[$i], ['json'])){
+				$tpl = json_encode($pre);
+				$pre = $this->e(json_encode($pre));
+			}
+			
+			$td = $this->tpl->block('modal-detail.td.struct')->assign([
+				'value' => $pre,
+				'meta'  => $this->col_ch[$i],
+				'name'  => $this->col_en[$i],
+				'func'  => '_' . $this->type[$i],
+				'info'  => $info,
+				'uid'   => $this->getUid(),
+				'arg' => json_encode([
+					'tpl' => $tpl,
+					'max' => $this->attr[$i]['max'] ?? 1,
+					'url' => $this->url,
+				], JSON_UNESCAPED_UNICODE),
+			]);
+			
+			$tmp = $this->split($this->show[$i], 'space');
+			$arr = [];
+			foreach($tmp as $v){
+				if(in_array($v, [$this->type[$i], 'hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
+					$arr[] = $v;
+				}
+			}
+			
+			$tr[] = [
+				'class' => implode(' ', $arr),
+				'td' => array($td),
+			];
 		}
 		
 		$tpl = $this->tpl->block('modal-detail')->assign([
