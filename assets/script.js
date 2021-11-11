@@ -907,7 +907,6 @@ function bindFormViewComplete(uid){
 	var r = aio.data('review_complete');
 	var t = aio.data('target_id');
 	var m = aio.data('modal');
-	var a = aio.data('search_adv');
 	var s = aio.data('search_area');
 	var l = aio.data('checked_list');
 	var max = aio.data('_max');
@@ -940,9 +939,8 @@ function bindFormViewComplete(uid){
 		p.find('button.review').css('margin-left', left);
 	});
 	
-	a.on('change', function(){ p.find('.yb-list').trigger('refresh', {type: 'review'}); });
 	c.change(function(){ p.find('.item-cnt').text($(this).val()); });
-	bindFormCheck( uid );
+	bindFormCheck(uid);
 	if(tree){
 		bindFormTreeView(uid);
 	}
@@ -979,7 +977,6 @@ function bindFormAjaxOnRefresh(uid){
 	var c = aio.data('item_cnt');
 	var r = aio.data('review_complete');
 	var s = aio.data('search_area');
-	var a = aio.data('search_adv');
 	var url = aio.data('url');
 	var max = aio.data('_max');
 	
@@ -993,7 +990,7 @@ function bindFormAjaxOnRefresh(uid){
 		var pdata = {data:{},where:{ AND: {}}};
 		var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
 		var keyword = s.find('[name=search]').val();
-		var keyword_adv = a.val();
+		var keyword_adv = aio.data('_search_adv');
 		var keyword_cus = serializeJSON(s.serializeArray());
 		
 		switch(obj.type){
@@ -1124,7 +1121,9 @@ function init(uid, url, config){
 	var aio = $('#' + uid);
 	
 	for(var i in config){
-		aio.data('_' + i, config[i]);
+		var tmp = config[i];
+		tmp = (Array.isArray(tmp) && tmp.length == 0)? {}: tmp;
+		aio.data('_' + i, tmp);
 	}
 	
 	aio.data('url', url);
@@ -1134,7 +1133,6 @@ function init(uid, url, config){
 	aio.data('review_complete', $('<input>'));
 	aio.data('tree_view_complete', $('<input>'));
 	aio.data('change_complete', $('<input>'));
-	aio.data('search_adv', $('<input value="' + aio.data('_query') + '">'));
 	
 	aio.data('panel', aio.find('.panel-body').eq(0));
 	aio.data('modal', aio.find('.panel-body').eq(1));
@@ -1259,19 +1257,17 @@ function genParam(uid){
 	
 	var aio = $('#' + uid);
 	var l = aio.data('checked_list');
-	var a = aio.data('search_adv');
 	var s = aio.data('search_area');
 	
 	var str_id = l.val();
 	var arr_id = str_id.split(',');
-	var adv = a.val();
 	var cus = serializeJSON(s.serializeArray());
 	
 	var arr = arr_id;
 	
 	var pdata = {
 		where: {
-			SEARCH_ADV: adv,
+			SEARCH_ADV: aio.data('_search_adv'),
 			SEARCH_CUS: cus,
 		}
 	};
@@ -1346,7 +1342,6 @@ function bindModuleOnChange(uid){
 	var f = aio.data('form');
 	var s = aio.data('search_area');
 	var c = aio.data('change_complete');
-	var a = aio.data('search_adv');
 	var tpl = aio.data('_module');
 	
 	for(var i in tpl){
@@ -1374,8 +1369,7 @@ function bindModuleOnChange(uid){
 			var arr = {};
 			var sql = tpl[i]['sql'];
 			var url = tpl[i]['url'];
-			var str = a.val();
-			var adv = JSON.parse(str)['AND'] || [];
+			var adv = aio.data('_search_adv')['AND'] || {};
 			
 			for(var j in sql){
 				arr[j] = f.find('[name="' + sql[j] + '"]').val() || adv[j] || s.find('[name="' + sql[j] + '"]').val() || sql[j];
@@ -1385,9 +1379,9 @@ function bindModuleOnChange(uid){
 			$(col).empty();
 			$(col).load(url, {
 				preset: arr,
-				query: JSON.stringify({
+				query: {
 					AND: arr
-				})
+				}
 			});
 		}
 	});
@@ -1443,16 +1437,11 @@ $(document).on('click', '.yb-tree', function(){
 $(document).on('click', '.yb-order', function(){
 	var aio = $(this).closest('.yb-root');
 	var p = aio.data('panel');
-	var a = aio.data('search_adv');
 	var plus = '';
 	var t = $(this).children();
 	var n = $(this).attr('name');
-	var tmp = JSON.parse(a.val()); //json in input
-	var obj = {};
 	
-	for(var i in tmp){
-		obj[i] = tmp[i];
-	}
+	var obj = aio.data('_search_adv');
 	
 	if(!('ORDER' in obj)){
 		obj['ORDER'] = {};
@@ -1469,8 +1458,8 @@ $(document).on('click', '.yb-order', function(){
 		plus = 'fa fa-sort-alpha-asc';
 	}
 	
-	var q = JSON.stringify(obj);  //json in input
-	a.val(q).trigger('change');
+	aio.data('_search_adv', obj);
+	p.find('.yb-list').trigger('refresh', {type: 'review'});
 	t.attr('class', plus);
 });
 

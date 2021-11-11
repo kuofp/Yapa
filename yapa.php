@@ -207,7 +207,7 @@ class Yapa{
 				'config'    => json_encode([
 					'create_more' => $this->config['create_more'] ?? false,
 					'module' => $this->config['module'] ?? [],
-					'query' => $this->e($_REQUEST['query'] ?? '{}'),
+					'search_adv' => $_REQUEST['query'] ?? [],
 					'admin' => $this->config['admin'] ?? '',
 					'tree' => $this->col_en[$this->tree['col']] ?? '',
 					'type' => $this->type,
@@ -671,7 +671,7 @@ class Yapa{
 			//search advance
 			if($pdata['where']['SEARCH_ADV'] ?? 0){
 				
-				$adv = json_decode($pdata['where']['SEARCH_ADV'], true);
+				$adv = $pdata['where']['SEARCH_ADV'];
 				foreach($adv['AND'] ?? [] as $k=>$v){
 					//table.id (join)
 					$adv['AND'][$this->table . '.' . $k] = $v;
