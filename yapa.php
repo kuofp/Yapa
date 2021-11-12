@@ -109,20 +109,6 @@ class Yapa{
 		$this->tpl->block('css')->render();
 	}
 	
-	public function authCheck($mode){
-		
-		$result = ['code' => 1, 'text' => '權限不足'];
-		$meta = ['review', 'create', 'modify', 'delete'];
-		
-		if(in_array($mode, $meta)){
-			if($this->auth[array_search($mode, $meta)] ?? $this->auth[$mode] ?? 0) $result = ['code' => 0, 'text' => ''];
-		}else{
-			if($this->auth[$mode] ?? 0) $result = ['code' => 0, 'text' => ''];
-		}
-		
-		return $result;
-	}
-	
 	public function decodeJson(){
 		
 		$pdata = $_REQUEST;
@@ -176,36 +162,36 @@ class Yapa{
 		
 		if(!$this->auth[0]){ return;}
 		
-			$th = [];
-			for($i = 0; $i < $this->col_num; $i++){
-				// order settings
-				if($this->hide[$i]) continue;
-				$th[] = [
-					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' yb-order': ''),
-					'name'  => $this->col_en[$i],
-					'text'  => $this->col_ch[$i],
-				];
-			}
-			
-			$this->tpl->block('main')->assign([
-				'unique_id' => $this->unique_id,
-				'url'       => $this->url,
-				'tr'        => '',
-				'th'        => $this->tpl->block('main.th')->nest($th),
-				'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
-				'modal'     => $this->genFormModal(),
-				'config'    => json_encode([
-					'create_more' => $this->config['create_more'] ?? false,
-					'module' => $this->config['module'] ?? [],
-					'search_adv' => $_REQUEST['query'] ?? [],
-					'admin' => $this->config['admin'] ?? '',
-					'tree' => $this->col_en[$this->tree['col']] ?? '',
-					'type' => $this->type,
-					'max' => $this->config['perpage'] ?? 50,
-					'col' => $this->col_en,
-					'auth' => $this->auth,
-				], JSON_UNESCAPED_UNICODE),
-			])->render();
+		$th = [];
+		for($i = 0; $i < $this->col_num; $i++){
+			// order settings
+			if($this->hide[$i]) continue;
+			$th[] = [
+				'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' yb-order': ''),
+				'name'  => $this->col_en[$i],
+				'text'  => $this->col_ch[$i],
+			];
+		}
+		
+		$this->tpl->block('main')->assign([
+			'unique_id' => $this->unique_id,
+			'url'       => $this->url,
+			'tr'        => '',
+			'th'        => $this->tpl->block('main.th')->nest($th),
+			'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
+			'modal'     => $this->genFormModal(),
+			'config'    => json_encode([
+				'create_more' => $this->config['create_more'] ?? false,
+				'module' => $this->config['module'] ?? [],
+				'search_adv' => $_REQUEST['query'] ?? [],
+				'admin' => $this->config['admin'] ?? '',
+				'tree' => $this->col_en[$this->tree['col']] ?? '',
+				'type' => $this->type,
+				'max' => $this->config['perpage'] ?? 50,
+				'col' => $this->col_en,
+				'auth' => $this->auth,
+			], JSON_UNESCAPED_UNICODE),
+		])->render();
 	}
 	
 	public function review($pdata, $callback = ''){
@@ -294,14 +280,14 @@ class Yapa{
 		
 		if(!$this->auth[1]){ return;}
 		
-			$pdata['data']['id'] = 0; //clear id, create don't need id
-			$data = $this->database->insert($this->table, $pdata['data']);
-			
-			if($data->rowCount()){
-				$result = ['code' => 0, 'data' => $this->database->id(), 'text' => '新增成功'];
-			}else{
-				$result = ['code' => 1, 'text' => '操作失敗'];
-			}
+		$pdata['data']['id'] = 0; //clear id, create don't need id
+		$data = $this->database->insert($this->table, $pdata['data']);
+		
+		if($data->rowCount()){
+			$result = ['code' => 0, 'data' => $this->database->id(), 'text' => '新增成功'];
+		}else{
+			$result = ['code' => 1, 'text' => '操作失敗'];
+		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
@@ -310,14 +296,14 @@ class Yapa{
 		
 		if(!$this->auth[2]){ return;}
 		
-			$pdata['where']['AND']['id'] = $pdata['data']['id'];
-			$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
-			
-			if($data->rowCount()){
-				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存'];
-			}else{
-				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存, 無任何變更'];
-			}
+		$pdata['where']['AND']['id'] = $pdata['data']['id'];
+		$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
+		
+		if($data->rowCount()){
+			$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存'];
+		}else{
+			$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存, 無任何變更'];
+		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
@@ -326,14 +312,14 @@ class Yapa{
 		
 		if(!$this->auth[3]){ return;}
 		
-			$pdata['where']['AND']['id'] = $pdata['data']['id'];
-			$data = $this->database->delete($this->table, $pdata['where']);
-			
-			if($data->rowCount()){
-				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已刪除'];
-			}else{
-				$result = ['code' => 1, 'text' => '操作失敗'];
-			}
+		$pdata['where']['AND']['id'] = $pdata['data']['id'];
+		$data = $this->database->delete($this->table, $pdata['where']);
+		
+		if($data->rowCount()){
+			$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已刪除'];
+		}else{
+			$result = ['code' => 1, 'text' => '操作失敗'];
+		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
@@ -342,20 +328,20 @@ class Yapa{
 		
 		if(!$this->auth[1] && !$this->auth[2]){ return;}
 		
-			$tmp = [];
-			
-			if(!file_exists('upload')){
-				mkdir('upload', 0755);
-			}
+		$tmp = [];
 		
-			foreach($_FILES ?? [] as $file){
-				// {"name":"new 2.txt","type":"text\/plain","tmp_name":"\/tmp\/phpRJ91Ks","error":0,"size":1295}
-				$url = 'upload/' . time() . md5(rand());
-				$tmp[] = ['url' => $url, 'name' => $file['name'], 'size' => $file['size']];
-				move_uploaded_file($file['tmp_name'], $url);
-			}
-			
-			$result['data'] = $tmp;
+		if(!file_exists('upload')){
+			mkdir('upload', 0755);
+		}
+		
+		foreach($_FILES ?? [] as $file){
+			// {"name":"new 2.txt","type":"text\/plain","tmp_name":"\/tmp\/phpRJ91Ks","error":0,"size":1295}
+			$url = 'upload/' . time() . md5(rand());
+			$tmp[] = ['url' => $url, 'name' => $file['name'], 'size' => $file['size']];
+			move_uploaded_file($file['tmp_name'], $url);
+		}
+		
+		$result['data'] = $tmp;
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
@@ -502,263 +488,263 @@ class Yapa{
 		
 		if(!$this->auth[0]){ return;}
 		
-			$arr_search = [];
-			$arr_chain = [];
-			$arr_col = [];
-			
-			for($i = 0; $i < $this->col_num; $i++){
-				// skip
-				if($this->type[$i] == 'value') continue;
-				$arr_col[$i] = $this->table . '.' . $this->col_en[$i];
-			}
-			for($i = 0; $i < $this->col_num; $i++){
-				// skip
-				if($this->type[$i] == 'value') continue;
-				if($this->join[$i]){
-					if(!in_array($this->type[$i], ['checkbox', 'autocomplete'])){
-						$arr_tmp = $this->join[$i];
-						$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
-						$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = [$this->col_en[$i] => $arr_tmp[2]];
-					}
-				}
-				// keep original id
-				$arr_col[$i + $this->col_num] = $this->table . '.' . $this->col_en[$i] . '(__' . $this->col_en[$i] . ')';
-			}
-			
-			if($this->tree['col'] !== null){
-				$col = $this->col_en[$this->tree['col']];
-				$arr_tmp = $this->join[$this->tree['col']];
-				$datas = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2], $col]);
-				
-				$tmp = [];
-				foreach($datas as $v){
-					$tmp[$v['id']] = $v[$col];
-				}
-				
-				$sub = $this->treeSub($tmp);
-				$order = $this->flatten($this->toTree($tmp));
-				
-				$offset = [];
-				foreach($order as $k=>$v){
-					$offset[$v] = explode(',', $k)[1];
-				}
-				
-				$this->tree['offset'] = $offset;
-				$this->tree['sub'] = $sub;
-			}
-			
-			// select only descendant
-			if($this->config['root'][0]){
-				$arr = [];
-				foreach($this->config['root'] as $v){
-					$arr = array_merge($arr, $this->tree['sub'][1][$v] ?? []);
-				}
-				// include self
-				$id = $pdata['where']['AND']['id'] ?? 0;
-				$ids = array_merge($arr, $this->config['root']);
-				
-				if($id){
-					if(!is_array($id)){
-						$id = [$id];
-					}
-					if($this->count(array_diff($id, $ids)) != 0){
-						// invalid user
-						exit;
-					}
-				}else{
-					$pdata['where']['AND']['id'] = $ids;
+		$arr_search = [];
+		$arr_chain = [];
+		$arr_col = [];
+		
+		for($i = 0; $i < $this->col_num; $i++){
+			// skip
+			if($this->type[$i] == 'value') continue;
+			$arr_col[$i] = $this->table . '.' . $this->col_en[$i];
+		}
+		for($i = 0; $i < $this->col_num; $i++){
+			// skip
+			if($this->type[$i] == 'value') continue;
+			if($this->join[$i]){
+				if(!in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+					$arr_tmp = $this->join[$i];
+					$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
+					$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = [$this->col_en[$i] => $arr_tmp[2]];
 				}
 			}
+			// keep original id
+			$arr_col[$i + $this->col_num] = $this->table . '.' . $this->col_en[$i] . '(__' . $this->col_en[$i] . ')';
+		}
+		
+		if($this->tree['col'] !== null){
+			$col = $this->col_en[$this->tree['col']];
+			$arr_tmp = $this->join[$this->tree['col']];
+			$datas = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2], $col]);
 			
-			// add table name
-			foreach($pdata['where']['AND'] ?? [] as $k=>$v){
-				$pdata['where']['AND'][$this->table . '.' . $k] = $v;
-				unset($pdata['where']['AND'][$k]);
+			$tmp = [];
+			foreach($datas as $v){
+				$tmp[$v['id']] = $v[$col];
 			}
 			
-			//for search
-			if(isset($pdata['where']['SEARCH'])){
-				$keyword = $this->split($pdata['where']['SEARCH'], 'space');
-				
-				foreach($keyword as $k=>$word){
-					if($word){
-						for($i = 0; $i < $this->col_num; $i++){
-							// skip
-							if(in_array($this->type[$i], ['value', 'password', 'uploadfile', 'datepicker'])) continue;
-							if($this->tree['col'] === $i) continue;
-							
-							if(in_array($this->type[$i], ['checkbox', 'autocomplete'])){
-								$arr_tmp = $this->join[$i];
-								$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $word, 'LIMIT' => 1000]);
-								if($ids){
-									// find in a comma separated string (not a precise approach yet)
-									$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $ids;
-								}
-								
-							}else if($this->join[$i]){
-								$arr_tmp = $this->join[$i];
-								$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $word;
-							}else{
-								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $word;
-							}
-						}
-						$pdata['where']['AND']['OR #muti keyword' . $k] = $arr_search;
-					}
+			$sub = $this->treeSub($tmp);
+			$order = $this->flatten($this->toTree($tmp));
+			
+			$offset = [];
+			foreach($order as $k=>$v){
+				$offset[$v] = explode(',', $k)[1];
+			}
+			
+			$this->tree['offset'] = $offset;
+			$this->tree['sub'] = $sub;
+		}
+		
+		// select only descendant
+		if($this->config['root'][0]){
+			$arr = [];
+			foreach($this->config['root'] as $v){
+				$arr = array_merge($arr, $this->tree['sub'][1][$v] ?? []);
+			}
+			// include self
+			$id = $pdata['where']['AND']['id'] ?? 0;
+			$ids = array_merge($arr, $this->config['root']);
+			
+			if($id){
+				if(!is_array($id)){
+					$id = [$id];
 				}
-				unset($pdata['where']['SEARCH']);
-			}
-			
-			//search advance
-			if($pdata['where']['SEARCH_ADV'] ?? 0){
-				
-				$adv = $pdata['where']['SEARCH_ADV'];
-				foreach($adv['AND'] ?? [] as $k=>$v){
-					//table.id (join)
-					$adv['AND'][$this->table . '.' . $k] = $v;
-					unset($adv['AND'][$k]);
+				if($this->count(array_diff($id, $ids)) != 0){
+					// invalid user
+					exit;
 				}
-				unset($pdata['where']['SEARCH_ADV']);
-				
-				if(is_array($adv)){
-					$pdata['where'] = array_merge_recursive($pdata['where'], $adv);
-				}
-			}
-			unset($pdata['where']['SEARCH_CUS']);
-			
-			// order
-			if(!($pdata['where']['ORDER'] ?? 0)){
-				// default order
-				$pdata['where']['ORDER'] = ['id' => 'DESC'];
-			}
-			
-			// add table name
-			foreach($pdata['where']['ORDER'] ?? [] as $k=>$v){
-				$pdata['where']['ORDER'][$this->table . '.' . $k] = $v;
-				unset($pdata['where']['ORDER'][$k]);
-			}
-			
-			$where = $pdata['where'] ?? '';
-			if($arr_chain){
-				$datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);
 			}else{
-				$datas = $this->database->select($this->table, '*', $where);
+				$pdata['where']['AND']['id'] = $ids;
 			}
+		}
+		
+		// add table name
+		foreach($pdata['where']['AND'] ?? [] as $k=>$v){
+			$pdata['where']['AND'][$this->table . '.' . $k] = $v;
+			unset($pdata['where']['AND'][$k]);
+		}
+		
+		//for search
+		if(isset($pdata['where']['SEARCH'])){
+			$keyword = $this->split($pdata['where']['SEARCH'], 'space');
 			
-			if($datas){
-				$arr_mark = [];
-				$cnt_datas = $this->count($datas);
-				
-				for($j = 0; $j < $this->col_num; $j++){
-					switch($this->type[$j]){
-						case 'checkbox':
-							$arr_mark[$j] = [];
-							$arr_tmp = $this->join[$j];
-							$datas_checkbox = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]]);
-							
-							foreach($datas_checkbox as $arr){
-								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
-							}
-							break;
-						case 'autocomplete':
-							// collect ids in data list for preventing too much results
-							$ids = [];
-							for($i = 0; $i < $cnt_datas; $i++){
-								$tmp = explode(',', $datas[$i][$this->col_en[$j]]);
-								foreach($tmp as $v){
-									$ids[$v] = $v;
-								}
-							}
-							
-							$arr_mark[$j] = [];
-							$arr_tmp = $this->join[$j];
-							$datas_checkbox = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]], [$arr_tmp[2] => $ids]);
-							
-							foreach($datas_checkbox as $arr){
-								$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
-							}
-							break;
-						case 'uploadfile':
-						case 'datepicker':
-						case 'value':
-							$arr_mark[$j] = 1;
-							break;
-						case 'json':
-							$arr_tmp = $this->config['preset'][$this->col_en[$j]] ?? [];
-							$tmp = [];
-							foreach($arr_tmp as $k=>$v){
-								$txt = explode(',', $k);
-								$tmp[($txt[0] ?? '')] = ($txt[1] ?? '')?: ($txt[0] ?? '');
-							}
-							$arr_mark[$j] = $tmp;
-							break;
-					}
-				}
-				
-				for($i = 0; $i < $cnt_datas; $i++){
-					//translate
-					foreach($arr_mark as $key=>$arr){
+			foreach($keyword as $k=>$word){
+				if($word){
+					for($i = 0; $i < $this->col_num; $i++){
+						// skip
+						if(in_array($this->type[$i], ['value', 'password', 'uploadfile', 'datepicker'])) continue;
+						if($this->tree['col'] === $i) continue;
 						
-						$idx = $key;
-						$key = $this->col_en[$idx];
-						
-						switch($this->type[$idx]){
-							case 'checkbox':
-							case 'autocomplete':
-								if($datas[$i][$key]){
-									$arr_vtmp = $this->split($datas[$i][$key]);
-									$arr_result = [];
-									
-									foreach($arr_vtmp as $val){
-										$arr_result[] = $arr[$val] ?? 0;
-									}
-									
-									$datas[$i][$key] = $this->raw(implode('<br>', $arr_result));
-								}
-								break;
+						if(in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+							$arr_tmp = $this->join[$i];
+							$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $word, 'LIMIT' => 1000]);
+							if($ids){
+								// find in a comma separated string (not a precise approach yet)
+								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $ids;
+							}
 							
-							case 'uploadfile':
-								$arr = json_decode($datas[$i][$key], true);
-								if(is_array($arr)){
-									// check file
-									foreach($arr as $k=>$v){
-										
-										$ext = strtolower(explode('.', $v['name'])[1] ?? 'na');
-										$arr[$k]['ext'] = $ext;
-										
-										if(file_exists($v['url']) && explode('/', mime_content_type($v['url']))[0] == 'image'){
-											$arr[$k]['icon'] = 'hidden';
-										}else{
-											$arr[$k]['img'] = 'hidden';
-										}
-									}
-									$datas[$i][$key] = $this->raw($this->tpl->block('crop-img')->nest($arr)->render(false));
-								}
-								break;
-								
-							case 'json':
-								$tmp = [];
-								foreach($arr as $k=>$v){
-									$arr = json_decode($datas[$i][$key], true);
-									$tmp[] = $this->e($v) . ': ' . $this->e($arr[$k] ?? '');
-								}
-								$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
-								break;
-								
-							case 'datepicker':
-								if($datas[$i][$key]){
-									$datas[$i][$key] = date($this->attr[$idx]['format'] ?? 'Y-m-d', (int)$datas[$i][$key]);
-								}
-								break;
-								
-							case 'value':
-								$datas[$i][$key] = '';
-								break;
+						}else if($this->join[$i]){
+							$arr_tmp = $this->join[$i];
+							$arr_search['t' . $i . '.' . $arr_tmp[1] . '[~]'] = $word;
+						}else{
+							$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $word;
 						}
 					}
+					$pdata['where']['AND']['OR #muti keyword' . $k] = $arr_search;
+				}
+			}
+			unset($pdata['where']['SEARCH']);
+		}
+		
+		//search advance
+		if($pdata['where']['SEARCH_ADV'] ?? 0){
+			
+			$adv = $pdata['where']['SEARCH_ADV'];
+			foreach($adv['AND'] ?? [] as $k=>$v){
+				//table.id (join)
+				$adv['AND'][$this->table . '.' . $k] = $v;
+				unset($adv['AND'][$k]);
+			}
+			unset($pdata['where']['SEARCH_ADV']);
+			
+			if(is_array($adv)){
+				$pdata['where'] = array_merge_recursive($pdata['where'], $adv);
+			}
+		}
+		unset($pdata['where']['SEARCH_CUS']);
+		
+		// order
+		if(!($pdata['where']['ORDER'] ?? 0)){
+			// default order
+			$pdata['where']['ORDER'] = ['id' => 'DESC'];
+		}
+		
+		// add table name
+		foreach($pdata['where']['ORDER'] ?? [] as $k=>$v){
+			$pdata['where']['ORDER'][$this->table . '.' . $k] = $v;
+			unset($pdata['where']['ORDER'][$k]);
+		}
+		
+		$where = $pdata['where'] ?? '';
+		if($arr_chain){
+			$datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);
+		}else{
+			$datas = $this->database->select($this->table, '*', $where);
+		}
+		
+		if($datas){
+			$arr_mark = [];
+			$cnt_datas = $this->count($datas);
+			
+			for($j = 0; $j < $this->col_num; $j++){
+				switch($this->type[$j]){
+					case 'checkbox':
+						$arr_mark[$j] = [];
+						$arr_tmp = $this->join[$j];
+						$datas_checkbox = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]]);
+						
+						foreach($datas_checkbox as $arr){
+							$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
+						}
+						break;
+					case 'autocomplete':
+						// collect ids in data list for preventing too much results
+						$ids = [];
+						for($i = 0; $i < $cnt_datas; $i++){
+							$tmp = explode(',', $datas[$i][$this->col_en[$j]]);
+							foreach($tmp as $v){
+								$ids[$v] = $v;
+							}
+						}
+						
+						$arr_mark[$j] = [];
+						$arr_tmp = $this->join[$j];
+						$datas_checkbox = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]], [$arr_tmp[2] => $ids]);
+						
+						foreach($datas_checkbox as $arr){
+							$arr_mark[$j][$arr[$arr_tmp[2]]] = $arr[$arr_tmp[1]];
+						}
+						break;
+					case 'uploadfile':
+					case 'datepicker':
+					case 'value':
+						$arr_mark[$j] = 1;
+						break;
+					case 'json':
+						$arr_tmp = $this->config['preset'][$this->col_en[$j]] ?? [];
+						$tmp = [];
+						foreach($arr_tmp as $k=>$v){
+							$txt = explode(',', $k);
+							$tmp[($txt[0] ?? '')] = ($txt[1] ?? '')?: ($txt[0] ?? '');
+						}
+						$arr_mark[$j] = $tmp;
+						break;
 				}
 			}
 			
-			$result = ['data' => $datas, 'cnt' => $this->count($datas)];
+			for($i = 0; $i < $cnt_datas; $i++){
+				//translate
+				foreach($arr_mark as $key=>$arr){
+					
+					$idx = $key;
+					$key = $this->col_en[$idx];
+					
+					switch($this->type[$idx]){
+						case 'checkbox':
+						case 'autocomplete':
+							if($datas[$i][$key]){
+								$arr_vtmp = $this->split($datas[$i][$key]);
+								$arr_result = [];
+								
+								foreach($arr_vtmp as $val){
+									$arr_result[] = $arr[$val] ?? 0;
+								}
+								
+								$datas[$i][$key] = $this->raw(implode('<br>', $arr_result));
+							}
+							break;
+							
+						case 'uploadfile':
+							$arr = json_decode($datas[$i][$key], true);
+							if(is_array($arr)){
+								// check file
+								foreach($arr as $k=>$v){
+									
+									$ext = strtolower(explode('.', $v['name'])[1] ?? 'na');
+									$arr[$k]['ext'] = $ext;
+									
+									if(file_exists($v['url']) && explode('/', mime_content_type($v['url']))[0] == 'image'){
+										$arr[$k]['icon'] = 'hidden';
+									}else{
+										$arr[$k]['img'] = 'hidden';
+									}
+								}
+								$datas[$i][$key] = $this->raw($this->tpl->block('crop-img')->nest($arr)->render(false));
+							}
+							break;
+							
+						case 'json':
+							$tmp = [];
+							foreach($arr as $k=>$v){
+								$arr = json_decode($datas[$i][$key], true);
+								$tmp[] = $this->e($v) . ': ' . $this->e($arr[$k] ?? '');
+							}
+							$datas[$i][$key] = $this->raw(implode('<br>', $tmp));
+							break;
+							
+						case 'datepicker':
+							if($datas[$i][$key]){
+								$datas[$i][$key] = date($this->attr[$idx]['format'] ?? 'Y-m-d', (int)$datas[$i][$key]);
+							}
+							break;
+							
+						case 'value':
+							$datas[$i][$key] = '';
+							break;
+					}
+				}
+			}
+		}
+		
+		$result = ['data' => $datas, 'cnt' => $this->count($datas)];
 		
 		return $result;
 	}
