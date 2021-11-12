@@ -174,12 +174,8 @@ class Yapa{
 	
 	public function reviewTool(){
 		
-		$result = $this->authCheck('review');
+		if(!$this->auth[0]){ return;}
 		
-		if($result['code']){
-			// fail
-		}else{
-			
 			$th = [];
 			for($i = 0; $i < $this->col_num; $i++){
 				// order settings
@@ -189,12 +185,6 @@ class Yapa{
 					'name'  => $this->col_en[$i],
 					'text'  => $this->col_ch[$i],
 				];
-			}
-			
-			$auth = [];
-			foreach(['create', 'modify', 'delete', 'export'] as $v){
-				$tmp = $this->authCheck(($v == 'export')? 'review': $v);
-				$auth[$v] = $tmp['code'];
 			}
 			
 			$this->tpl->block('main')->assign([
@@ -213,12 +203,9 @@ class Yapa{
 					'type' => $this->type,
 					'max' => $this->config['perpage'] ?? 50,
 					'col' => $this->col_en,
-					'auth' => $auth,
+					'auth' => $this->auth,
 				], JSON_UNESCAPED_UNICODE),
 			])->render();
-		}
-		
-		return $result;
 	}
 	
 	public function review($pdata, $callback = ''){
@@ -305,11 +292,8 @@ class Yapa{
 	
 	public function create($pdata){
 		
-		$result = $this->authCheck('create');
+		if(!$this->auth[1]){ return;}
 		
-		if($result['code']){
-			// fail
-		}else{
 			$pdata['data']['id'] = 0; //clear id, create don't need id
 			$data = $this->database->insert($this->table, $pdata['data']);
 			
@@ -318,18 +302,14 @@ class Yapa{
 			}else{
 				$result = ['code' => 1, 'text' => '操作失敗'];
 			}
-		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
 	public function modify($pdata){
 		
-		$result = $this->authCheck('modify');
+		if(!$this->auth[2]){ return;}
 		
-		if($result['code']){
-			// fail
-		}else{
 			$pdata['where']['AND']['id'] = $pdata['data']['id'];
 			$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
 			
@@ -338,18 +318,14 @@ class Yapa{
 			}else{
 				$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存, 無任何變更'];
 			}
-		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
 	public function delete($pdata){
 		
-		$result = $this->authCheck('delete');
+		if(!$this->auth[3]){ return;}
 		
-		if($result['code']){
-			// fail
-		}else{
 			$pdata['where']['AND']['id'] = $pdata['data']['id'];
 			$data = $this->database->delete($this->table, $pdata['where']);
 			
@@ -358,19 +334,14 @@ class Yapa{
 			}else{
 				$result = ['code' => 1, 'text' => '操作失敗'];
 			}
-		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
 	public function upload(){
 		
-		//$result = $this->authCheck('create');
+		if(!$this->auth[1] && !$this->auth[2]){ return;}
 		
-		//if($result['code']){
-			// fail
-		//}else{
-			
 			$tmp = [];
 			
 			if(!file_exists('upload')){
@@ -385,20 +356,16 @@ class Yapa{
 			}
 			
 			$result['data'] = $tmp;
-		//}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
 	}
 	
 	public function genFormModal(){
 		
-		$result = [];
 		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
 		
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
-			
-			$info = $this->info[$i];
 			
 			$tpl = '';
 			$pre = $preset[$this->col_en[$i]] ?? ''; //靜態預設值(Preset)用於載入子分頁, 點擊新增時Reset可回復到預設值
@@ -437,7 +404,7 @@ class Yapa{
 				'meta'  => $this->col_ch[$i],
 				'name'  => $this->col_en[$i],
 				'func'  => '_' . $this->type[$i],
-				'info'  => $info,
+				'info'  => $this->info[$i],
 				'uid'   => $this->getUid(),
 				'arg' => json_encode([
 					'tpl' => $tpl,
@@ -471,11 +438,9 @@ class Yapa{
 	
 	public function getJson($pdata){
 		
-		$result = $this->authCheck('review');
+		if(!$this->auth[0]){ return;}
 		
-		if($result['code']){
-			// fail
-		}else if($pdata['data']['autocomplete'] ?? 0){
+		if($pdata['data']['autocomplete'] ?? 0){
 			
 			for($i = 0; $i < $this->col_num; $i++){
 				if($this->col_en[$i] == $pdata['data']['autocomplete']){
@@ -535,11 +500,8 @@ class Yapa{
 	
 	public function getData($pdata){
 		
-		$result = $this->authCheck('review');
+		if(!$this->auth[0]){ return;}
 		
-		if($result['code']){
-			// fail
-		}else{
 			$arr_search = [];
 			$arr_chain = [];
 			$arr_col = [];
@@ -795,9 +757,8 @@ class Yapa{
 					}
 				}
 			}
-		
+			
 			$result = ['data' => $datas, 'cnt' => $this->count($datas)];
-		}
 		
 		return $result;
 	}

@@ -1163,10 +1163,10 @@ function init(uid, url, config){
 	aio.data('sub', aio.data('form').find('div').eq(1));
 	
 	var auth = aio.data('_auth');
-	if(!auth['review']){ bindFormExportTool(uid);}
-	if(!auth['create']){ bindFormCreateTool(uid);}
-	if(!auth['modify']){ bindFormModifyTool(uid);}
-	if(!auth['delete']){ bindFormDeleteTool(uid);}
+	if(auth[0]){ bindFormExportTool(uid);}
+	if(auth[1]){ bindFormCreateTool(uid);}
+	if(auth[2]){ bindFormModifyTool(uid);}
+	if(auth[3]){ bindFormDeleteTool(uid);}
 	
 	bindFormViewComplete(uid);
 	bindFormAjaxOnRefresh(uid);
