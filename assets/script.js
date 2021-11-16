@@ -822,30 +822,31 @@ function bindFormCheck(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var l = aio.data('checked_list');
+	l.data('list', {});
+	
 	p.find('th.yb-check').click(function(){
 		if($(this).find('.fa-check-square-o').length){
 			$(this).children().removeClass('fa-check-square-o').addClass('fa-square-o');
-			l.val('');
+			l.data('list', {});
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
-			var check = [];
-			p.find('.yb-row').not('.hidden').each(function(i){
-				check[i] = $(this).attr('data-id');
+			var obj = l.data('list');
+			p.find('.yb-row').not('.hidden').each(function(){
+				var id = $(this).data('id');
+				obj[id] = id;
 			});
-			l.val(check.join());
 		}
 		l.trigger('change');
 	});
 	
 	l.change(function(){
-		var str = l.val();
-		var arr = str.split(',').filter(Boolean);
+		var obj = l.data('list');
 		
 		p.find('.yb-row').removeClass('highlight');
 		p.find('td.yb-check').children().removeClass('fa-check-square-o').addClass('fa-square-o');
 		
-		for(var i in arr){
-			p.find('.yb-row[data-id=' + arr[i] + ']').addClass('highlight').find('td.yb-check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
+		for(var i in obj){
+			p.find('.yb-row[data-id=' + obj[i] + ']').addClass('highlight').find('td.yb-check').children().removeClass('fa-square-o').addClass('fa-check-square-o');
 		}
 	});
 }
@@ -1279,11 +1280,9 @@ function genParam(uid){
 	var l = aio.data('checked_list');
 	var s = aio.data('search_area');
 	
-	var str_id = l.val();
-	var arr_id = str_id.split(',');
 	var cus = serializeJSON(s.serializeArray());
 	
-	var arr = arr_id;
+	var obj = l.data('list');
 	
 	var pdata = {
 		where: {
@@ -1292,9 +1291,9 @@ function genParam(uid){
 		}
 	};
 	
-	if(arr[0]){
-		pdata['where']['ORDER'] = {id: arr};
-		pdata['where']['AND'] = {id: arr};
+	if(Object.keys(obj).length){
+		pdata['where']['ORDER'] = {id: obj};
+		pdata['where']['AND'] = {id: obj};
 	}
 	
 	return pdata;
@@ -1428,16 +1427,15 @@ $(document).on('click', '.yb-row > td:not(.func)', function(){
 $(document).on('click', 'td.yb-check', function(){
 	var aio = $(this).closest('.yb-root');
 	var l = aio.data('checked_list');
-	var id = $(this).closest('.yb-row').attr('data-id');
-	var arr = l.val().split(',').filter(Boolean);
-	var idx = $.inArray(id, arr);
+	var id = $(this).closest('.yb-row').data('id');
+	var obj = l.data('list');
 	
-	if(idx != -1){
-		arr.splice(idx, 1);
+	if(id in obj){
+		delete obj[id];
 	}else{
-		arr.push(id);
+		obj[id] = id;
 	}
-	l.val(arr.join()).trigger('change');
+	l.trigger('change');
 });
 
 $(document).on('click', '.yb-tree', function(){
@@ -1471,7 +1469,6 @@ $(document).on('click', '.yb-order', function(){
 		obj['ORDER'][n] = 'ASC';
 	}
 	
-	aio.data('_search_adv', obj);
 	p.find('.yb-list').trigger('refresh', {type: 'review'});
 });
 
