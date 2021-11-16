@@ -803,7 +803,7 @@ class Yapa{
 		// tree view class
 		$arr = [];
 		foreach($tree as $k => $v){
-			$arr[$k] = 's_' . $k . ' p_' . ((in_array($k, $this->config['root']) || !isset($tree[$v]))? '0': $v);
+			$arr[$k] = 'p_' . ((in_array($k, $this->config['root']) || !isset($tree[$v]))? '0': $v);
 		}
 		$result[] = $arr;
 		

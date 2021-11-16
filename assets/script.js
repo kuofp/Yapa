@@ -859,31 +859,30 @@ function bindFormTreeView(uid){
 	var t = aio.data('tree_view_complete');
 	var tree = aio.data('_tree');
 	var admin = aio.data('_admin');
-	var btn = $('<button class="btn btn-default btn-block prev" show=".p_0" prev="">' + _gettext('Back to previous level') + '</button>');
+	var btn = $('<button class="btn btn-default btn-block">' + _gettext('Back to previous level') + '</button>');
 	var box = {};
 	
 	f.on('reset', function(){
 		setTimeout(function(){
-			var tmp = btn.attr('show').match(/p_([\w]+)/)[1];
-			f.find('[name=' + tree + ']').val(tmp);
+			f.find('[name=' + tree + ']').val(t.data('show'));
 		}, 1);
 	});
 	
+	t.data('show', '0');
 	// before scrollable div
 	p.find('.yb-list').parent('div').css('height', 'calc(100% - 124px)').before(btn);
 	
 	$(btn).click(function(){
-		var prev = $(btn).attr('prev');
+		var prev = t.data('prev');
 		if(prev){
-			$(btn).attr('show', prev);
-			tag = prev.match(/p_([\w]+)/)[1];
-			if(tag != '0'){
-				tmp = p.find('.s_' + tag).attr('class');
-				prev = '.' + tmp.match(/p_[\w]+/)[0];
+			t.data('show', prev);
+			if(prev != '0'){
+				tmp = p.find('.yb-row[data-id=' + prev + ']').attr('class');
+				prev = tmp.match(/p_([\w]+)/)[1];
 			}else{
 				prev = '';
 			}
-			$(btn).attr('prev', prev);
+			t.data('prev', prev);
 		}
 		p.find('.yb-list').trigger('tree');
 	});
@@ -898,10 +897,9 @@ function bindFormTreeView(uid){
 			$(btn).prop('disabled', true);
 		}else{
 			$(this).children('tbody').children().addClass('hidden');
-			$(this).children('tbody').find($(btn).attr('show')).removeClass('hidden');
-			$(btn).prop('disabled', !p.find('.prev').attr('prev'));
+			$(this).children('tbody').find('.p_' + t.data('show')).removeClass('hidden');
+			$(btn).prop('disabled', !t.data('prev'));
 		}
-		
 		// detach or append
 		$(this).children('tbody').children().each(function(){
 			if($(this).hasClass('hidden')){
@@ -1445,13 +1443,11 @@ $(document).on('click', 'td.yb-check', function(){
 $(document).on('click', '.yb-tree', function(){
 	var aio = $(this).closest('.yb-root');
 	var p = aio.data('panel');
-	var l = aio.data('checked_list');
+	var t = aio.data('tree_view_complete');
 	
-	var tag = $(this).closest('.yb-row').attr('class');
-	tag = tag.match(/s_([\w]+)/)[1];
 	if($(this).text() != ''){
-		p.find('.prev').attr('prev', p.find('.prev').attr('show'));
-		p.find('.prev').attr('show', '.p_' + tag);
+		t.data('prev', t.data('show'));
+		t.data('show', $(this).closest('.yb-row').attr('data-id'));
 		p.find('.yb-list').trigger('tree');
 	}
 });
