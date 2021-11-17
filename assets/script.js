@@ -889,26 +889,26 @@ function bindFormTreeView(uid){
 	});
 	
 	p.find('.yb-list').on('tree', function(){
-		// detach and gather td's
-		$(this).children('tbody').children().not('.hidden').each(function(){
-			box[$(this).attr('data-id')] = $(this).children().detach();
-		});
-		
 		if(s.find('[name=search]').val()){
 			$(btn).prop('disabled', true);
 		}else{
-			$(this).children('tbody').children().addClass('hidden');
-			$(this).children('tbody').find('.p_' + t.data('show')).removeClass('hidden');
 			$(btn).prop('disabled', !t.data('prev'));
+			
+			var tmp = 'p_' + t.data('show');
+			$(this).children('tbody').children().each(function(){
+				if($(this).hasClass(tmp)){
+					if($(this).hasClass('hidden')){
+						$(this).append(box[$(this).attr('data-id')]);
+						$(this).removeClass('hidden');
+					}
+				}else{
+					if(!$(this).hasClass('hidden')){
+						box[$(this).attr('data-id')] = $(this).children().detach();
+						$(this).addClass('hidden');
+					}
+				}
+			});
 		}
-		// detach or append
-		$(this).children('tbody').children().each(function(){
-			if($(this).hasClass('hidden')){
-				$(this).children().detach();
-			}else{
-				$(this).append(box[$(this).attr('data-id')]);
-			}
-		});
 		
 		if(!admin){
 			p.find('div.toollist').find('button.create').prop('disabled', $(btn).prop('disabled'));
@@ -925,8 +925,6 @@ function bindFormViewComplete(uid){
 	var p = aio.data('panel');
 	var c = aio.data('item_cnt');
 	var r = aio.data('review_complete');
-	var t = aio.data('target_id');
-	var m = aio.data('modal');
 	var s = aio.data('search_area');
 	var l = aio.data('checked_list');
 	var max = aio.data('_max');
@@ -1314,16 +1312,16 @@ function bindInputAjaxOnChange(uid){
 	m.find('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
 	
 	t.change(function(){
-		var pdata={
+		var pdata = {
 			data: {},
-			where:{
-				AND:{ id: $(this).val() }
+			where: {
+				AND: { id: $(this).val() }
 			}
 		};
 		$.ajax({
-			url:  url,
+			url: url,
 			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
+			data: {jdata: JSON.stringify({pdata: pdata, method: 'getJson'})},
 			success: function(re){
 				
 				var jdata = JSON.parse(re);
@@ -1332,16 +1330,7 @@ function bindInputAjaxOnChange(uid){
 				}else{
 					pdata = jdata['data'][0];
 					for(var i in col){
-						
-						switch(type[i]){
-							case 'hidden':
-								f.find('[name=' + col[i] + ']').val(pdata[col[i]]);
-								break;
-							default:
-								// put value and trigger preset
-								f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
-								break;
-						}
+						f.find('[name=' + col[i] + ']').val(pdata[col[i]]).trigger('preset');
 					}
 					c.trigger('change');
 				}
@@ -1362,10 +1351,11 @@ function bindModuleOnChange(uid){
 	var s = aio.data('search_area');
 	var c = aio.data('change_complete');
 	var tpl = aio.data('_module');
+	var tab = m.find('.nav-tabs');
 	
 	for(var i in tpl){
 		var t = uid + '_menu_' + i;
-		m.find('.nav-tabs').append('<li><a data-toggle="tab" href="#' + t + '" style="padding: 0 15px 0 6px">' + tpl[i]['tag'] + '</a></li>');
+		tab.append('<li><a data-toggle="tab" href="#' + t + '" style="padding: 0 15px 0 6px">' + tpl[i]['tag'] + '</a></li>');
 		m.find('#' + uid + '_menu').after('<div id="' + t + '" class="tab-pane fade" style="height: 100%"></div>');
 	}
 	
@@ -1375,14 +1365,14 @@ function bindModuleOnChange(uid){
 	
 	f.on('reset', function(){
 		// hide tabs
-		m.find('.nav-tabs a:first').tab('show');
-		m.find('.nav-tabs a').not(':first').addClass('hidden');
+		tab.find('a:first').tab('show');
+		tab.find('a').not(':first').addClass('hidden');
 	});
 	
 	c.on('change', function(){
 		// hide tabs
-		m.find('.nav-tabs a:first').tab('show');
-		m.find('.nav-tabs a').not(':first').removeClass('hidden');
+		tab.find('a:first').tab('show');
+		tab.find('a').not(':first').removeClass('hidden');
 		
 		for(var i in tpl){
 			var arr = {};
@@ -1408,9 +1398,6 @@ function bindModuleOnChange(uid){
 
 $(document).on('click', '.yb-row > td:not(.func)', function(){
 	var aio = $(this).closest('.yb-root');
-	var uid = aio.attr('id');
-	var p = aio.data('panel');
-	var r = aio.data('review_complete');
 	var t = aio.data('target_id');
 	var m = aio.data('modal');
 	
