@@ -402,9 +402,13 @@ class Yapa{
 			$tmp = $this->split($this->show[$i], 'space');
 			$arr = [];
 			foreach($tmp as $v){
-				if(in_array($v, [$this->type[$i], 'hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
+				if(in_array($v, ['hidden-create', 'hidden-modify', 'disabled', 'disabled-create', 'disabled-modify'])){
 					$arr[] = $v;
 				}
+			}
+			
+			if(in_array($this->type[$i], ['hidden'])){
+				$arr[] = 'hidden';
 			}
 			
 			$tr[] = [
