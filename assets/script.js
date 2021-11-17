@@ -498,7 +498,7 @@ jQuery.fn.extend({
 		// fetch data
 		$(col).on('input', function(){
 			
-			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[~]': $(this).val()}};
+			var pdata = {where: {'[a~]': [$(tar).attr('name'), $(this).val()]}};
 			
 			if(timer){ clearTimeout(timer);}
 			timer = setTimeout(function(){
@@ -530,7 +530,7 @@ jQuery.fn.extend({
 		$(tar).on('preset', function(){
 			
 			var id = $(tar).val().split(',');
-			var pdata = {data: {autocomplete: $(tar).attr('name')}, where: {'[=]': id}};
+			var pdata = {where: {'[a=]': [$(tar).attr('name'), id]}};
 			
 			$(col).prop('disabled', $(tar).prop('disabled'));
 			$(box).empty();
