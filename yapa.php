@@ -598,7 +598,7 @@ class Yapa{
 		}
 		
 		//search advance
-		if($pdata['where']['SEARCH_ADV'] ?? 0){
+		if(isset($pdata['where']['SEARCH_ADV'])){
 			
 			$adv = $pdata['where']['SEARCH_ADV'];
 			foreach($adv['AND'] ?? [] as $k=>$v){
