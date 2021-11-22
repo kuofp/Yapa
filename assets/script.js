@@ -1251,7 +1251,7 @@ function bindFormExportTool(uid){
 		$.ajax({
 			url: url,
 			type: 'POST',
-			data: { jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'print' },
+			data: { jdata: JSON.stringify({pdata: pdata, method: 'review', style: 'print'})},
 			success: function(re) {
 				var jdata = JSON.parse(re);
 				if(jdata['code']){
@@ -1268,7 +1268,7 @@ function bindFormExportTool(uid){
 	
 	$(b2).click(function(){
 		var pdata = genParam(uid);
-		open('POST', url, {jdata: JSON.stringify({ pdata: pdata, method: 'review' }), style: 'excel'}, '_blank');
+		open('POST', url, {jdata: JSON.stringify({pdata: pdata, method: 'review', style: 'excel'})}, '_blank');
 	});
 }
 

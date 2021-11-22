@@ -111,10 +111,10 @@ class Yapa{
 	
 	public function decodeJson(){
 		
-		$pdata = $_REQUEST;
+		$request = $_REQUEST;
 		
-		if(isset($pdata['jdata'])){
-			$jdata = json_decode($pdata['jdata'], true);
+		if(isset($request['jdata'])){
+			$jdata = json_decode($request['jdata'], true);
 			
 			//must keep keys 'data' and 'where', but remove empty array in where key
 			//array( 'data' => array())                   got error
@@ -152,9 +152,11 @@ class Yapa{
 			
 			$this->act = $method;
 			$this->arg = $pdata;
+			$this->req = $jdata;
 		}else{
-			$this->act = $_REQUEST['method'] ?? '';
+			$this->act = $request['method'] ?? '';
 			$this->arg = '';
+			$this->req = $request;
 		}
 	}
 	
@@ -183,7 +185,7 @@ class Yapa{
 			'config'    => json_encode([
 				'create_more' => $this->config['create_more'] ?? false,
 				'module' => $this->config['module'] ?? [],
-				'search_adv' => $_REQUEST['query'] ?? [],
+				'search_adv' => $this->req['query'] ?? [],
 				'admin' => $this->config['admin'] ?? '',
 				'tree' => $this->col_en[$this->tree['col']] ?? '',
 				'type' => $this->type,
@@ -219,7 +221,7 @@ class Yapa{
 			$datas = call_user_func($callback, $datas);
 		}
 		
-		$style = $_REQUEST['style'] ?? '';
+		$style = $this->req['style'] ?? '';
 		
 		$th = array_map(function($v){
 			return ['text' => $v];
@@ -348,7 +350,7 @@ class Yapa{
 	
 	public function genFormModal(){
 		
-		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($_REQUEST['preset'] ?? []));
+		$preset = array_replace_recursive(($this->config['preset'] ?? []), ($this->req['preset'] ?? []));
 		
 		$tr = [];
 		for($i = 0; $i < $this->col_num; $i++){
