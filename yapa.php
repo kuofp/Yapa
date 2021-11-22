@@ -130,18 +130,6 @@ class Yapa{
 			];
 			
 			if(in_array($method, ['create', 'modify', 'delete'])){
-				// decode serialize() from js
-				$arr_tmp = explode('&', $pdata['data']);
-				$arr_tmp2 = [];
-				foreach($arr_tmp as $v){
-					$s = explode('=', $v);
-					$arr_tmp2[$s[0]][] = urldecode($s[1]);
-				}
-				$data = [];
-				foreach($arr_tmp2 as $k=>$v){
-					$data[$k] = implode(',', $v);
-				}
-				$pdata['data'] = $data;
 				// unset disabled cols when create and modify
 				for($i = 0; $i < $this->col_num; $i++){
 					if(($this->attr[$i]['disabled'] ?? 0) || ($this->attr[$i]['disabled-' . $method] ?? 0)){

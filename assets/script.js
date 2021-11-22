@@ -1110,7 +1110,7 @@ function bindFormAjaxByMethod(uid, tar, method, toggle){
 	var btn = aio.data(tar);
 	
 	btn.button('loading');
-	var pdata = {data: f.serialize(), where: {}};
+	var pdata = {data: serializeJSON(f.serializeArray()), where: {}};
 	
 	$.ajax({
 		url: url,
