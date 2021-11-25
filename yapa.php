@@ -579,7 +579,7 @@ class Yapa{
 							$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $word;
 						}
 					}
-					$pdata['where']['AND']['OR #muti keyword' . $k] = $arr_search;
+					$pdata['where']['AND #fuzzy search']['OR #muti keyword' . $k] = $arr_search;
 				}
 			}
 			unset($pdata['where']['SEARCH']);
@@ -591,13 +591,23 @@ class Yapa{
 			$adv = $pdata['where']['SEARCH_ADV'];
 			foreach($adv['AND'] ?? [] as $k=>$v){
 				//table.id (join)
-				$adv['AND'][$this->table . '.' . $k] = $v;
+				$adv['AND #adv'][$this->table . '.' . $k] = $v;
 				unset($adv['AND'][$k]);
 			}
 			unset($pdata['where']['SEARCH_ADV']);
 			
 			if(is_array($adv)){
 				$pdata['where'] = array_merge_recursive($pdata['where'], $adv);
+			}
+		}
+		// check and merge SEARCH_CUS
+		foreach($pdata['where']['SEARCH_CUS'] ?? [] as $k=>$v){
+			$tmp = [];
+			preg_match('/[\w]+/', $k, $tmp);
+			$col = $tmp[0] ?? '';
+			if(in_array($col, $this->col_en) && $v){
+				$i = array_flip($this->col_en)[$col] ?? 0;
+				$pdata['where']['AND #cus'][$this->table . '.' . $k] = $this->join[$i]? $this->split($v): $v;
 			}
 		}
 		unset($pdata['where']['SEARCH_CUS']);
@@ -614,7 +624,7 @@ class Yapa{
 			unset($pdata['where']['ORDER'][$k]);
 		}
 		
-		$where = $pdata['where'] ?? '';
+		$where = array_filter($pdata['where'] ?? []);
 		if($arr_chain){
 			$datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);
 		}else{

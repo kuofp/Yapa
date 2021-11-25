@@ -39,7 +39,8 @@ function serializeJSON(obj){
 	var arr = {};
 	$(obj).each(function(i, o){
 		if(o.name in arr){
-			arr[o.name] += ',' + o.value;
+			// multi select type
+			arr[o.name] += ((arr[o.name] && o.value)? ',': '') + o.value;
 		}else{
 			arr[o.name] = o.value;
 		}
