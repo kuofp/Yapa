@@ -672,7 +672,7 @@ jQuery.fn.extend({
 			data.append('method', 'upload');
 			
 			$.ajax({
-				url:  url,
+				url: url,
 				type: 'POST',
 				data: data,
 				processData: false, // Don't process the files
@@ -847,7 +847,7 @@ function bindFilter(uid){
 	});
 }
 
-function bindFormCheck(uid){
+function bindCheck(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var l = aio.data('checked_list');
@@ -880,7 +880,7 @@ function bindFormCheck(uid){
 	});
 }
 
-function bindFormTreeView(uid){
+function bindTree(uid){
 	
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
@@ -949,7 +949,7 @@ function bindFormTreeView(uid){
 	});
 }
 
-function bindFormViewComplete(uid){
+function bindView(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var c = aio.data('item_cnt');
@@ -987,10 +987,10 @@ function bindFormViewComplete(uid){
 	});
 	
 	c.change(function(){ p.find('.item-cnt').text($(this).val()); });
-	bindFormCheck(uid);
+	bindCheck(uid);
 	bindFilter(uid);
 	if(tree){
-		bindFormTreeView(uid);
+		bindTree(uid);
 	}
 	
 	p.find('button.review').click(function(e){
@@ -1020,7 +1020,7 @@ function bindFormViewComplete(uid){
 }
 
 
-function bindFormAjaxOnRefresh(uid){
+function bindRefresh(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var c = aio.data('item_cnt');
@@ -1131,7 +1131,7 @@ function bindFormAjaxOnRefresh(uid){
 	}).trigger('refresh',{type: 'review'});
 }
 
-function bindFormAjaxByMethod(uid, tar, method, toggle){
+function bindAjax(uid, tar, method, toggle){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var m = aio.data('modal');
@@ -1191,18 +1191,18 @@ function init(uid, url, config){
 	aio.data('filter', aio.data('search_area').find('.yb-filter'));
 	
 	var auth = aio.data('_auth');
-	if(auth[0]){ bindFormExportTool(uid);}
-	if(auth[1]){ bindFormCreateTool(uid);}
-	if(auth[2]){ bindFormModifyTool(uid);}
-	if(auth[3]){ bindFormDeleteTool(uid);}
+	if(auth[0]){ bindExport(uid);}
+	if(auth[1]){ bindCreate(uid);}
+	if(auth[2]){ bindModify(uid);}
+	if(auth[3]){ bindDelete(uid);}
 	
-	bindFormViewComplete(uid);
-	bindFormAjaxOnRefresh(uid);
-	bindInputAjaxOnChange(uid);
-	bindModuleOnChange(uid);
+	bindView(uid);
+	bindRefresh(uid);
+	bindRefresh2(uid);
+	bindModule(uid);
 }
 
-function bindFormCreateTool(uid){
+function bindCreate(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var m = aio.data('modal');
@@ -1218,13 +1218,13 @@ function bindFormCreateTool(uid){
 	if(aio.data('_create_more')){
 		m.find('.modal-footer').eq(0).append(b2);
 		b2.click(function(){
-			bindFormAjaxByMethod(uid, 'btn_create_more', 'create', false);
+			bindAjax(uid, 'btn_create_more', 'create', false);
 		});
 	}
 	
 	m.find('.modal-footer').eq(0).append(b1);
 	b1.click(function(){
-		bindFormAjaxByMethod(uid, 'btn_create', 'create', true);
+		bindAjax(uid, 'btn_create', 'create', true);
 	});
 	
 	p.find('div.toollist').find('button.create').click(function(){
@@ -1239,7 +1239,7 @@ function bindFormCreateTool(uid){
 }
 
 
-function bindFormModifyTool(uid){
+function bindModify(uid){
 	var aio = $('#' + uid);
 	var m = aio.data('modal');
 	
@@ -1248,11 +1248,11 @@ function bindFormModifyTool(uid){
 	m.find('.modal-footer').eq(0).append(b);
 	
 	b.click(function(){
-		bindFormAjaxByMethod(uid, 'btn_modify', 'modify', true);
+		bindAjax(uid, 'btn_modify', 'modify', true);
 	});
 }
 
-function bindFormDeleteTool(uid){
+function bindDelete(uid){
 	var aio = $('#' + uid);
 	var m = aio.data('modal');
 	
@@ -1262,12 +1262,12 @@ function bindFormDeleteTool(uid){
 	
 	b.click(function(){
 		if(confirm(_gettext('Are you sure to DELETE this?'))){
-			bindFormAjaxByMethod(uid, 'btn_delete', 'delete', true);
+			bindAjax(uid, 'btn_delete', 'delete', true);
 		}
 	});
 }
 
-function bindFormExportTool(uid){
+function bindExport(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
 	var url = aio.data('url');
@@ -1328,7 +1328,7 @@ function genParam(uid){
 	return pdata;
 }
 
-function bindInputAjaxOnChange(uid){
+function bindRefresh2(uid){
 	
 	var aio = $('#' + uid);
 	var t = aio.data('target_id');
@@ -1374,7 +1374,7 @@ function bindInputAjaxOnChange(uid){
 	});
 }
 
-function bindModuleOnChange(uid){
+function bindModule(uid){
 	
 	var aio = $('#' + uid);
 	var m = aio.data('modal');

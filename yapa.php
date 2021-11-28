@@ -159,8 +159,8 @@ class Yapa{
 			if($this->hide[$i]) continue;
 			$th[] = [
 				'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' yb-order': ''),
-				'name'  => $this->col_en[$i],
-				'text'  => $this->col_ch[$i],
+				'name' => $this->col_en[$i],
+				'text' => $this->col_ch[$i],
 			];
 		}
 		
@@ -270,8 +270,8 @@ class Yapa{
 				$tree = (($this->tree['col'] === $i)? ' yb-tree func': '');
 				$td[] = [
 					'class' => $this->show[$i] . $tree,
-					'name'  => $this->col_en[$i],
-					'text'  => ($tree? '<a href="#">': '') . $this->e($v[$this->col_en[$i]] ?? '') . ($tree? '</a>': ''),
+					'name' => $this->col_en[$i],
+					'text' => ($tree? '<a href="#">': '') . $this->e($v[$this->col_en[$i]] ?? '') . ($tree? '</a>': ''),
 				];
 			}
 			
