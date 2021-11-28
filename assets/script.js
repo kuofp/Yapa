@@ -819,6 +819,34 @@ function bindOrder(uid){
 	}
 }
 
+function bindFilter(uid){
+	var aio = $('#' + uid);
+	var p = aio.data('panel');
+	var s = aio.data('search_area');
+	var r = aio.data('review_complete');
+	var f = aio.data('filter');
+	var b1 = $('<div class="btn btn-default btn-block"><i class="fa fa-search"></i> ' + _gettext('Search') + '</div>');
+	var b2 = $('<div class="btn btn-default"><i class="fa fa-filter"></i></div>');
+	
+	b1.click(function(){
+		f.toggle();
+		p.find('.yb-list').trigger('refresh', {type: 'review'});
+	});
+	b2.click(function(){
+		f.toggle();
+	});
+	
+	if(!f.find('[name]').length){ return;}
+	
+	s.find('[name=search]').closest('.btn-group').after(b2);
+	f.append(b1);
+	r.change(function(){
+		s.find('[name]').each(function(){
+			$(this).trigger('preset');
+		});
+	});
+}
+
 function bindFormCheck(uid){
 	var aio = $('#' + uid);
 	var p = aio.data('panel');
@@ -960,6 +988,7 @@ function bindFormViewComplete(uid){
 	
 	c.change(function(){ p.find('.item-cnt').text($(this).val()); });
 	bindFormCheck(uid);
+	bindFilter(uid);
 	if(tree){
 		bindFormTreeView(uid);
 	}
@@ -1159,6 +1188,7 @@ function init(uid, url, config){
 	aio.data('search_area', aio.data('panel').find('form'));
 	aio.data('form', aio.data('modal').find('.tab-pane').eq(0).find('form'));
 	aio.data('sub', aio.data('form').find('div').eq(1));
+	aio.data('filter', aio.data('search_area').find('.yb-filter'));
 	
 	var auth = aio.data('_auth');
 	if(auth[0]){ bindFormExportTool(uid);}

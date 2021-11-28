@@ -153,6 +153,7 @@ class Yapa{
 		if(!$this->auth[0]){ return;}
 		
 		$th = [];
+		$filter = [];
 		for($i = 0; $i < $this->col_num; $i++){
 			// order settings
 			if($this->hide[$i]) continue;
@@ -163,12 +164,55 @@ class Yapa{
 			];
 		}
 		
+		foreach($this->config['filter'] ?? [] as $k=>$v){
+			$tmp = [];
+			preg_match('/[\w]+/', $k, $tmp);
+			$col = $tmp[0] ?? '';
+			$i = array_flip($this->col_en)[$col] ?? 0;
+			if($i){
+				
+				$tpl = '';
+				if(in_array($this->col_en[$i], ['hidden', 'value'])){
+					continue;
+				}else if(in_array($this->col_en[$i], ['select', 'radiobox', 'checkbox'])){
+					$func = 'checkbox';
+					$arr_tmp = $this->join[$i];
+					$datas = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]], $arr_tmp[3]);
+					
+					$tpl = [];
+					foreach($datas as $arr){
+						$text = $arr[$arr_tmp[1]];
+						if($this->attr[$i]['i18n'] ?? 0){
+							$text = $text? _($text): '';
+						}
+						if(!$text){ continue;}
+						$tpl[] = [$arr[$arr_tmp[2]], $text];
+					}
+					$tpl = json_encode($tpl);
+				}else{
+					$func = 'text';
+				}
+				$filter[] = [
+					'value' => $v,
+					'meta' => $this->col_ch[$i],
+					'name' => $k,
+					'func' => '_' . $func,
+					'uid' => $this->getUid(),
+					'arg' => json_encode([
+						'tpl' => $tpl,
+						'url' => $this->url,
+					]),
+				];
+			}
+		}
+		
 		$this->tpl->block('main')->assign([
 			'unique_id' => $this->unique_id,
 			'url'       => $this->url,
 			'tr'        => '',
 			'th'        => $this->tpl->block('main.th')->nest($th),
 			'search'    => $this->config['search'] ?? $this->tpl->block('main.search')->render(false),
+			'filter'    => $this->tpl->block('filter')->nest($filter),
 			'modal'     => $this->genFormModal(),
 			'config'    => json_encode([
 				'create_more' => $this->config['create_more'] ?? false,
