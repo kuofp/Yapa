@@ -168,7 +168,7 @@ class Yapa{
 				$tmp = $this->join[$i];
 				$data = $this->database->select($tmp[0], [$tmp[1], $tmp[2]], $tmp[3]);
 				$tpl = [];
-				foreach($data as $v){
+				foreach($data?: [] as $v){
 					$text = $v[$tmp[1]];
 					if($this->attr[$i]['i18n'] ?? 0){
 						$text = $text? _($text): '';
@@ -191,11 +191,15 @@ class Yapa{
 			if($i){
 				
 				$tpl = '';
-				if(in_array($this->type[$i], ['hidden', 'value'])){
+				if(in_array($this->type[$i], ['value'])){
 					continue;
-				}else if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
-					$func = 'checkbox';
-					$tpl = $this->join[$i][4];
+				}else if($this->join[$i]){
+					if($this->type[$i] == 'autocomplete'){
+						$func = 'autocomplete';
+					}else{
+						$func = 'checkbox';
+						$tpl = $this->join[$i][4];
+					}
 				}else{
 					$func = 'text';
 				}
@@ -207,6 +211,7 @@ class Yapa{
 					'uid' => $this->getUid(),
 					'arg' => json_encode([
 						'tpl' => $tpl,
+						'max' => 10,
 						'url' => $this->url,
 					]),
 				];
