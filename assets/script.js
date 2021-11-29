@@ -825,9 +825,10 @@ function bindFilter(uid){
 	var s = aio.data('search_area');
 	var r = aio.data('review_complete');
 	var f = aio.data('filter');
-	var b1 = $('<div class="btn btn-default btn-block"><i class="fa fa-search"></i> ' + _gettext('Search') + '</div>');
-	var b2 = $('<div class="btn btn-default"><i class="fa fa-filter"></i></div>');
+	var b1 = s.find('.yb-filter2');
+	var b2 = s.find('.yb-filter3');
 	
+	b1.append(_gettext('Search'));
 	b1.click(function(){
 		f.toggle();
 		p.find('.yb-list').trigger('refresh', {type: 'review'});
@@ -836,15 +837,14 @@ function bindFilter(uid){
 		f.toggle();
 	});
 	
-	if(!f.find('[name]').length){ return;}
-	
-	s.find('[name=search]').closest('.btn-group').after(b2);
-	f.append(b1);
-	r.change(function(){
-		s.find('[name]').each(function(){
-			$(this).trigger('preset');
+	if(f.find('[name]').length){
+		b2.show();
+		r.change(function(){
+			s.find('[name]').each(function(){
+				$(this).trigger('preset');
+			});
 		});
-	});
+	}
 }
 
 function bindCheck(uid){
