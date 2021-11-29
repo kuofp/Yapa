@@ -164,7 +164,7 @@ class Yapa{
 				];
 			}
 			
-			if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
+			if($this->join[$i]){
 				$tmp = $this->join[$i];
 				$data = $this->database->select($tmp[0], [$tmp[1], $tmp[2]], $tmp[3]);
 				$tpl = [];
