@@ -156,12 +156,31 @@ class Yapa{
 		$filter = [];
 		for($i = 0; $i < $this->col_num; $i++){
 			// order settings
-			if($this->hide[$i]) continue;
-			$th[] = [
-				'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' yb-order': ''),
-				'name' => $this->col_en[$i],
-				'text' => $this->col_ch[$i],
-			];
+			if(!$this->hide[$i]){
+				$th[] = [
+					'class' => $this->show[$i] . (($this->type[$i] != 'value')? ' yb-order': ''),
+					'name' => $this->col_en[$i],
+					'text' => $this->col_ch[$i],
+				];
+			}
+			
+			if($this->join[$i]){
+				$tmp = $this->join[$i];
+				$data = $this->database->select($tmp[0], [$tmp[1], $tmp[2]], $tmp[3]);
+				$tpl = [];
+				foreach($data as $v){
+					$text = $v[$tmp[1]];
+					if($this->attr[$i]['i18n'] ?? 0){
+						$text = $text? _($text): '';
+					}
+					if($text){
+						// JS won't ensure the order of numeric keys
+						$tpl[] = [$v[$tmp[2]], $text];
+					}
+				}
+				$tpl = json_encode($tpl, JSON_UNESCAPED_UNICODE);
+				$this->join[$i][4] = $tpl;
+			}
 		}
 		
 		foreach($this->config['filter'] ?? [] as $k=>$v){
@@ -176,19 +195,7 @@ class Yapa{
 					continue;
 				}else if(in_array($this->col_en[$i], ['select', 'radiobox', 'checkbox'])){
 					$func = 'checkbox';
-					$arr_tmp = $this->join[$i];
-					$datas = $this->database->select($arr_tmp[0], [$arr_tmp[1], $arr_tmp[2]], $arr_tmp[3]);
-					
-					$tpl = [];
-					foreach($datas as $arr){
-						$text = $arr[$arr_tmp[1]];
-						if($this->attr[$i]['i18n'] ?? 0){
-							$text = $text? _($text): '';
-						}
-						if(!$text){ continue;}
-						$tpl[] = [$arr[$arr_tmp[2]], $text];
-					}
-					$tpl = json_encode($tpl);
+					$tpl = $this->join[$i][4];
 				}else{
 					$func = 'text';
 				}
@@ -395,19 +402,7 @@ class Yapa{
 			}
 			
 			if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
-				$arr_tmp = $this->join[$i];
-				$datas = $this->database->select($arr_tmp[0], '*', $arr_tmp[3]);
-				
-				$tpl = [];
-				foreach($datas as $arr){
-					$text = $arr[$arr_tmp[1]];
-					if($this->attr[$i]['i18n'] ?? 0){
-						$text = $text? _($text): '';
-					}
-					if(!$text){ continue;}
-					$tpl[] = [$arr[$arr_tmp[2]], $text]; // JS won't ensure the order of numeric keys
-				}
-				$tpl = json_encode($tpl);
+				$tpl = $this->join[$i][4];
 			}
 			
 			if(in_array($this->type[$i], ['datepicker'])){
