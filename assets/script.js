@@ -1036,11 +1036,8 @@ function bindRefresh(uid){
 	p.find('.yb-list').on('refresh', function (e,obj){
 		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
-		var pdata = {data:{},where:{ AND: {}}};
+		var pdata = genParam(uid);
 		var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
-		var keyword = s.find('[name=search]').val();
-		var keyword_adv = aio.data('_search_adv');
-		var keyword_cus = serializeJSON(s.serializeArray());
 		
 		switch(obj.type){
 			case 'review':
@@ -1049,17 +1046,11 @@ function bindRefresh(uid){
 				if(max_){ // skip zero case
 					pdata['where']['LIMIT'] = [c.val(), max_];
 				}
-				pdata['where']['SEARCH'] = keyword;
-				pdata['where']['SEARCH_ADV'] = keyword_adv;
-				pdata['where']['SEARCH_CUS'] = keyword_cus;
 				break;
 			case 'create':
 			case 'modify':
 			case 'delete':
 				pdata['where']['AND']['id'] = arr_id;
-				pdata['where']['SEARCH'] = keyword;
-				pdata['where']['SEARCH_ADV'] = keyword_adv;
-				pdata['where']['SEARCH_CUS'] = keyword_cus;
 				break;
 			default:
 				break;
@@ -1308,15 +1299,14 @@ function genParam(uid){
 	var aio = $('#' + uid);
 	var l = aio.data('checked_list');
 	var s = aio.data('search_area');
-	
-	var cus = serializeJSON(s.serializeArray());
-	
 	var obj = l.data('list');
 	
 	var pdata = {
 		where: {
+			SEARCH: s.find('[name=search]').val(),
 			SEARCH_ADV: aio.data('_search_adv'),
-			SEARCH_CUS: cus,
+			SEARCH_CUS: serializeJSON(s.serializeArray()),
+			AND: {},
 		}
 	};
 	
