@@ -191,9 +191,9 @@ class Yapa{
 			if($i){
 				
 				$tpl = '';
-				if(in_array($this->col_en[$i], ['hidden', 'value'])){
+				if(in_array($this->type[$i], ['hidden', 'value'])){
 					continue;
-				}else if(in_array($this->col_en[$i], ['select', 'radiobox', 'checkbox'])){
+				}else if(in_array($this->type[$i], ['select', 'radiobox', 'checkbox'])){
 					$func = 'checkbox';
 					$tpl = $this->join[$i][4];
 				}else{
