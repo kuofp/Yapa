@@ -612,8 +612,11 @@ class Yapa{
 							$arr_tmp = $this->join[$i];
 							$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $word, 'LIMIT' => 1000]);
 							if($ids){
-								// find in a comma separated string (not a precise approach yet)
-								$arr_search[$this->table . '.' . $this->col_en[$i] . '[~]'] = $ids;
+								// find in a comma separated string
+								$ids = array_map(function($r){
+									return '(^|,)' . $r . '(,|$)';
+								}, $ids);
+								$arr_search[$this->table . '.' . $this->col_en[$i] . '[REGEXP]'] = implode('|', $ids);
 							}
 							
 						}else if($this->join[$i]){
@@ -651,7 +654,16 @@ class Yapa{
 			$col = $tmp[0] ?? '';
 			if(in_array($col, $this->col_en) && $v){
 				$i = array_flip($this->col_en)[$col] ?? 0;
-				$pdata['where']['AND #cus'][$this->table . '.' . $k] = $this->join[$i]? $this->split($v): $v;
+				if($this->join[$i]){
+					// find in a comma separated string
+					$ids = $this->split($v);
+					$ids = array_map(function($r){
+						return '(^|,)' . $r . '(,|$)';
+					}, $ids);
+					$pdata['where']['AND #cus'][$this->table . '.' . $k . '[REGEXP]'] = implode('|', $ids);
+				}else{
+					$pdata['where']['AND #cus'][$this->table . '.' . $k] = $v;
+				}
 			}
 		}
 		unset($pdata['where']['SEARCH_CUS']);
