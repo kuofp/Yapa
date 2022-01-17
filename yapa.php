@@ -228,6 +228,7 @@ class Yapa{
 			'modal'     => $this->genFormModal(),
 			'config'    => json_encode([
 				'create_more' => $this->config['create_more'] ?? false,
+				'single' => $this->config['single'] ?? false,
 				'module' => $this->config['module'] ?? [],
 				'search_adv' => $this->req['query'] ?? [],
 				'admin' => $this->config['admin'] ?? '',
