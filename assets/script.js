@@ -958,6 +958,7 @@ function bindView(uid){
 	var l = aio.data('checked_list');
 	var max = aio.data('_max');
 	var tree = aio.data('_tree');
+	var single = aio.data('_single');
 	var timer = 0;// delay loading
 	
 	s.find('[name=search][auto]').attr('placeholder', _gettext('Search'));
@@ -1004,6 +1005,10 @@ function bindView(uid){
 		
 		if(tree){
 			p.find('.yb-list').trigger('tree');
+		}
+		
+		if(single){
+			p.find('.yb-row').find('td').not('.func').eq(0).click();
 		}
 		
 		p.find('.buttonLoading').button('reset');
@@ -1371,6 +1376,7 @@ function bindModule(uid){
 	var f = aio.data('form');
 	var s = aio.data('search_area');
 	var c = aio.data('change_complete');
+	var single = aio.data('_single');
 	var tpl = aio.data('_module');
 	var tab = m.find('.nav-tabs');
 	
@@ -1383,6 +1389,10 @@ function bindModule(uid){
 	m.children('div').eq(0).children('button.close').click(function(){
 		m.trigger('toggle');
 	});
+	
+	if(single){
+		m.children('div').eq(0).children('button.close').hide();
+	}
 	
 	f.on('reset', function(){
 		// hide tabs
