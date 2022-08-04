@@ -193,6 +193,9 @@ class Yapa{
 				$tpl = '';
 				if(in_array($this->type[$i], ['value'])){
 					continue;
+				}else if(in_array($this->type[$i], ['datepicker'])){
+					$func = 'datepicker';
+					$tpl = $this->attr[$i]['format'] ?? 'Y-m-d';
 				}else if($this->join[$i]){
 					if($this->type[$i] == 'autocomplete'){
 						$func = 'autocomplete';
@@ -205,7 +208,7 @@ class Yapa{
 				}
 				$filter[] = [
 					'value' => $v,
-					'meta' => $this->col_ch[$i],
+					'meta' => $this->split($k, 'label')[1] ?? $this->col_ch[$i],
 					'name' => $k,
 					'func' => '_' . $func,
 					'uid' => $this->getUid(),

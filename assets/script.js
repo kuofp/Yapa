@@ -407,6 +407,15 @@ jQuery.fn.extend({
 			}
 		});
 		
+		$(col).on('input', function(){
+			if($(this).val() == ''){
+				$(tar).val('');
+			}else{
+				var unixtime = Date.parse($(this).val())/1000;
+				$(tar).val(unixtime);
+			}
+		})
+		
 		$(tar).on('preset', function(){
 			
 			var val = $(tar).val();
