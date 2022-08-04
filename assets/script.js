@@ -464,7 +464,7 @@ jQuery.fn.extend({
 			var tmp = $(tar).val()? $(tar).val().split(','): [];
 			var idx = tmp.indexOf(Math.abs(val) + '');
 			
-			if(val > 0 && idx == -1){
+			if(txt.length && idx == -1){
 				
 				if(max <= tmp.length){
 					$(box).find('[value=' + tmp[0] + ']').closest('.checkbox').remove();
@@ -481,12 +481,12 @@ jQuery.fn.extend({
 					$(btn).find('input').prop('disabled', $(tar).prop('disabled'));
 				}else{
 					$(btn).find('label').click(function(){
-						set(-val, '');
+						set(val, '');
 						$(btn).remove();
 					});
 				}
 				
-			}else if(val < 0 && idx != -1){
+			}else if(idx != -1){
 				tmp.splice(idx, 1);
 				$(tar).val(tmp.join(','));
 			}

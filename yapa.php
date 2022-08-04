@@ -712,6 +712,7 @@ class Yapa{
 								$ids[$v] = $v;
 							}
 						}
+						$ids = array_values($ids);
 						
 						$arr_mark[$j] = [];
 						$arr_tmp = $this->join[$j];
