@@ -402,7 +402,7 @@ jQuery.fn.extend({
 				if(func == 'time'){
 					date = '2000-01-01 ' + date;
 				}
-				var unixtime = Date.parse(date)/1000;
+				var unixtime = Date.parse(date.replace('-', '/'))/1000;
 				$(tar).val(unixtime);
 			}
 		});
@@ -411,7 +411,7 @@ jQuery.fn.extend({
 			if($(this).val() == ''){
 				$(tar).val('');
 			}else{
-				var unixtime = Date.parse($(this).val())/1000;
+				var unixtime = Date.parse($(this).val().replace('-', '/'))/1000;
 				$(tar).val(unixtime);
 			}
 		})
