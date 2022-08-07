@@ -206,10 +206,12 @@ class Yapa{
 				}else{
 					$func = 'text';
 				}
+				
+				$tmp = $this->split($k, 'label');
 				$filter[] = [
 					'value' => $v,
-					'meta' => $this->split($k, 'label')[1] ?? $this->col_ch[$i],
-					'name' => $k,
+					'meta' => $tmp[1] ?? $this->col_ch[$i],
+					'name' => $tmp[0],
 					'func' => '_' . $func,
 					'uid' => $this->getUid(),
 					'arg' => json_encode([
@@ -642,7 +644,19 @@ class Yapa{
 			$adv = $pdata['where']['SEARCH_ADV'];
 			foreach($adv['AND'] ?? [] as $k=>$v){
 				//table.id (join)
-				$adv['AND #adv'][$this->table . '.' . $k] = $v;
+				$i = array_flip($this->col_en)[$k] ?? 0;
+				if(in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+					$ids = explode(',', $v);
+					if($ids){
+						// find in a comma separated string
+						$ids = array_map(function($r){
+							return '(^|,)' . $r . '(,|$)';
+						}, $ids);
+						$adv['AND #adv'][$this->table . '.' . $this->col_en[$i] . '[REGEXP]'] = implode('|', $ids);
+					}
+				}else{
+					$adv['AND #adv'][$this->table . '.' . $k] = $v;
+				}
 				unset($adv['AND'][$k]);
 			}
 			unset($pdata['where']['SEARCH_ADV']);
