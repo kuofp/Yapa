@@ -1042,6 +1042,7 @@ function bindRefresh(uid){
 	var s = aio.data('search_area');
 	var url = aio.data('url');
 	var max = aio.data('_max');
+	var id = aio.data('_id');
 	
 	p.find('button.review').attr('data-loading-text', '<i class="fa fa-circle-o-notch fa-spin"></i> ' + _gettext('Loading'));
 	p.find('button.review').text(_gettext('Show more items +') + max);
@@ -1064,7 +1065,7 @@ function bindRefresh(uid){
 			case 'create':
 			case 'modify':
 			case 'delete':
-				pdata['where']['AND']['id'] = arr_id;
+				pdata['where']['AND'][id] = arr_id;
 				break;
 			default:
 				break;
@@ -1314,6 +1315,7 @@ function genParam(uid){
 	var l = aio.data('checked_list');
 	var s = aio.data('search_area');
 	var obj = l.data('list');
+	var id = aio.data('_id');
 	
 	var pdata = {
 		where: {
@@ -1325,8 +1327,9 @@ function genParam(uid){
 	};
 	
 	if(Object.keys(obj).length){
-		pdata['where']['ORDER'] = {id: obj};
-		pdata['where']['AND'] = {id: obj};
+		pdata['where']['ORDER'] = {};
+		pdata['where']['ORDER'][id] = obj;
+		pdata['where']['AND'][id] = obj;
 	}
 	
 	return pdata;
@@ -1342,6 +1345,7 @@ function bindRefresh2(uid){
 	var url = aio.data('url');
 	var type = aio.data('_type');
 	var col = aio.data('_col');
+	var id = aio.data('_id');
 	
 	m.find('.nav-tabs').find('a').eq(0).text(_gettext('Detail'));
 	m.find('[data-content]').hide().not('[data-content=""]').show().popover({trigger: 'hover', html: true});
@@ -1350,9 +1354,10 @@ function bindRefresh2(uid){
 		var pdata = {
 			data: {},
 			where: {
-				AND: { id: $(this).val() }
+				AND: {}
 			}
 		};
+		pdata['where']['AND'][id] = $(this).val();
 		$.ajax({
 			url: url,
 			type: 'POST',

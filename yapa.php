@@ -31,6 +31,7 @@ class Yapa{
 		
 		$this->url = $url;
 		$this->table = $table;
+		$this->id = $this->config['id'] ?? $col_en[0];
 		
 		// separate label and info
 		$label = [];
@@ -67,7 +68,7 @@ class Yapa{
 		$hide = [];
 		foreach($show as $k=>$v){
 			$tmp = $v? $this->split($v, 'space'): '';
-			$hide[] = (in_array('hidden', $tmp) && $col_en[$k] != 'id')? 1: 0;
+			$hide[] = (in_array('hidden', $tmp) && $col_en[$k] != $this->id)? 1: 0;
 			
 			foreach(array_intersect(['disabled', 'disabled-create', 'disabled-modify'], $tmp) as $w){
 				$attr[1][$k][$w] = 1;
@@ -242,6 +243,7 @@ class Yapa{
 				'max' => $this->config['perpage'] ?? 50,
 				'col' => $this->col_en,
 				'auth' => $this->auth,
+				'id' => $this->id,
 			], JSON_UNESCAPED_UNICODE),
 		])->render();
 	}
@@ -293,10 +295,10 @@ class Yapa{
 				];
 			}
 			
-			$tree = $this->tree['col']? ($this->tree['sub'][2][$v['id']] ?? ''): '';
+			$tree = $this->tree['col']? ($this->tree['sub'][2][$v[$this->id]] ?? ''): '';
 			$tr[] = [
 				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
-				'attr' => 'data-id="' . $v['id'] . '" class="yb-row ' . $tree . '"',
+				'attr' => 'data-id="' . $v[$this->id] . '" class="yb-row ' . $tree . '"',
 			];
 		}
 		
@@ -332,7 +334,7 @@ class Yapa{
 		
 		if(!$this->auth[1]){ return;}
 		
-		$pdata['data']['id'] = 0; //clear id, create don't need id
+		$pdata['data'][$this->id] = 0; //clear id, create don't need id
 		$data = $this->database->insert($this->table, $pdata['data']);
 		
 		if($data->rowCount()){
@@ -348,13 +350,13 @@ class Yapa{
 		
 		if(!$this->auth[2]){ return;}
 		
-		$pdata['where']['AND']['id'] = $pdata['data']['id'];
+		$pdata['where']['AND'][$this->id] = $pdata['data'][$this->id];
 		$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
 		
 		if($data->rowCount()){
-			$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存'];
+			$result = ['code' => 0, 'data' => $pdata['where']['AND'][$this->id], 'text' => '已儲存'];
 		}else{
-			$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已儲存, 無任何變更'];
+			$result = ['code' => 0, 'data' => $pdata['where']['AND'][$this->id], 'text' => '已儲存, 無任何變更'];
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -364,11 +366,11 @@ class Yapa{
 		
 		if(!$this->auth[3]){ return;}
 		
-		$pdata['where']['AND']['id'] = $pdata['data']['id'];
+		$pdata['where']['AND'][$this->id] = $pdata['data'][$this->id];
 		$data = $this->database->delete($this->table, $pdata['where']);
 		
 		if($data->rowCount()){
-			$result = ['code' => 0, 'data' => $pdata['where']['AND']['id'], 'text' => '已刪除'];
+			$result = ['code' => 0, 'data' => $pdata['where']['AND'][$this->id], 'text' => '已刪除'];
 		}else{
 			$result = ['code' => 1, 'text' => '操作失敗'];
 		}
@@ -559,7 +561,7 @@ class Yapa{
 			
 			$tmp = [];
 			foreach($datas as $v){
-				$tmp[$v['id']] = $v[$col];
+				$tmp[$v[$this->id]] = $v[$col];
 			}
 			
 			$sub = $this->treeSub($tmp);
@@ -581,7 +583,7 @@ class Yapa{
 				$arr = array_merge($arr, $this->tree['sub'][1][$v] ?? []);
 			}
 			// include self
-			$id = $pdata['where']['AND']['id'] ?? 0;
+			$id = $pdata['where']['AND'][$this->id] ?? 0;
 			$ids = array_merge($arr, $this->config['root']);
 			
 			if($id){
@@ -593,7 +595,7 @@ class Yapa{
 					exit;
 				}
 			}else{
-				$pdata['where']['AND']['id'] = $ids;
+				$pdata['where']['AND'][$this->id] = $ids;
 			}
 		}
 		
@@ -689,7 +691,7 @@ class Yapa{
 		// order
 		if(!($pdata['where']['ORDER'] ?? 0)){
 			// default order
-			$pdata['where']['ORDER'] = ['id' => 'DESC'];
+			$pdata['where']['ORDER'] = [$this->id => 'DESC'];
 		}
 		
 		// add table name
@@ -917,8 +919,8 @@ class Yapa{
 		
 		foreach($data as $arr){
 			foreach($arr as $k=>$v){
-				if($k != 'id'){
-					$this->data[$k][$arr['id']] = $v;
+				if($k != $this->id){
+					$this->data[$k][$arr[$this->id]] = $v;
 				}
 			}
 		}
@@ -928,7 +930,7 @@ class Yapa{
 		
 		foreach($data['data'] as $k=>$v){
 			foreach($this->data as $key=>$arr){
-				$data['data'][$k][$key] = $this->data[$key][$v['id']] ?? '';
+				$data['data'][$k][$key] = $this->data[$key][$v[$this->id]] ?? '';
 			}
 		}
 	}
@@ -943,24 +945,24 @@ class Yapa{
 			
 			foreach($data['data'] as $k=>$v){
 				foreach($this->config['sum'] ?? [] as $key){
-					$this->data[$key][$v['id']] = $v[$key] ?? 0;
+					$this->data[$key][$v[$this->id]] = $v[$key] ?? 0;
 				}
 			}
 			
 			foreach($data['data'] as $k=>$v){
 				foreach($this->config['sum'] ?? [] as $key){
 					$sum = 0;
-					$sum += (float)($this->data[$key][$v['id']] ?? 0);
-					foreach($sub[$v['id']] as $c){
+					$sum += (float)($this->data[$key][$v[$this->id]] ?? 0);
+					foreach($sub[$v[$this->id]] as $c){
 						$sum += (float)($this->data[$key][$c] ?? 0);
 					}
 					$data['data'][$k][$key] = $sum;
 				}
 				
 				if($this->config['level'] ?? 0){
-					$data['data'][$k][$col] = ($offset[$v['id']] < ($this->config['level'] ?? 0) -1)? '(' . $this->count($dsub[$v['id']]) . ')': '';
+					$data['data'][$k][$col] = ($offset[$v[$this->id]] < ($this->config['level'] ?? 0) -1)? '(' . $this->count($dsub[$v[$this->id]]) . ')': '';
 				}else{
-					$data['data'][$k][$col] = $this->count($dsub[$v['id']])? '(' . $this->count($dsub[$v['id']]) . ')': '';
+					$data['data'][$k][$col] = $this->count($dsub[$v[$this->id]])? '(' . $this->count($dsub[$v[$this->id]]) . ')': '';
 				}
 			}
 		}
