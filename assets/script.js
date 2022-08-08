@@ -240,7 +240,7 @@ jQuery.fn.extend({
 });
 
 jQuery.fn.extend({
-	_colorpicker: function() {
+	_colorpicker: function(){
 		
 		var tar = this;
 		var box = $('<input type="text"/>');
@@ -515,7 +515,7 @@ jQuery.fn.extend({
 				$.ajax({
 					url: url,
 					type: 'POST',
-					data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
+					data: {jdata: JSON.stringify({pdata: pdata, method: 'getJson'})},
 					success: function(re){
 						
 						var jdata = JSON.parse(re);
@@ -549,7 +549,7 @@ jQuery.fn.extend({
 				$.ajax({
 					url: url,
 					type: 'POST',
-					data: { jdata: JSON.stringify({ pdata: pdata, method: 'getJson' }) },
+					data: {jdata: JSON.stringify({pdata: pdata, method: 'getJson'})},
 					success: function(re){
 						
 						var jdata = JSON.parse(re);
@@ -1007,7 +1007,7 @@ function bindView(uid){
 		// prevent sending post
 		e.preventDefault();
 		$(this).addClass('buttonLoading').button('loading');
-		p.find('.yb-list').trigger('refresh',{type: 'append', max: max});
+		p.find('.yb-list').trigger('refresh', {type: 'append', max: max});
 	});
 	
 	r.change(function(){
@@ -1048,18 +1048,18 @@ function bindRefresh(uid){
 	p.find('button.review').text(_gettext('Show more items +') + max);
 	p.find('p.end').text(_gettext('Reach the bottom of list'));
 	
-	p.find('.yb-list').on('refresh', function (e,obj){
-		var str_id = (typeof obj.id === 'undefined') ? '' : obj.id + ''; // to str by default
+	p.find('.yb-list').on('refresh', function(e, obj){
+		var str_id = (typeof obj.id === 'undefined')? '': obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
 		var pdata = genParam(uid);
-		var max_ = parseInt((typeof obj.max === 'undefined') ? max : obj.max);
+		var _max = parseInt((typeof obj.max === 'undefined')? max: obj.max);
 		
 		switch(obj.type){
 			case 'review':
 				c.val(0);
 			case 'append':
-				if(max_){ // skip zero case
-					pdata['where']['LIMIT'] = [c.val(), max_];
+				if(_max){ // skip zero case
+					pdata['where']['LIMIT'] = [c.val(), _max];
 				}
 				break;
 			case 'create':
@@ -1084,7 +1084,7 @@ function bindRefresh(uid){
 		$.ajax({
 			url: url,
 			type: 'POST',
-			data: {jdata: JSON.stringify({ pdata: pdata, method: 'review' })},
+			data: {jdata: JSON.stringify({pdata: pdata, method: 'review'})},
 			success: function(re){
 				
 				var jdata = JSON.parse(re);
@@ -1100,7 +1100,7 @@ function bindRefresh(uid){
 							if(jdata['cnt'] > 0){
 								p.find('.yb-list').children('tbody').append(jdata['data']);
 							}
-							if(max_ > 0 && jdata['cnt'] == max_){
+							if(_max > 0 && jdata['cnt'] == _max){
 								p.find('button.review').show();
 								p.find('p.end').hide();
 							}else{
@@ -1134,7 +1134,7 @@ function bindRefresh(uid){
 				alert(_gettext('Reload the page and try again'));
 			}
 		});
-	}).trigger('refresh',{type: 'review'});
+	}).trigger('refresh', {type: 'review'});
 }
 
 function bindAjax(uid, tar, method, toggle){
@@ -1151,13 +1151,13 @@ function bindAjax(uid, tar, method, toggle){
 	$.ajax({
 		url: url,
 		type: 'POST',
-		data: { jdata: JSON.stringify({ pdata: pdata, method: method }) },
+		data: {jdata: JSON.stringify({pdata: pdata, method: method})},
 		success: function(re){
 			var jdata = JSON.parse(re);
 			if(jdata['code']){
 				// fail
 			}else{
-				p.find('.yb-list').trigger('refresh',{type: method, id: jdata['data']});
+				p.find('.yb-list').trigger('refresh', {type: method, id: jdata['data']});
 				if(toggle){
 					m.trigger('toggle');
 				}
@@ -1289,7 +1289,7 @@ function bindExport(uid){
 			url: url,
 			type: 'POST',
 			data: { jdata: JSON.stringify({pdata: pdata, method: 'review', style: 'print'})},
-			success: function(re) {
+			success: function(re){
 				var jdata = JSON.parse(re);
 				if(jdata['code']){
 					// fail
