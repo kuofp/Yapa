@@ -453,7 +453,7 @@ jQuery.fn.extend({
 		var tar = this;
 		var url = init.url || '';
 		var max = parseInt(init.max || 1);
-		var col = $('<input class="form-control input-sm" type="text" placeholder="&#x1F50D;"/>');
+		var col = $('<input class="form-control input-sm" type="text" placeholder="&#xF002;" style="font-family: FontAwesome"/>');
 		var box = $('<div></div>');
 		var timer = 0;// delay loading
 		
@@ -471,7 +471,7 @@ jQuery.fn.extend({
 		// generate checkbox list
 		function set(val, txt){
 			var tmp = $(tar).val()? $(tar).val().split(','): [];
-			var idx = tmp.indexOf(Math.abs(val) + '');
+			var idx = tmp.indexOf(val + '');
 			
 			if(txt.length && idx == -1){
 				
@@ -495,7 +495,7 @@ jQuery.fn.extend({
 					});
 				}
 				
-			}else if(idx != -1){
+			}else if(txt == '' && idx != -1){
 				tmp.splice(idx, 1);
 				$(tar).val(tmp.join(','));
 			}
@@ -539,13 +539,13 @@ jQuery.fn.extend({
 		
 		$(tar).on('preset', function(){
 			
-			var id = $(tar).val().split(',');
+			var id = $(tar).val()? $(tar).val().split(','): [];
 			var pdata = {where: {'[a=]': [$(tar).attr('name'), id]}};
 			
 			$(col).prop('disabled', $(tar).prop('disabled'));
 			$(box).empty();
 			
-			if(parseInt(id[0])){ // prevent string '0' == true
+			if(id.length){
 				$.ajax({
 					url: url,
 					type: 'POST',
