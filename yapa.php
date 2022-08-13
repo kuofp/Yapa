@@ -599,10 +599,12 @@ class Yapa{
 			}
 		}
 		
-		// add table name
+		// add table name, skip specified table
 		foreach($pdata['where']['AND'] ?? [] as $k=>$v){
-			$pdata['where']['AND'][$this->table . '.' . $k] = $v;
-			unset($pdata['where']['AND'][$k]);
+			if(!preg_match('/\./', $k)){
+				$pdata['where']['AND'][$this->table . '.' . $k] = $v;
+				unset($pdata['where']['AND'][$k]);
+			}
 		}
 		
 		//for search
