@@ -525,17 +525,18 @@ jQuery.fn.extend({
 							pdata = jdata['data'];
 							var arr = Object.keys(pdata).map(function(key){return pdata[key]});
 							$(col).autocomplete({
+								minLength: 0,
 								source: arr,
 								select: function(event, ui){
 									set(ui.item.val, ui.item.label);
 								}
-							}).autocomplete('search');
+							}).autocomplete('search', '');
 						}
 						customAlert(jdata);
 					}
 				});
 			}, 1000);
-		}).trigger('input'); //init autocomplete or words will be cut at first input
+		});
 		
 		$(tar).on('preset', function(){
 			

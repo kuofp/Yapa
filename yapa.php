@@ -485,8 +485,13 @@ class Yapa{
 					$key = $ac[1] ?? '';
 					if($pdata['where']['[a~]'] ?? 0){
 						$where = ['LIMIT' => 10];
-						$match = [$arr_tmp[1] => $key];
-						$fuzzy = [$arr_tmp[1] . '[~]' => $key];
+						foreach($this->split($key, 'space') as $k=>$v){
+							// treat wildcards as normal string (medoo > 2.1.3)
+							$v = str_replace(['_', '[', ']', '%', '^'], ['\_', '\[', '\]', '\%', '\^'], $v);
+							
+							$match['AND'][$arr_tmp[1] . '#muti keyword' . $k] = $v;
+							$fuzzy['AND'][$arr_tmp[1] . '[~] #muti keyword' . $k] = $v;
+						}
 						
 						$pdata['where'] = array_replace_recursive($where, $match, $arr_tmp[3]);
 						$arr1 = $this->database->select($table, $arr_col, $pdata['where']);
