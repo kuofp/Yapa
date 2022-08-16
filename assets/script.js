@@ -1052,7 +1052,7 @@ function bindRefresh(uid){
 	p.find('.yb-list').on('refresh', function(e, obj){
 		var str_id = (typeof obj.id === 'undefined')? '': obj.id + ''; // to str by default
 		var arr_id = str_id.split(',');
-		var pdata = genParam(uid);
+		var pdata = genParam(uid, 1);
 		var _max = parseInt((typeof obj.max === 'undefined')? max: obj.max);
 		
 		switch(obj.type){
@@ -1285,7 +1285,7 @@ function bindExport(uid){
 	p.find('ul.toollist').append(b1).append(b2);
 	
 	$(b1).click(function(){
-		var pdata = genParam(uid);
+		var pdata = genParam(uid, 0);
 		$.ajax({
 			url: url,
 			type: 'POST',
@@ -1305,12 +1305,12 @@ function bindExport(uid){
 	});
 	
 	$(b2).click(function(){
-		var pdata = genParam(uid);
+		var pdata = genParam(uid, 0);
 		open('POST', url, {jdata: JSON.stringify({pdata: pdata, method: 'review', style: 'excel'})}, '_blank');
 	});
 }
 
-function genParam(uid){
+function genParam(uid, all){
 	
 	var aio = $('#' + uid);
 	var l = aio.data('checked_list');
@@ -1327,7 +1327,7 @@ function genParam(uid){
 		}
 	};
 	
-	if(Object.keys(obj).length){
+	if(Object.keys(obj).length && !all){
 		pdata['where']['ORDER'] = {};
 		pdata['where']['ORDER'][id] = obj;
 		pdata['where']['AND'][id] = obj;
