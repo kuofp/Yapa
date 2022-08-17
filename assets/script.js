@@ -576,6 +576,7 @@ jQuery.fn.extend({
 		var tar = this;
 		var box = $('<div></div>');
 		var tpl = JSON.parse(init.tpl || '[]');
+		var keep = init.max || 0;
 		var cls = $(tar).attr('class');
 		
 		$(tar).before(box);
@@ -616,11 +617,15 @@ jQuery.fn.extend({
 					tmp[k] = obj[k] || '';
 					txt[k] = arr[1] || k;
 				}
-				obj = tmp;
+				tpl = tmp;
+				
+				if(!keep){
+					obj = tmp;
+					$(tar).val(JSON.stringify(obj));
+				}
 			}
-			$(tar).val(JSON.stringify(obj));
 			
-			for(var i in obj){
+			for(var i in tpl){
 				
 				// prevernt xss
 				ctl[i] = $('<span class="label label-default"></span><input>');

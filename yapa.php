@@ -424,6 +424,7 @@ class Yapa{
 			if(in_array($this->type[$i], ['json'])){
 				$tpl = json_encode($pre);
 				$pre = $this->e(json_encode($pre));
+				$this->attr[$i]['max'] = $this->attr[$i]['keep'] ?? 0;
 			}
 			
 			$td = $this->tpl->block('modal-detail.td.struct')->assign([
