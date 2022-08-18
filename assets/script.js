@@ -468,39 +468,6 @@ jQuery.fn.extend({
 			}, 1);
 		});
 		
-		// generate checkbox list
-		function set(val, txt){
-			var tmp = $(tar).val()? $(tar).val().split(','): [];
-			var idx = tmp.indexOf(val + '');
-			
-			if(txt.length && idx == -1){
-				
-				if(max <= tmp.length){
-					$(box).find('[value=' + tmp[0] + ']').closest('.checkbox').remove();
-					tmp.splice(0, 1);
-				}
-				
-				tmp.push(val);
-				$(tar).val(tmp.join(','));
-				var btn = $('<div class="checkbox"><label><input type="checkbox" value="' + val + '" checked>' + txt + '</label></div>');
-				
-				$(box).append(btn);
-				// disabled prop
-				if($(tar).prop('disabled')){
-					$(btn).find('input').prop('disabled', $(tar).prop('disabled'));
-				}else{
-					$(btn).find('label').click(function(){
-						set(val, '');
-						$(btn).remove();
-					});
-				}
-				
-			}else if(txt == '' && idx != -1){
-				tmp.splice(idx, 1);
-				$(tar).val(tmp.join(','));
-			}
-		}
-		
 		$(col).blur(function(){
 			$(this).val('');
 		});
@@ -528,7 +495,7 @@ jQuery.fn.extend({
 								minLength: 0,
 								source: arr,
 								select: function(event, ui){
-									set(ui.item.val, ui.item.label);
+									tar._autocomplete_set(ui.item.val, ui.item.label, box, max);
 								}
 							}).autocomplete('search', '');
 						}
@@ -539,35 +506,70 @@ jQuery.fn.extend({
 		});
 		
 		$(tar).on('preset', function(){
+			$(tar)._autocomplete_preset(url, col, box, max);
+		});
+	},
+	_autocomplete_set: function(val, txt, box, max){
+		var tar = this;
+		var tmp = $(tar).val()? $(tar).val().split(','): [];
+		var idx = tmp.indexOf(val + '');
+		
+		if(txt.length && idx == -1){
 			
-			var id = $(tar).val()? $(tar).val().split(','): [];
-			var pdata = {where: {'[a=]': [$(tar).attr('name'), id]}};
+			if(max <= tmp.length){
+				$(box).find('[value=' + tmp[0] + ']').closest('.checkbox').remove();
+				tmp.splice(0, 1);
+			}
 			
-			$(col).prop('disabled', $(tar).prop('disabled'));
-			$(box).empty();
+			tmp.push(val);
+			$(tar).val(tmp.join(','));
+			var btn = $('<div class="checkbox"><label><input type="checkbox" value="' + val + '" checked>' + txt + '</label></div>');
 			
-			if(id.length){
-				$.ajax({
-					url: url,
-					type: 'POST',
-					data: {jdata: JSON.stringify({pdata: pdata, method: 'getJson'})},
-					success: function(re){
-						
-						var jdata = JSON.parse(re);
-						if(jdata['code']){
-							// fail
-						}else{
-							$(tar).val('');
-							for(var i in jdata['data']){
-								set(jdata['data'][i]['val'], jdata['data'][i]['label']);
-							}
-						}
-						customAlert(jdata);
-					}
+			$(box).append(btn);
+			// disabled prop
+			if($(tar).prop('disabled')){
+				$(btn).find('input').prop('disabled', $(tar).prop('disabled'));
+			}else{
+				$(btn).find('label').click(function(){
+					tar._autocomplete_set(val, '', box, max);
+					$(btn).remove();
 				});
 			}
-		});
-	}
+			
+		}else if(txt == '' && idx != -1){
+			tmp.splice(idx, 1);
+			$(tar).val(tmp.join(','));
+		}
+	},
+	_autocomplete_preset: function(url, col, box, max){
+		var tar = this;
+		var id = $(tar).val()? $(tar).val().split(','): [];
+		var pdata = {where: {'[a=]': [$(tar).attr('name'), id]}};
+		
+		$(col).prop('disabled', $(tar).prop('disabled'));
+		$(box).empty();
+		
+		if(id.length){
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: {jdata: JSON.stringify({pdata: pdata, method: 'getJson'})},
+				success: function(re){
+					
+					var jdata = JSON.parse(re);
+					if(jdata['code']){
+						// fail
+					}else{
+						$(tar).val('');
+						for(var i in jdata['data']){
+							tar._autocomplete_set(jdata['data'][i]['val'], jdata['data'][i]['label'], box, max);
+						}
+					}
+					customAlert(jdata);
+				}
+			});
+		}
+	},
 });
 
 jQuery.fn.extend({
