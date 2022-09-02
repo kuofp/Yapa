@@ -31,7 +31,7 @@ class Yapa{
 		
 		$this->url = $url;
 		$this->table = $table;
-		$this->id = $this->config['id'] ?? $col_en[0];
+		$this->id = $config['id'] ?? $col_en[0];
 		
 		// separate label and info
 		$label = [];
