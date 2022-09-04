@@ -188,8 +188,8 @@ class Yapa{
 			$tmp = [];
 			preg_match('/[\w]+/', $k, $tmp);
 			$col = $tmp[0] ?? '';
-			$i = array_flip($this->col_en)[$col] ?? 0;
-			if($i){
+			$i = array_flip($this->col_en)[$col] ?? -1;
+			if($i != -1){
 				$tpl = '';
 				if(in_array($this->type[$i], ['value'])){
 					continue;
