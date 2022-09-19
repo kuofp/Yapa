@@ -297,7 +297,7 @@ class Yapa{
 			$tree = $this->tree['col']? ($this->tree['sub'][2][$v[$this->id]] ?? ''): '';
 			$tr[] = [
 				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
-				'attr' => 'data-id="' . $v[$this->id] . '" class="yb-row ' . $tree . '"',
+				'attr' => 'data-id="' . $v['__' . $this->id] . '" class="yb-row ' . $tree . '"',
 			];
 		}
 		
@@ -711,7 +711,7 @@ class Yapa{
 		if($arr_chain){
 			$datas = $this->database->select($this->table, $arr_chain, $arr_col, $where);
 		}else{
-			$datas = $this->database->select($this->table, '*', $where);
+			$datas = $this->database->select($this->table, $arr_col, $where);
 		}
 		
 		if($datas){
