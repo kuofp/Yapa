@@ -599,9 +599,7 @@ jQuery.fn.extend({
 				var obj = JSON.parse(str);
 				var tmp = {};
 				for(var i in obj){
-					var arr = i.split(/[,]+/, 2);
-					var k = arr[0];
-					tmp[k] = obj[i] || '';
+					tmp[i] = obj[i] || '';
 				}
 				obj = tmp;
 			}catch(e){
@@ -619,7 +617,6 @@ jQuery.fn.extend({
 					tmp[k] = obj[k] || '';
 					txt[k] = arr[1] || k;
 				}
-				tpl = tmp;
 				
 				if(!keep){
 					obj = tmp;
@@ -627,8 +624,10 @@ jQuery.fn.extend({
 				}
 			}
 			
-			for(var i in tpl){
-				
+			for(var i in obj){
+				if(!txt[i]){
+					continue;
+				}
 				// prevernt xss
 				ctl[i] = $('<span class="label label-default"></span><input>');
 				ctl[i].eq(0).text(txt[i] || i);
