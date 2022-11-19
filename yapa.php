@@ -287,17 +287,18 @@ class Yapa{
 			for($i = 0; $i < $this->col_num; $i++){
 				if($style == '' && $this->hide[$i]) continue;
 				$tree = (($this->tree['col'] === $i)? ' yb-tree func': '');
+				$link = $tree && ($this->e($v[$this->col_en[$i]] ?? '') != '');
 				$td[] = [
 					'class' => $this->show[$i] . $tree,
 					'name' => $this->col_en[$i],
-					'text' => ($tree? '<a href="#">': '') . $this->e($v[$this->col_en[$i]] ?? '') . ($tree? '</a>': ''),
+					'text' => ($link? '<a href="#">(': '') . $this->e($v[$this->col_en[$i]] ?? '') . ($link? ')</a>': ''),
 				];
 			}
 			
 			$tree = $this->tree['col']? ($this->tree['sub'][2][$v[$this->id]] ?? ''): '';
 			$tr[] = [
 				'td' => $this->tpl->block($block . '.td')->nest($td)->render(false),
-				'attr' => 'data-id="' . $v['__' . $this->id] . '" class="yb-row ' . $tree . '"',
+				'attr' => ($tree? ('data-sub="' . $v[$this->col_en[$this->tree['col']]] . '"'): '') . 'data-id="' . $v['__' . $this->id] . '" class="yb-row ' . $tree . '"',
 			];
 		}
 		
@@ -966,11 +967,7 @@ class Yapa{
 					$data['data'][$k][$key] = $sum;
 				}
 				
-				if($this->config['level'] ?? 0){
-					$data['data'][$k][$col] = ($offset[$v[$this->id]] < ($this->config['level'] ?? 0) -1)? '(' . $this->count($dsub[$v[$this->id]]) . ')': '';
-				}else{
-					$data['data'][$k][$col] = $this->count($dsub[$v[$this->id]])? '(' . $this->count($dsub[$v[$this->id]]) . ')': '';
-				}
+				$data['data'][$k][$col] = ($offset[$v[$this->id]] < ($this->config['level'] ?? 1000) -1)? $this->count($dsub[$v[$this->id]]): '';
 			}
 		}
 	}
