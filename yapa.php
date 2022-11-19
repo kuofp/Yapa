@@ -197,7 +197,7 @@ class Yapa{
 					$func = 'datepicker';
 					$tpl = $this->attr[$i]['format'] ?? 'Y-m-d';
 				}else if($this->join[$i]){
-					if($this->type[$i] == 'autocomplete'){
+					if(in_array($this->type[$i], ['autocomplete', 'module'])){
 						$func = 'autocomplete';
 					}else{
 						$func = 'checkbox';
@@ -418,6 +418,10 @@ class Yapa{
 				$tpl = $this->join[$i][4];
 			}
 			
+			if(in_array($this->type[$i], ['module'])){
+				$tpl = $this->attr[$i]['tpl'] ?? '';
+			}
+			
 			if(in_array($this->type[$i], ['datepicker'])){
 				$tpl = $this->attr[$i]['format'] ?? 'Y-m-d';
 			}
@@ -550,7 +554,7 @@ class Yapa{
 			// skip
 			if($this->type[$i] == 'value') continue;
 			if($this->join[$i]){
-				if(!in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+				if(!in_array($this->type[$i], ['checkbox', 'autocomplete', 'module'])){
 					$arr_tmp = $this->join[$i];
 					$arr_col[$i] = 't' . $i . '.' . $arr_tmp[1] . '(' . $this->col_en[$i] . ')';
 					$arr_chain['[>]' . $arr_tmp[0] . '(t' . $i . ')'] = [$this->col_en[$i] => $arr_tmp[2]];
@@ -624,7 +628,7 @@ class Yapa{
 						if(in_array($this->type[$i], ['value', 'password', 'uploadfile', 'datepicker'])) continue;
 						if($this->tree['col'] === $i) continue;
 						
-						if(in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+						if(in_array($this->type[$i], ['checkbox', 'autocomplete', 'module'])){
 							$arr_tmp = $this->join[$i];
 							$ids = $this->database->select($arr_tmp[0], $arr_tmp[2], [$arr_tmp[1] . '[~]' => $word, 'LIMIT' => 1000]);
 							if($ids){
@@ -655,7 +659,7 @@ class Yapa{
 			foreach($adv['AND'] ?? [] as $k=>$v){
 				//table.id (join)
 				$i = array_flip($this->col_en)[$k] ?? 0;
-				if(in_array($this->type[$i], ['checkbox', 'autocomplete'])){
+				if(in_array($this->type[$i], ['checkbox', 'autocomplete', 'module'])){
 					$ids = explode(',', $v);
 					if($ids){
 						// find in a comma separated string
@@ -731,6 +735,7 @@ class Yapa{
 						}
 						break;
 					case 'autocomplete':
+					case 'module':
 						// collect ids in data list for preventing too much results
 						$ids = [];
 						for($i = 0; $i < $cnt_datas; $i++){
@@ -776,6 +781,7 @@ class Yapa{
 					switch($this->type[$idx]){
 						case 'checkbox':
 						case 'autocomplete':
+						case 'module':
 							if($datas[$i][$key]){
 								$arr_vtmp = $this->split($datas[$i][$key]);
 								$arr_result = [];

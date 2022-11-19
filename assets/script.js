@@ -573,6 +573,93 @@ jQuery.fn.extend({
 });
 
 jQuery.fn.extend({
+	_module: function(init){
+		
+		var tar = this;
+		var url = init.url || '';
+		var tpl = init.tpl || '';
+		var max = parseInt(init.max || 1);
+		var col = $('<input class="form-control input-sm" type="text" placeholder="&#xF002;" style="font-family: FontAwesome"/>');
+		var box = $('<div style="margin: 10px 0px"></div>');
+		var pnl = $('<div style="display: none; border-radius: 3px; border: 1px solid #c5c5c5; width: 340px; height: 360px; background: white; position: absolute;"></div>');
+		var chk = null;
+		var aio = null;
+		
+		$(col).attr('class', $(tar).attr('class'));
+		$(tar).before(col);
+		$(tar).attr('class', 'hidden');
+		$(tar).before(box);
+		$(box).css('height', max * 20);
+		$('body').append(pnl);
+		
+		$(col).focus(function(){
+			var pos = $(this).offset();
+			$(pnl).css('left', pos.left).css('top', pos.top).css('width', $(this).outerWidth());
+			$(pnl).fadeIn(200);
+			$(col).trigger('input');
+			
+			aio.data('search_area').find('[name=search]').focus();
+			// sync to module
+			var tmp = $(tar).val()? $(tar).val().split(','): [];
+			var obj = {};
+			for(var i in tmp){
+				obj[tmp[i]] = tmp[i];
+			}
+			chk.data('list', obj).trigger('change');
+		});
+		
+		$(document).click(function(e){
+			// todo: keep module while tree view dom is detached, buggy body while first focus, some absolute widgets
+			var keep = $(e.target).is(col) || $(e.target).is(pnl) || pnl.has(e.target).length || $(e.target).parent().hasClass('yb-tree') || $(e.target).hasClass('yb-tree') || $(e.target).is('body');
+			if(!keep){
+				$(pnl).fadeOut(200);
+			}
+		});
+		
+		$(tar).closest('form').on('reset', function(){
+			setTimeout(function(){
+				$(tar).trigger('preset');
+			}, 1);
+		});
+		
+		$(pnl).load(tpl, {}, function(){
+			aio = $(pnl).find('.yb-root');
+			var p = aio.data('panel');
+			var s = aio.data('search_area');
+			var c = aio.data('item_cnt');
+			var t = aio.data('tree_view_complete');
+			aio.data('_checked_list_max', max);
+			
+			// style
+			p.css('padding', '5px');
+			p.find('.yb-list').parent().css('height', 'calc(100% - 100px)');
+			p.find('.toollist').hide();
+			s.find('[refresh]').hide();
+			s.find('[name=search]').addClass('input-sm');
+			c.hide();
+			
+			t.change(function(){
+				p.find('.yb-list').find('[data-sub=0]').find('td.yb-tree').empty();
+			})
+			
+			chk = aio.data('checked_list');
+			chk.change(function(){
+				var obj = chk.data('list');
+				var arr = [];
+				for(var i in obj){
+					arr.push(obj[i]);
+				}
+				tar.val(arr.join(',')).trigger('preset');
+			})
+		});
+		
+		$(tar).on('preset', function(){
+			$(tar)._autocomplete_preset(url, col, box, max);
+		});
+	}
+});
+
+jQuery.fn.extend({
 	_json: function(init){
 		
 		var tar = this;
@@ -875,8 +962,12 @@ function bindCheck(uid){
 			l.data('list', {});
 		}else{
 			$(this).children().removeClass('fa-square-o').addClass('fa-check-square-o');
+			var max = aio.data('_checked_list_max');
 			var obj = l.data('list');
 			p.find('.yb-row').not('.hidden').each(function(){
+				if(max && Object.keys(obj).length >= max){
+					return;
+				}
 				var id = $(this).data('id');
 				obj[id] = id;
 			});
@@ -1452,8 +1543,11 @@ $(document).on('click', '.yb-row > td:not(.func)', function(){
 	var aio = $(this).closest('.yb-root');
 	var t = aio.data('target_id');
 	var m = aio.data('modal');
+	var max = aio.data('_checked_list_max');
 	
-	if(!getSelection().toString()){
+	if(max){
+		$(this).closest('tr').find('td.yb-check').click();
+	}else if(!getSelection().toString()){
 		t.val($(this).closest('tr').data('id')).trigger('change');
 		m.find('.hidden-create').show();
 		m.find('.hidden-modify').hide();
@@ -1468,10 +1562,14 @@ $(document).on('click', 'td.yb-check', function(){
 	var l = aio.data('checked_list');
 	var id = $(this).closest('.yb-row').data('id');
 	var obj = l.data('list');
+	var max = aio.data('_checked_list_max');
 	
 	if(id in obj){
 		delete obj[id];
 	}else{
+		if(max && Object.keys(obj).length >= max){
+			delete obj[Object.keys(obj)[0]];
+		}
 		obj[id] = id;
 	}
 	l.trigger('change');
