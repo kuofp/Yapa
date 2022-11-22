@@ -787,7 +787,7 @@ class Yapa{
 								$arr_result = [];
 								
 								foreach($arr_vtmp as $val){
-									$arr_result[] = $arr[$val] ?? 0;
+									$arr_result[] = $this->e($arr[$val] ?? 0);
 								}
 								
 								$datas[$i][$key] = $this->raw(implode('<br>', $arr_result));
