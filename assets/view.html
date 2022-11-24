@@ -120,14 +120,10 @@ if(typeof checkScript == 'undefined'){
 <!-- @crop-img -->
 <div class="thumbnail" style="position: relative; display: inline-block; margin: 0px;">
 	<span style="position: absolute; top: 0px; right: 6px; color: black; font-size: 11px;">.{ext}</span>
-	<table style="width: 100px; height: 100px;">
-		<tr>
-			<td class="text-center">
-				<img src="{url}" class="img-responsive {img}" style="max-width: 100px; max-height: 100px; margin: 0 auto;"/>
-				<i class="fa fa-file {icon}" style="position: relative; color: brown; font-size: 45px"></i>
-			</td>
-		</tr>
-	</table>
+	<div style="width: 100px; height: 100px; display: table-cell; vertical-align: middle; text-align: center">
+		<img src="{url}" class="img-responsive {img}" style="max-width: 100px; max-height: 100px; margin: 0 auto;"/>
+		<i class="fa fa-file {icon}" style="position: relative; color: brown; font-size: 45px"></i>
+	</div>
 </div>
 <!-- @crop-img -->
 
