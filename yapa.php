@@ -207,20 +207,39 @@ class Yapa{
 					$func = 'text';
 				}
 				
-				$tmp = $this->split($k, 'label');
-				$filter[] = [
-					'value' => $v,
-					'meta' => $tmp[1] ?? $this->col_ch[$i],
-					'name' => $tmp[0],
-					'func' => '_' . $func,
-					'uid' => $this->getUid(),
-					'arg' => json_encode([
-						'tpl' => $tpl,
-						'max' => 10,
-						'url' => $this->url,
-					]),
-				];
+				$value = $v;
+				
+			}else{
+				if(is_array($v)){
+					$func = 'checkbox';
+					$tpl = [];
+					foreach($v as $k2=>$v2){
+						$tpl[] = [$k2, $v2];
+					}
+					$tpl = json_encode($tpl, JSON_UNESCAPED_UNICODE);
+				}else{
+					$func = $v;
+					if($func == 'datepicker'){
+						$tpl = 'Y-m-d';
+					}
+				}
+				
+				$value = '';
 			}
+			
+			$tmp = $this->split($k, 'label');
+			$filter[] = [
+				'value' => $value,
+				'meta' => $tmp[1] ?? $this->col_ch[$i] ?? $tmp[0] ?? '',
+				'name' => $tmp[0] ?? '',
+				'func' => '_' . $func,
+				'uid' => $this->getUid(),
+				'arg' => json_encode([
+					'tpl' => $tpl,
+					'max' => 20,
+					'url' => $this->url,
+				]),
+			];
 		}
 		
 		$this->tpl->block('main')->assign([
