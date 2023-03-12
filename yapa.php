@@ -31,7 +31,27 @@ class Yapa{
 		
 		$this->url = $url;
 		$this->table = $table;
+		$this->table_o = $table;
 		$this->id = $config['id'] ?? $col_en[0];
+		$this->ids = $this->split($this->id);
+		$this->concat_id = '`' . $this->id . '`';
+		$this->database = $medoo;
+		
+		if($this->count($this->ids) > 1){
+			$this->concat_id = 'CONCAT(`' . implode("`, '_', `", $this->ids) . '`)';
+			$this->id = implode('_', $this->ids);
+			
+			$col_en[] = $this->id;
+			$col_ch[] = $this->id;
+			$join[] = '';
+			$show[] = 'hidden';
+			$type[] = 'hidden';
+			// combine id as new view
+			$sql = 'SELECT *, ' . $this->concat_id . ' as `' . $this->id . '` FROM `' . $table . '`';
+			$table = 'v_tmp_' . md5($sql);
+			$config['table'][$table] = $sql;
+			$this->table = $table;
+		}
 		
 		// separate label and info
 		$label = [];
@@ -84,12 +104,12 @@ class Yapa{
 		$this->type = $attr[0];
 		$this->attr = $attr[1];
 		$this->auth = $auth;
-		$this->database = $medoo;
 		$this->data = [];
 		$this->tree = $tree;
 		$this->config = $config;
 		
 		$this->config['root'] = $this->split($this->config['root'] ?? '');
+		$this->set_table($this->config['table'] ?? []);
 		
 		$this->col_num = $this->count($col_en);
 		$this->uid = 0;
@@ -353,11 +373,37 @@ class Yapa{
 		
 		if(!$this->auth[1]){ return;}
 		
-		$pdata['data'][$this->id] = 0; //clear id, create don't need id
-		$data = $this->database->insert($this->table, $pdata['data']);
+		$auto_increment = \Box::obj('db')->query('SHOW COLUMNS FROM `' . $this->table_o . '` WHERE `Extra` LIKE \'%auto_increment%\'')->fetchAll(\PDO::FETCH_ASSOC);
 		
-		if($data->rowCount()){
-			$result = ['code' => 0, 'data' => $this->database->id(), 'text' => '新增成功'];
+		if($auto_increment || $this->count($this->ids) > 1){
+			unset($pdata['data'][$this->id]);
+		}
+		
+		if(!$auto_increment){
+			// user defined id and check
+			$tmp = [];
+			foreach($this->ids as $v){
+				$tmp[] = $pdata['data'][$v];
+			}
+			$id = implode('_', $tmp);
+			
+			$r = $this->database->select($this->table_o, '*',
+				\Medoo\Medoo::raw('WHERE ' . $this->concat_id . ' = :id', [':id' => $id])
+			);
+			
+			if($r){
+				$result = ['code' => 1, 'text' => '編號重複'];
+				return json_encode($result, JSON_UNESCAPED_UNICODE);
+			}
+		}
+		
+		$r = $this->database->insert($this->table_o, $pdata['data']);
+		
+		if($r && $r->rowCount()){
+			if($auto_increment){
+				$id = $this->database->id();
+			}
+			$result = ['code' => 0, 'data' => $id, 'text' => '新增成功'];
 		}else{
 			$result = ['code' => 1, 'text' => '操作失敗'];
 		}
@@ -369,13 +415,17 @@ class Yapa{
 		
 		if(!$this->auth[2]){ return;}
 		
-		$pdata['where']['AND'][$this->id] = $pdata['data'][$this->id];
-		$data = $this->database->update($this->table, $pdata['data'], $pdata['where']);
+		$id = $pdata['data'][$this->id];
+		unset($pdata['data'][$this->id]);
 		
-		if($data->rowCount()){
-			$result = ['code' => 0, 'data' => $pdata['where']['AND'][$this->id], 'text' => '已儲存'];
+		$r = $this->database->update($this->table_o, $pdata['data'],
+			\Medoo\Medoo::raw('WHERE ' . $this->concat_id . ' = :id', [':id' => $id])
+		);
+		
+		if($r && $r->rowCount()){
+			$result = ['code' => 0, 'data' => $id, 'text' => '已儲存'];
 		}else{
-			$result = ['code' => 0, 'data' => $pdata['where']['AND'][$this->id], 'text' => '已儲存, 無任何變更'];
+			$result = ['code' => 0, 'data' => $id, 'text' => '已儲存, 無任何變更'];
 		}
 		
 		return json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -385,11 +435,15 @@ class Yapa{
 		
 		if(!$this->auth[3]){ return;}
 		
-		$pdata['where']['AND'][$this->id] = $pdata['data'][$this->id];
-		$data = $this->database->delete($this->table, $pdata['where']);
+		$id = $pdata['data'][$this->id];
+		unset($pdata['data'][$this->id]);
 		
-		if($data->rowCount()){
-			$result = ['code' => 0, 'data' => $pdata['where']['AND'][$this->id], 'text' => '已刪除'];
+		$r = $this->database->delete($this->table_o,
+			\Medoo\Medoo::raw('WHERE ' . $this->concat_id . ' = :id', [':id' => $id])
+		);
+		
+		if($r && $r->rowCount()){
+			$result = ['code' => 0, 'data' => $id, 'text' => '已刪除'];
 		}else{
 			$result = ['code' => 1, 'text' => '操作失敗'];
 		}
@@ -1027,5 +1081,25 @@ class Yapa{
 	protected function count($tmp){
 		// php 7.2 issue
 		return count((array)$tmp);
+	}
+	
+	public function set_table($arr){
+		
+		foreach($arr as $table=>$value){
+			if(is_array($value)){
+				// create temp table from arr
+				$col = [];
+				foreach($value[0] ?? [] as $k=>$v){
+					$col[] = '`' . $k . '` VARCHAR(100) NOT NULL';
+				}
+				
+				$this->database->query('CREATE OR REPLACE TEMPORARY TABLE `' . $table . '` (' . implode(',', $col) . ')')->fetchAll();
+				$this->database->insert($table, $value);
+				
+			}else if(preg_match('/SELECT .+ FROM/i', $value)){
+				// create view
+				$this->database->query('CREATE OR REPLACE VIEW `' . $table . '` AS ' . $value)->fetchAll();
+			}
+		}
 	}
 }
