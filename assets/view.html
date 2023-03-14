@@ -47,7 +47,10 @@ if(typeof checkScript == 'undefined'){
 			<i class="fa fa-repeat"></i>
 		</div>
 		<!-- @search -->
-		<div class="panel panel-default yb-filter" style="position: absolute; padding: 15px; max-height: calc(100% - 85px); width: 300px; overflow-y: auto; z-index: 1; display: none">
+		<div class="panel panel-default yb-filter" style="position: absolute; padding: 15px; height: 100%; max-height: calc(100% - 85px); width: 300px; overflow: hidden; z-index: 1; display: none">
+			<div class="btn btn-default btn-block yb-filter2"><i class="fa fa-search"></i></div>
+			<hr>
+			<div class="checkbox-dense" style="height: calc(100% - 80px); overflow-y: scroll; margin: 15px -15px 0px 0px; padding-bottom: 300px">
 			<!-- @filter -->
 			<span style="font-weight: bold">{meta}</span>
 			<textarea class="form-control input-sm" name="{name}" id="{uid}">{value}</textarea>
@@ -55,8 +58,7 @@ if(typeof checkScript == 'undefined'){
 				$('#{uid}').{func}({arg});
 			</script>
 			<!-- @filter -->
-			<br>
-			<div class="btn btn-default btn-block yb-filter2"><i class="fa fa-search"></i></div>
+			</div>
 		</div>
 		</form>
 		
@@ -205,5 +207,6 @@ if(typeof checkScript == 'undefined'){
 .w400{width: 400px}.w420{width: 420px}.w440{width: 440px}.w460{width: 460px}.w480{width: 480px}
 .w500{width: 500px}
 .modal-footer > .btn{ padding: 0px 5px;}
+.checkbox-dense .checkbox{ margin: 0 0 0 5px;}
 </style>
 <!-- @css -->
