@@ -313,6 +313,44 @@ class Yapa{
 		
 		$style = $this->req['style'] ?? '';
 		
+		if($style == 'excel' && class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet')){
+			$width = [];
+			for($i = 0; $i < $this->col_num; $i++){
+				// not always show id
+				$show = $this->split($this->show[$i], 'space');
+				if(!in_array('hidden', $show)){
+					$width[$i] = str_replace('w', '', array_values(preg_grep('/^w[\d]+$/', $show))[0] ?? '');
+				}
+			}
+			
+			$out = [];
+			foreach($datas['data'] as $k=>$v){
+				$tmp = [];
+				foreach($width as $i=>$w){
+					// raw() is an array
+					$tmp[] = is_array($v[$this->col_en[$i]])?
+						str_replace('<br>', "\n", (htmlspecialchars_decode($v[$this->col_en[$i]][0], ENT_NOQUOTES))):
+						$v[$this->col_en[$i]];
+				}
+				$out[] = $tmp;
+			}
+			\PhpOffice\PhpSpreadsheet\Cell\Cell::setValueBinder(new \PhpOffice\PhpSpreadsheet\Cell\AdvancedValueBinder());
+			$sheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+			$c = 'A';
+			foreach($width as $i=>$w){
+				$sheet->getSheet(0)->getColumnDimension($c)->setWidth($w?: 100, 'px');
+				$sheet->getSheet(0)->setCellValue($c . '1', $this->col_ch[$i]);
+				$c++;
+			}
+			$sheet->getSheet(0)->fromArray($out, NULL, 'A2');
+			$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($sheet);
+			
+			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			header('Content-Disposition:filename=' . 'Export_' . date('YmdHis') . '.xlsx');
+			$writer->save('php://output');
+			exit;
+		}
+		
 		$th = array_map(function($v){
 			return ['text' => $v];
 		}, $this->col_ch);
