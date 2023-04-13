@@ -814,7 +814,7 @@ class Yapa{
 		// order
 		if(!($pdata['where']['ORDER'] ?? 0)){
 			// default order
-			$pdata['where']['ORDER'] = [$this->id => 'DESC'];
+			$pdata['where']['ORDER'] = ($this->count($this->ids) > 1)? []: [$this->id => 'DESC'];
 		}
 		
 		// add table name
@@ -1134,7 +1134,7 @@ class Yapa{
 				$this->database->query('CREATE OR REPLACE TEMPORARY TABLE `' . $table . '` (' . implode(',', $col) . ')')->fetchAll();
 				$this->database->insert($table, $value);
 				
-			}else if(preg_match('/SELECT .+ FROM/i', $value)){
+			}else if($this->database->query('EXPLAIN ' . $value)){
 				// create view
 				$this->database->query('CREATE OR REPLACE VIEW `' . $table . '` AS ' . $value)->fetchAll();
 			}
