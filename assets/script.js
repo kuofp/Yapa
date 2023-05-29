@@ -1089,9 +1089,12 @@ function bindView(uid){
 	p.find('.yb-list').parent().scroll(function(){
 		// safari issue
 		var left = Math.min($(this).scrollLeft(), $(this).get(0).scrollWidth - $(this).get(0).clientWidth);
-		p.find('.table-alter').eq(0).css('margin-left', -left);
 		p.find('.end').css('margin-left', left);
 		p.find('button.review').css('margin-left', left);
+	});
+	
+	p.find('.yb-list').find('th[name]').each(function(){
+		$(this).resizable({handles: 'e'});
 	});
 	
 	c.change(function(){ p.find('.item-cnt').text($(this).val()); });

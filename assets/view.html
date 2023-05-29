@@ -62,20 +62,15 @@ if(typeof checkScript == 'undefined'){
 		</div>
 		</form>
 		
-		<div style="padding-right: 16px; overflow: hidden">
-			<table class="table table-alter" style="margin: 0px; cursor: pointer">
-				<thead>
+		<div style="overflow-y: scroll; height: calc(100% - 40px);">
+			<table class="table table-hover table-alter yb-list" style="cursor: pointer; border-collapse: separate">
+				<thead style="position: sticky; background: #fff; top: 0">
 					<th class="yb-check w40"><i class="fa fa-square-o"></i></th>
 					<!-- @th -->
 					<th class="{class}" name="{name}">{text}<i class="fa"></i></th>
 					<!-- @th -->
 					<th></th>
 				</thead>
-			</table>
-		</div>
-		
-		<div style="overflow-y: scroll; height: calc(100% - 90px);">
-			<table class="table table-hover table-alter yb-list" style="cursor: pointer;">
 				<tbody>
 					<!-- @tr -->
 					<tr {attr}>
@@ -182,6 +177,21 @@ if(typeof checkScript == 'undefined'){
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+.table-alter th .ui-resizable-e{
+	right: 0px;
+}
+.table-alter th .ui-resizable-e:after{
+	content: " ";
+	width: 2px;
+	position: absolute;
+	height: 50%;
+	background: #ddd;
+	top: 25%;
+	left: calc(50% - 1px);
+}
+.table-alter th .ui-resizable-e:hover:after{
+	background: #000;
 }
 .table-less>tbody>tr>td{
 	border: none;
