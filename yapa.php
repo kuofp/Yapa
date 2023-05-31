@@ -109,7 +109,6 @@ class Yapa{
 		$this->config = $config;
 		
 		$this->config['root'] = $this->split($this->config['root'] ?? '');
-		$this->set_table($this->config['table'] ?? []);
 		
 		$this->col_num = $this->count($col_en);
 		$this->uid = 0;
@@ -588,6 +587,8 @@ class Yapa{
 		
 		if(!$this->auth[0]){ return;}
 		
+		$this->set_table($this->config['table'] ?? []);
+		
 		$ac = $pdata['where']['[a~]'] ?? $pdata['where']['[a=]'] ?? 0;
 		if($ac){
 			for($i = 0; $i < $this->col_num; $i++){
@@ -651,6 +652,8 @@ class Yapa{
 	public function getData($pdata){
 		
 		if(!$this->auth[0]){ return;}
+		
+		$this->set_table($this->config['table'] ?? []);
 		
 		$arr_search = [];
 		$arr_chain = [];
@@ -1134,10 +1137,41 @@ class Yapa{
 				$this->database->query('CREATE OR REPLACE TEMPORARY TABLE `' . $table . '` (' . implode(',', $col) . ')')->fetchAll();
 				$this->database->insert($table, $value);
 				
+			}else if(is_a($value, 'Medoo\Raw')){
+				// create view with param
+				if($this->query('EXPLAIN ' . $value->value, $value->map)){
+					$this->query('CREATE OR REPLACE VIEW `' . $table . '` AS ' . $value->value, $value->map)->fetchAll();
+				}
+				
 			}else if($this->database->query('EXPLAIN ' . $value)){
 				// create view
 				$this->database->query('CREATE OR REPLACE VIEW `' . $table . '` AS ' . $value)->fetchAll();
 			}
 		}
+	}
+	
+	public function query($sql, $bind)
+	{
+		$arr = [];
+		foreach($bind as $k=>$v){
+			if(is_array($v)){
+				// deal with where in
+				$tmp = [];
+				foreach($v as $k2=>$v2){
+					$arr[$k . '_yapa' . $k2] = $v2;
+					$tmp[] = $k . '_yapa' . $k2;
+				}
+				
+				if($tmp){
+					$sql = str_replace($k, implode(',', $tmp), $sql);
+				}else{
+					$sql = preg_replace('/[\S]+[\s]+IN[\s]+\([\s]*' . $k . '[\s]*\)/i', '1=1', $sql);
+				}
+			}else{
+				$arr[$k] = $v;
+			}
+		}
+		
+		return $this->database->query($sql, $arr);
 	}
 }
