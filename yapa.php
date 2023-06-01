@@ -109,6 +109,7 @@ class Yapa{
 		$this->config = $config;
 		
 		$this->config['root'] = $this->split($this->config['root'] ?? '');
+		$this->set_table($this->config['table'] ?? []);
 		
 		$this->col_num = $this->count($col_en);
 		$this->uid = 0;
@@ -587,8 +588,6 @@ class Yapa{
 		
 		if(!$this->auth[0]){ return;}
 		
-		$this->set_table($this->config['table'] ?? []);
-		
 		$ac = $pdata['where']['[a~]'] ?? $pdata['where']['[a=]'] ?? 0;
 		if($ac){
 			for($i = 0; $i < $this->col_num; $i++){
@@ -653,7 +652,7 @@ class Yapa{
 		
 		if(!$this->auth[0]){ return;}
 		
-		$this->set_table($this->config['table'] ?? []);
+		$this->set_table([$this->table => $this->config['table'][$this->table] ?? '']);
 		
 		$arr_search = [];
 		$arr_chain = [];
