@@ -1006,8 +1006,9 @@ function bindTree(uid){
 	});
 	
 	t.data('show', '0');
-	// before scrollable div
-	p.find('.yb-list').parent('div').css('height', 'calc(100% - 124px)').before(btn);
+	// colspan=100 not work
+	p.find('.yb-list').find('thead').find('tr').after(btn);
+	btn.wrap('<tr><td colspan="' + p.find('.yb-list').find('tr').find('th:visible').length + '" style="border: none; padding: 0"></td></tr>');
 	
 	$(btn).click(function(){
 		var prev = t.data('prev');
