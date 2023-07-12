@@ -32,7 +32,7 @@ class Yapa{
 		$this->url = $url;
 		$this->table = $table;
 		$this->table_o = $table;
-		$this->id = $config['id'] ?? $col_en[0];
+		$this->id = $config['id'] ?? $col_en[0] ?? '';
 		$this->ids = $this->split($this->id);
 		$this->concat_id = '`' . $this->id . '`';
 		$this->database = $medoo;
@@ -54,7 +54,7 @@ class Yapa{
 		}
 		
 		// separate label and info
-		$label = [];
+		$label = [[], []];
 		foreach($col_ch as $v){
 			$tmp = $this->split($v, 'label');
 			$label[0][] = $tmp[0] ?? '';
@@ -77,7 +77,7 @@ class Yapa{
 		}
 		
 		// type with attr
-		$attr = [];
+		$attr = [[], []];
 		foreach($type as $k=>$v){
 			$tmp = $v? $this->split($v, 'label'): '';
 			$attr[0][] = $tmp[0] ?? '';
